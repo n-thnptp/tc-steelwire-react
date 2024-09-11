@@ -1,17 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+:root {
+  --primary-color: #FFEAC5;
+  --accent-brown-300: #FFDBB5;
+  --accent-brown-600: #6C4E31;
+  --accent-brown-900: #603F26;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+*:focus {
+  outline: none;
 }
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #FFEAC5;
+}
+
+.separator {
+  font-family: 'Inter', 'sans-serif';
+  color: #a5a5a5;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #a5a5a5;
+}
+
+.separator:not(:empty)::before {
+  margin-right: .25em;
+}
+
+.separator:not(:empty)::after {
+  margin-left: .25em;
+}
+
+.input-field {
+  font-family: 'Inter', 'sans-serif';
+  background-color: #FFF;
+  margin: auto;
+  padding: 5px;
+  border-radius: 10px;
+  color: var(--accent-brown-600)
+}
+
+.primary-buttons {
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 25px;
+  line-height: normal;
+
+  height: 60px;
+  border-radius: 10px;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 10px;
+  background-color: var(--accent-brown-300);
+  color: var(--accent-brown-600);
+}
+
+.primary-buttons::before {
+  content: '';
+  width: 0;
+  height: 100%;
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, var(--accent-brown-600) 0%, var(--accent-brown-900) 100%);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+  display: block;
+  z-index: -1;
+}
+
+.primary-buttons:hover::before {
+  /* https://uiverse.io/xueyuantan/rotten-pig-19 */
+  width: 100%;
+}
+
+.primary-buttons:hover {
+  color: var(--primary-color);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+}
+
