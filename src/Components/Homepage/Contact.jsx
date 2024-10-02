@@ -1,39 +1,32 @@
-// src/components/Contact.jsx
 import React from 'react';
 
 const Contact = () => {
   return (
-    <div className="flex justify-between items-center bg-[#FFEAC5] p-10 w-full">
-        {/* กล่องใหญ่ที่ 1 (ว่างเปล่า) */}
-        <div className="w-1/3"></div>
-        {/* กล่องใหญ่ที่ 2 (ว่างเปล่า) */}
-        <div className="w-1/3"></div>
-
-      {/* กล่องใหญ่ที่ 3 (มีกล่องย่อย 3 กล่อง) */}
-      <div className="w-1/5 flex justify-between items-center">
+    <div className="flex justify-end items-start bg-[#FFEAC5] p-10 w-full">
+      
+      {/* กล่องที่ครอบ Contact และ Follow Us */}
+      <div className="flex justify-end space-x-24 max-w-screen-lg w-full items-start">
         
-        {/* กล่องย่อยที่ 1 (Contact Information) */}
-        <div className="w-2/5 text-right">
-          <h3 className="text-lg font-bold mb-4">CONTACT</h3>
+        {/* กล่องสำหรับ Contact Information */}
+        <div className="flex flex-col items-start text-right">
+          <h3 className="text-lg font-bold mb-6">CONTACT</h3>
           <ul className="text-sm">
-            <li>ADDRESS</li>
-            <li>TEL NO.</li>
-            <li>EMAIL</li>
+            <li className="flex items-center"><span>🏳</span> <span className="ml-2">ADDRESS</span></li>
+            <li className="flex items-center"><span>📞</span> <span className="ml-2">TEL NO.</span></li>
+            <li className="flex items-center"><span>✉️</span> <span className="ml-2">EMAIL</span></li>
           </ul>
         </div>
 
-        {/* กล่องย่อยที่ 2 (ว่างเปล่า) */}
-        <div className="w-1/5"></div>
-
-        {/* กล่องย่อยที่ 3 (Follow Us) */}
-        <div className="w-2/5 text-right">
-          <h3 className="text-lg font-bold mb-4">FOLLOW US</h3>
+        {/* กล่องสำหรับ Follow Us */}
+        <div className="flex flex-col items-start text-right">
+          <h3 className="text-lg font-bold mb-6">FOLLOW US</h3>
           <ul className="text-sm">
-            <li><a href="#">INSTAGRAM</a></li>
-            <li><a href="#">FACEBOOK</a></li>
-            <li><a href="#">TWITTER</a></li>
+            <li className="flex items-center"><span>📸</span> <span className="ml-2"><a href="#">INSTAGRAM</a></span></li>
+            <li className="flex items-center"><span>📘</span> <span className="ml-2"><a href="#">FACEBOOK</a></span></li>
+            <li className="flex items-center"><span>🐦</span> <span className="ml-2"><a href="#">TWITTER</a></span></li>
           </ul>
         </div>
+        
       </div>
     </div>
   );
