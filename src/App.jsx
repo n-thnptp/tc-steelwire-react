@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import Navbar from './Components/Navbar';
 import LoginForm from "./Components/LoginForm/LoginForm";
 import Homepage from "./Components/Homepage/Homepage";
+import OrderForm from './Components/OrderPage/OderForm';
 
-const Order = () => <h2>Order Page</h2>;
 const Purchase = () => <h2>Purchase Page</h2>;
 const Status = () => <h2>Status Page</h2>;
 const Configuration = () => <h2>Configuration Page</h2>;
@@ -20,7 +20,7 @@ function App() {
       {shouldShowNavbar && <Navbar />}  {/* แสดง Navbar เฉพาะเมื่อเส้นทางไม่ใช่ /login หรือ /signup */}
       <Routes>
         <Route path="/" element={<Homepage />} />
-        <Route path="/order" element={<Order />} />
+        <Route path="/order" element={<OrderForm />} />
         <Route path="/purchase" element={<Purchase />} />
         <Route path="/status" element={<Status />} />
         <Route path="/configuration" element={<Configuration />} />
