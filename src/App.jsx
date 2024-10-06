@@ -3,6 +3,7 @@ import Navbar from './Components/Navbar';
 import LoginForm from "./Components/LoginForm/LoginForm";
 import Homepage from "./Components/Homepage/Homepage";
 import OrderForm from './Components/OrderPage/OderForm';
+import PurchasePage from './Components/PurchasePage/PurchasePage';
 
 const Purchase = () => <h2>Purchase Page</h2>;
 const Status = () => <h2>Status Page</h2>;
@@ -21,7 +22,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/order" element={<OrderForm />} />
-        <Route path="/purchase" element={<Purchase />} />
+        <Route path="/purchase" element={<PurchasePage />} />
         <Route path="/status" element={<Status />} />
         <Route path="/configuration" element={<Configuration />} />
         <Route path="/history" element={<History />} />
