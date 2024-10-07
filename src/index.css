@@ -49,8 +49,8 @@ body {
   background-color: #FFF;
   margin: auto;
   padding: 5px;
-  border-radius: 10px;
-  color: var(--accent-brown-600)
+  border-radius: 20px;
+  color: theme(colors.accent.600);
 }
 
 .primary-buttons {
@@ -68,8 +68,8 @@ body {
   overflow: hidden;
   z-index: 1;
   padding: 10px;
-  background-color: var(--accent-brown-300);
-  color: var(--accent-brown-600);
+  background-color: theme(colors.accent.300);
+  color: theme(colors.accent.600);
 }
 
 .primary-buttons::before {
@@ -92,7 +92,7 @@ body {
 }
 
 .primary-buttons:hover {
-  color: var(--primary-color);
+  color: theme(colors.primary);
   transition: .5s cubic-bezier(.31,.12,.33,1);
 }
 

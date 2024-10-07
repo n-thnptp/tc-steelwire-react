@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playwrite+CU:wght@100..400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.drag-and-drop {
+    label {
+        color: theme("colors.accent.900");
+        border-color: theme("colors.accent.900");
+    }
+    svg {
+        path {
+            fill: theme("colors.accent.600");
+        }
+    }
+    span {
+        color: theme("colors.accent.900");
+    }
+}
+
+.steps-circle {
+    display: inline-flex;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 9999px;
+    
+    font-family: Inter, sans-serif;
+    font-weight: 700;
+    font-size: 1.875rem /* 30px */;
+    line-height: 2.25rem /* 36px */;
+}
