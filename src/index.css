@@ -4,13 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-color: #FFEAC5;
-  --accent-brown-300: #FFDBB5;
-  --accent-brown-600: #6C4E31;
-  --accent-brown-900: #603F26;
-}
-
 *:focus {
   outline: none;
 }
@@ -18,7 +11,7 @@
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #FFEAC5;
+  background: theme(colors.primary);
 }
 
 .separator {
@@ -80,7 +73,7 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  background-image: linear-gradient(to right, var(--accent-brown-600) 0%, var(--accent-brown-900) 100%);
+  background-image: linear-gradient(to right, theme(colors.accent.600) 0%, theme(colors.accent.900) 100%);
   transition: .5s cubic-bezier(.31,.12,.33,1);
   display: block;
   z-index: -1;

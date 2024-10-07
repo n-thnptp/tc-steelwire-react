@@ -21,6 +21,8 @@ module.exports = withMT({
           600: '#6C4E31',
           900: '#603F26',
         },
+        error: 'CD3535',
+        gray: 'F4F4F4'
       },
     },
   },
