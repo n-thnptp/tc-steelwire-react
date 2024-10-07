@@ -21,8 +21,8 @@
 
 .steps-circle {
     display: inline-flex;
-    width: 4rem;
-    height: 4rem;
+    width: 5rem;
+    height: 5rem;
     border-radius: 9999px;
     
     font-family: Inter, sans-serif;

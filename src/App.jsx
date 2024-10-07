@@ -27,6 +27,7 @@ function App() {
         <Route path="/configuration" element={<Configuration />} />
         <Route path="/history" element={<History />} />
         <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<RegisterForm />} />
       </Routes>
     </>
   );
