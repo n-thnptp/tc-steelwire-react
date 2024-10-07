@@ -80,14 +80,6 @@ const CartView = () => {
         <p className="text-sm text-gray-500">ESTIMATED TIME : MONTHS DAYS</p>
         <button className="text-accent-900 underline text-sm">EDIT LOCATION</button>
       </div>
-
-      {/* Favorites */}
-      <div className="mt-6">
-        <h3 className="font-bold text-lg">FAVORITES</h3>
-        <p className="text-sm text-gray-500">
-          WANT TO VIEW YOUR BOOKMARKS? <a href="#" className="underline">JOIN US</a> OR <a href="#" className="underline">SIGN IN</a>
-        </p>
-      </div>
     </div>
   );
 };

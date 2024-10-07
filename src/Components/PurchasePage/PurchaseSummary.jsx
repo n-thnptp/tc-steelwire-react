@@ -24,7 +24,7 @@ const PurchaseSummary = () => {
         </p>
 
         {/* เส้นใต้ */}
-        <hr className="my-2 border-t border-gray-300" />
+        <hr className="my-2 border-t border-gray-300 mb-6" />
 
         {/* ยอดรวมทั้งหมด */}
         <p className="flex justify-between font-bold">
@@ -34,7 +34,7 @@ const PurchaseSummary = () => {
       </div>
       <div className="flex flex-col items-center">
         {/* ปุ่ม Checkout */}
-        <button className="w-[45%] p-2 bg-white text-accent-900 font-bold rounded-lg border-2 shadow-lg">
+        <button className="w-[45%] p-2 bg-white text-accent-900 font-bold rounded-lg border-2 shadow-lg mb-2">
           CHECKOUT
         </button>
         {/* ปุ่ม Cancel */}
