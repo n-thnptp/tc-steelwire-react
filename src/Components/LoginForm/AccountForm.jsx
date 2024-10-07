@@ -33,24 +33,28 @@ const AccountForm = () => {
                     {/* username/email and password fields */}
                     <div className="flex flex-col gap-4 items-center justify-center">
                         <FormInput
+                            size="md"
                             type="text"
                             placeholder="Username"
                             icon={FaUser}
                             required
                         />
                         <FormInput
+                            size="md"
                             type="text"
                             placeholder="Email"
                             icon={MdEmail}
                             required
                         />
                         <FormInput
+                            size="md"
                             type="password"
                             placeholder="Password"
                             icon={RiLockPasswordFill}
                             required
                         />
                         <FormInput
+                            size="md"
                             type="password"
                             placeholder="Confirm Password"
                             icon={RiLockPasswordFill}

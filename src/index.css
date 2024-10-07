@@ -51,11 +51,11 @@ body {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 700;
-  font-size: 25px;
+  font-size: 22px;
   line-height: normal;
 
   height: 60px;
-  border-radius: 10px;
+  border-radius: 20px;
   border: none;
   position: relative;
   overflow: hidden;
@@ -69,7 +69,7 @@ body {
   content: '';
   width: 0;
   height: 100%;
-  border-radius: 10px;
+  border-radius: 20px;
   position: absolute;
   top: 0;
   left: 0;
@@ -85,6 +85,49 @@ body {
 }
 
 .primary-buttons:hover {
+  color: theme(colors.primary);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+}
+
+.secondary-buttons {
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: normal;
+
+  height: 60px;
+  border-radius: 20px;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 10px;
+  background-color: theme(colors.white);
+  color: theme(colors.accent.900);
+}
+
+.secondary-buttons::before {
+  content: '';
+  width: 0;
+  height: 100%;
+  border-radius: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, theme(colors.accent.600) 0%, theme(colors.accent.900) 100%);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+  display: block;
+  z-index: -1;
+}
+
+.secondary-buttons:hover::before {
+  /* https://uiverse.io/xueyuantan/rotten-pig-19 */
+  width: 100%;
+}
+
+.secondary-buttons:hover {
   color: theme(colors.primary);
   transition: .5s cubic-bezier(.31,.12,.33,1);
 }

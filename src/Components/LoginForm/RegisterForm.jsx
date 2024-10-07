@@ -2,15 +2,7 @@ import React, { useState } from "react";
 import "./RegisterForm.css";
 import AccountForm from "./AccountForm";
 import CompanyForm from "./CompanyForm";
-import { Button } from '@material-tailwind/react';
-import { FileUploader } from 'react-drag-drop-files';
-import { FaUser } from "react-icons/fa";
-import { MdEmail } from "react-icons/md";
-import { RiLockPasswordFill } from "react-icons/ri";
-import { RiContractRightLine } from "react-icons/ri";
-import { RiLogoutBoxFill } from "react-icons/ri";
-
-const FileTypes = ["JPG", "JPEG", "PNG"];
+import RegisterDone from "./RegisterDone";
 
 class Page {
     static AccountForm = 0;
@@ -39,10 +31,10 @@ function RegisterForm() {
     }
 
     return (
-        <section className="flex min-h-screen items-center justify-center bg-red-500">
+        <section className="flex min-h-screen items-center justify-center bg-neutral-gray">
 
             {/* form container */}
-            <div className="rounded-3xl flex max-w-3xl bg-accent-900">
+            <div className="rounded-3xl flex w-fit shadow-lg bg-accent-900">
                 
                 {/* steps container */}
                 <div className="p-16 my-10 h-auto flex flex-col gap-20 w-3/6 justify-center">
