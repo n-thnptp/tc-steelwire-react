@@ -4,13 +4,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-color: #FFEAC5;
-  --accent-brown-300: #FFDBB5;
-  --accent-brown-600: #6C4E31;
-  --accent-brown-900: #603F26;
-}
-
 *:focus {
   outline: none;
 }
@@ -18,7 +11,7 @@
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #FFEAC5;
+  background: theme(colors.primary);
 }
 
 .separator {
@@ -58,11 +51,11 @@ body {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 700;
-  font-size: 25px;
+  font-size: 22px;
   line-height: normal;
 
   height: 60px;
-  border-radius: 10px;
+  border-radius: 20px;
   border: none;
   position: relative;
   overflow: hidden;
@@ -76,11 +69,11 @@ body {
   content: '';
   width: 0;
   height: 100%;
-  border-radius: 10px;
+  border-radius: 20px;
   position: absolute;
   top: 0;
   left: 0;
-  background-image: linear-gradient(to right, var(--accent-brown-600) 0%, var(--accent-brown-900) 100%);
+  background-image: linear-gradient(to right, theme(colors.accent.600) 0%, theme(colors.accent.900) 100%);
   transition: .5s cubic-bezier(.31,.12,.33,1);
   display: block;
   z-index: -1;
@@ -96,3 +89,70 @@ body {
   transition: .5s cubic-bezier(.31,.12,.33,1);
 }
 
+.secondary-buttons {
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: normal;
+
+  height: 60px;
+  border-radius: 20px;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 10px;
+  background-color: theme(colors.white);
+  color: theme(colors.accent.900);
+}
+
+.secondary-buttons::before {
+  content: '';
+  width: 0;
+  height: 100%;
+  border-radius: 20px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, theme(colors.accent.600) 0%, theme(colors.accent.900) 100%);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+  display: block;
+  z-index: -1;
+}
+
+.secondary-buttons:hover::before {
+  /* https://uiverse.io/xueyuantan/rotten-pig-19 */
+  width: 100%;
+}
+
+.secondary-buttons:hover {
+  color: theme(colors.primary);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+}
+
+.button-underline {
+  display: inline-block;
+  position: relative;
+  padding-bottom: 2px;
+  color: theme(colors.accent.900);
+}
+
+.button-underline::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: theme(colors.accent.900);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.button-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}

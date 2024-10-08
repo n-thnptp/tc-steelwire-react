@@ -1,4 +1,5 @@
 import React from 'react';
+import FormInput from './FormInput';
 import { Button } from '@material-tailwind/react';
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -12,14 +13,18 @@ const LoginForm = () => {
 
                 {/* username/email and password fields */}
                 <div className="grid grid-rows-2 gap-6">
-                    <div className="flex w-full input-field">
-                        <MdEmail className="my-auto mx-2 text-3xl text-accent-900" />
-                        <input className="w-full h-[50px]" type="text" placeholder="Email / Username" required />
-                    </div>
-                    <div className="flex w-full input-field">
-                        <RiLockPasswordFill className="my-auto mx-2 text-3xl text-accent-900" />
-                        <input className="w-full h-[50px]" type="password" placeholder="Password" required />
-                    </div>
+                    <FormInput
+                        type="text"
+                        placeholder="Email / Username"
+                        icon={MdEmail}
+                        required
+                    />
+                    <FormInput
+                        type="password"
+                        placeholder="Password"
+                        icon={RiLockPasswordFill}
+                        required
+                    />
                 </div>
 
                 {/* login button */}
