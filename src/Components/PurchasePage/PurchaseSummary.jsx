@@ -1,9 +1,12 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';  // นำเข้า useNavigate
 
 const PurchaseSummary = () => {
   const subtotal = 'XXX.XX BAHT';
   const shipping = 'XXXX.XX BAHT';
   const total = 'XX,XXX.XX BAHT';
+  
+  const navigate = useNavigate();  // สร้าง useNavigate instance
 
   return (
     <div className="flex flex-col justify-between p-6 lg:h-full h-auto">
@@ -31,7 +34,7 @@ const PurchaseSummary = () => {
       </div>
       <div className="flex flex-col items-center">
         {/* ปุ่ม Checkout */}
-        <button className="w-[80%] p-2 bg-white text-accent-900 font-bold font-inter rounded-full border-2 shadow-lg mb-3">
+        <button className="w-[80%] p-2 bg-white text-accent-900 font-bold font-inter rounded-full border-2 shadow-lg mb-3" onClick={() => navigate('/payment')}>
           CHECKOUT
         </button>
         {/* ปุ่ม Cancel */}

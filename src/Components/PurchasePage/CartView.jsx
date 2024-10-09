@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
+import EditAddress from './EditAddress';
 
 const CartView = () => {
   const items = [
@@ -21,6 +22,17 @@ const CartView = () => {
       image: '/pic/PC-strand1.png' 
     }
   ];
+
+
+  const [isEditAddressOpen, setIsEditAddressOpen] = useState(false);
+
+  const handleEditClick = () => {
+    setIsEditAddressOpen(true);
+  };
+
+  const handleCloseEdit = () => {
+    setIsEditAddressOpen(false);
+  };
 
   return (
     <div className="p-6">
@@ -99,8 +111,12 @@ const CartView = () => {
       <div className="mt-6">
         <p className="text-[#603F26] font-bold font-inter">SHIPPING</p>
         <p className="font-inter text-gray-500">ESTIMATED TIME : MONTHS DAYS</p>
-        <button className="text-accent-900 underline text-sm font-bold font-inter">EDIT LOCATION</button>
+        <button onClick={handleEditClick} className="text-accent-900 underline text-sm font-bold font-inter">EDIT LOCATION</button>
       </div>
+
+      {/* แสดงหน้าต่าง EditAddress ถ้า isEditAddressOpen เป็น true */}
+      {isEditAddressOpen && <EditAddress onClose={handleCloseEdit} />}
+
     </div>
   );
 };

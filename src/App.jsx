@@ -5,8 +5,9 @@ import RegisterForm from "./Components/LoginForm/RegisterForm";
 import Homepage from "./Components/Homepage/Homepage";
 import OrderForm from './Components/OrderPage/OderForm';
 import PurchasePage from './Components/PurchasePage/PurchasePage';
+import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
+import EditAddress from './Components/PurchasePage/EditAddress';
 
-const Purchase = () => <h2>Purchase Page</h2>;
 const Status = () => <h2>Status Page</h2>;
 const Configuration = () => <h2>Configuration Page</h2>;
 const History = () => <h2>History Page</h2>;
@@ -24,6 +25,8 @@ function App() {
         <Route path="/" element={<Homepage />} />
         <Route path="/order" element={<OrderForm />} />
         <Route path="/purchase" element={<PurchasePage />} />
+        <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/editAddress" element={<EditAddress />} />
         <Route path="/status" element={<Status />} />
         <Route path="/configuration" element={<Configuration />} />
         <Route path="/history" element={<History />} />
