@@ -7,8 +7,8 @@ import OrderForm from './Components/OrderPage/OderForm';
 import PurchasePage from './Components/PurchasePage/PurchasePage';
 import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
 import EditAddress from './Components/PurchasePage/EditAddress';
+import Status from './Components/StatusPage/Status';
 
-const Status = () => <h2>Status Page</h2>;
 const Configuration = () => <h2>Configuration Page</h2>;
 const History = () => <h2>History Page</h2>;
 
