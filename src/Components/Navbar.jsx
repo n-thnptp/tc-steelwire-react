@@ -36,6 +36,32 @@ const Navbar = () => {
       case 'SIGNUP':
         navigate('/signup');  // เปลี่ยนเส้นทางไปยังหน้า Sign Up
         break;
+        case 'Bookmark':
+          navigate('/bookmark');
+          break;
+        case 'Location':
+          navigate('/location');
+          break;
+        case 'Profile':
+          navigate('/profile');
+          break;
+      default:
+        navigate('/');
+    }
+  };
+
+  // ฟังก์ชันสำหรับการนำทางจากไอคอน
+  const handleIconClick = (page) => {
+    switch (page) {
+      case 'Bookmark':
+        navigate('/bookmark');
+        break;
+      case 'Location':
+        navigate('/location');
+        break;
+      case 'Profile':
+        navigate('/profile');
+        break;
       default:
         navigate('/');
     }
@@ -44,11 +70,11 @@ const Navbar = () => {
   const menuItems = ['HOME', 'ORDER', 'PURCHASE', 'STATUS', 'CONFIGURATION', 'HISTORY'];
 
   return (
-    <nav className="sticky top-0 bg-white shadow-md p-4 w-full z-50 ">
+    <nav className="sticky top-0 bg-white shadow-md p-4 w-full z-50">
       <div className="flex items-center justify-between">
         {/* Logo */}
         <div className="flex items-center justify-between" style={{ width: '180px', height: '50px' }}>
-          <h1 className="text-lg font-inter font-bold text-accent-900 text-[20px] items-center justify-between">
+          <h1 className="text-lg font-inter font-bold text-accent-900 text-[20px] items-center justify-between ml-auto">
             TC STEELWIRE
           </h1>
         </div>
@@ -58,9 +84,7 @@ const Navbar = () => {
           {menuItems.map((menu) => (
             <span
               key={menu}
-              className={`cursor-pointer ${
-                active === menu ? 'border-b-2 border-accent-900' : ''
-              }`}
+              className={`cursor-pointer ${active === menu ? 'border-b-2 border-accent-900' : ''}`}
               onClick={() => handleMenuClick(menu)}
             >
               {menu}
@@ -68,8 +92,30 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Login/Signup */}
-        <div className="hidden lg:flex items-center space-x-4">
+        {/* Desktop Icon (แทน LOGIN และ SIGN UP) */}
+        <div className="hidden lg:flex items-center space-x-4 ">
+          <img
+            src="/icon/Bookmark.png"
+            alt="Bookmark"
+            className="w-6 h-6 cursor-pointer"
+            onClick={() => handleIconClick('Bookmark')}
+          />
+          <img
+            src="/icon/Pin_alt_fill.png"
+            alt="Location"
+            className="w-6 h-6 cursor-pointer"
+            onClick={() => handleIconClick('Location')}
+          />
+          <img
+            src="/icon/User_alt_fill.png"
+            alt="Profile"
+            className="w-6 h-6 cursor-pointer"
+            onClick={() => handleIconClick('Profile')}
+          />
+        </div>
+
+        {/* Hidden Desktop Login/Signup (ยังอยู่แต่ซ่อน) */}
+        <div className="hidden">
           <button
             className="bg-white text-accent-900 text-[10px] px-4 py-2 rounded font-inter font-bold"
             style={{ width: '75px', height: '35px' }}
@@ -114,31 +160,33 @@ const Navbar = () => {
           {menuItems.map((menu) => (
             <li
               key={menu}
-              className={`cursor-pointer text-center ${
-                active === menu ? 'border-b-2 border-accent-900' : ''
-              } py-2`}
+              className={`cursor-pointer text-center ${active === menu ? 'border-b-2 border-accent-900' : ''} py-2`}
               onClick={() => handleMenuClick(menu)}
             >
               <span>{menu}</span>
             </li>
           ))}
-          <li className="text-center py-2">
-            <button
-              className="bg-white text-accent-900 text-[10px] px-4 py-2 rounded font-inter font-bold"
-              style={{ width: '100px', height: '35px' }}
-              onClick={() => handleMenuClick('LOGIN')}  // เมื่อคลิกจะไปหน้า LOGIN
-            >
-              LOGIN
-            </button>
-          </li>
-          <li className="text-center py-2">
-            <button
-              className="bg-accent-900 text-white text-[10px] px-4 py-2 rounded font-inter font-bold"
-              style={{ width: '100px', height: '35px' }}
-              onClick={() => handleMenuClick('SIGNUP')}  // เมื่อคลิกจะไปหน้า SIGN UP
-            >
-              SIGN UP
-            </button>
+          {/* Mobile Icon Menu */}
+          <li className="text-center py-2 flex">
+            <img
+              src="/icon/Bookmark.png"
+              alt="Bookmark"
+              className="w-6 h-6 mx-auto"
+              onClick={() => handleIconClick('Bookmark')}
+              />
+            <img
+              src="/icon/Pin_alt_fill.png"
+              alt="Location"
+              className="w-6 h-6 mx-auto"
+              onClick={() => handleIconClick('Location')}
+            />
+
+            <img
+              src="/icon/User_alt_fill.png"
+              alt="Profile"
+              className="w-6 h-6 mx-auto"
+              onClick={() => handleIconClick('Profile')}
+            />
           </li>
         </ul>
       </div>
