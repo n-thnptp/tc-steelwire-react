@@ -117,7 +117,7 @@ const Status = () => {
   });
 
   return (
-    <div className="flex flex-col lg:flex-row p-8 justify-center bg-white items-start h-full" style={{ height: 'calc(95.5vh - 50px)' }}>
+    <div className="flex flex-col lg:flex-row p-8 justify-center bg-white items-start h-full" style={{ height: 'calc(96vh - 50px)' }}>
       <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
         <h2 className="text-3xl font-bold mb-4 text-[#603F26] font-inter">MY ORDER</h2>
 

@@ -4,7 +4,7 @@ import SummaryCheckout from './SummaryCheckout';
 
 const PaymentPage = () => {
   return (
-    <div className="flex flex-col lg:flex-row p-8 justify-between bg-white items-start h-full" style={{ height: 'calc(95vh - 50px)' }}>
+    <div className="flex flex-col lg:flex-row p-8 justify-between bg-white items-start h-full" style={{ height: 'calc(96vh - 50px)' }}>
       {/* กล่อง Banking */}
       <div className="w-full lg:w-3/5 bg-white rounded-lg p-4 overflow-y-auto mb-4 lg:mb-0">
         <Banking />

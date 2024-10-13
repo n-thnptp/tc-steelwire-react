@@ -36,7 +36,7 @@ const OrderForm = () => {
   };
 
   return (
-    <div className="p-4 items-start bg-gray-100" style={{ height: 'calc(96.5vh - 50px)' }}>  
+    <div className="p-4 items-start bg-white" style={{ height: 'calc(96vh - 50px)' }}>  
       <div className="p-4 flex h-[80vh]">
         <div className="w-full flex">
 
