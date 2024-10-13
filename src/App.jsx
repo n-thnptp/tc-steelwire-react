@@ -8,6 +8,7 @@ import PurchasePage from './Components/PurchasePage/PurchasePage';
 import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
 import EditAddress from './Components/PurchasePage/EditAddress';
 import Status from './Components/StatusPage/Status';
+import HistoryPage from './Components/HistoryPage/HistoryPage';
 
 const Configuration = () => <h2>Configuration Page</h2>;
 const History = () => <h2>History Page</h2>;
@@ -29,7 +30,7 @@ function App() {
         <Route path="/editAddress" element={<EditAddress />} />
         <Route path="/status" element={<Status />} />
         <Route path="/configuration" element={<Configuration />} />
-        <Route path="/history" element={<History />} />
+        <Route path="/history" element={<HistoryPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<RegisterForm />} />
       </Routes>

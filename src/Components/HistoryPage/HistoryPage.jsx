@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const Status = () => {
+const HistoryPage = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,8 +13,8 @@ const Status = () => {
       length: '06.00 M',
       weight: '2,000.00 KG',
       price: 'XXXXX.XX BAHT',
-      progress: 50,
-      status: 'IN PROGRESS',
+      progress: 100,
+      date: 'XX MONTH 20XX',
     },
     {
       name: 'PC WIRE',
@@ -23,48 +23,8 @@ const Status = () => {
       length: '06.00 M',
       weight: '2,000.00 KG',
       price: 'XXXXX.XX BAHT',
-      progress: 0,
-      status: 'CANCEL',
-    },
-    {
-      name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
-      price: 'XXXXX.XX BAHT',
-      progress: 0,
-      status: 'PENDING ON PURCHASE',
-    },
-    {
-      name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
-      price: 'XXXXX.XX BAHT',
-      progress: 0,
-      status: 'CANCEL',
-    },
-    {
-      name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
-      price: 'XXXXX.XX BAHT',
-      progress: 0,
-      status: 'CANCEL',
-    },
-    {
-      name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
-      price: 'XXXXX.XX BAHT',
-      progress: 0,
-      status: 'CANCEL',
+      progress: 100,
+      date: 'XX MONTH 20XX',
     },
     // เพิ่มรายการอื่น ๆ ตามต้องการ
   ];
@@ -83,19 +43,6 @@ const Status = () => {
       return sortOrder === 'asc' ? '▲' : '▼';
     }
     return '▲▼';
-  };
-
-  const getStatusColor = (status) => {
-    if (status === 'IN PROGRESS') {
-      return 'text-green-500';
-    }
-    if (status === 'CANCEL') {
-      return 'text-red-500';
-    }
-    if (status === 'PENDING ON PURCHASE') {
-      return 'text-yellow-500';
-    }
-    return 'text-gray-500'; // กำหนดสีเริ่มต้น
   };
 
   const filteredOrders = orders.filter((order) => {
@@ -119,7 +66,7 @@ const Status = () => {
   return (
     <div className="flex flex-col lg:flex-row p-8 justify-center bg-white items-start h-full" style={{ height: 'calc(95.5vh - 50px)' }}>
       <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
-        <h2 className="text-3xl font-bold mb-4 text-[#603F26] font-inter">MY ORDER</h2>
+        <h2 className="text-3xl font-bold mb-4 text-[#603F26] font-inter">ORDER HISTORY</h2>
 
         {/* Search Box */}
         <div className="mb-4 flex justify-end text-[#603F26] font-inter opacity-[50%]">
@@ -150,11 +97,14 @@ const Status = () => {
                 <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('price')}>
                   PRICE {getSortIcon('price')}
                 </th>
+                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('date')}>
+                  DATE {getSortIcon('date')}
+                </th>
                 <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('progress')}>
                   PROGRESS {getSortIcon('progress')}
                 </th>
-                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tr-2xl" onClick={() => handleSort('status')}>
-                  PAYMENT STATUS {getSortIcon('status')}
+                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tr-2xl" onClick={() => handleSort('reorder')}>
+                  RE-ORDER {getSortIcon('reorder')}
                 </th>
               </tr>
             </thead>
@@ -167,6 +117,7 @@ const Status = () => {
                     {`${order.length} / ${order.weight}`}
                   </td>
                   <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.price}</td>
+                  <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.date}</td>
                   <td className="py-3 px-4 text-center">
                     <div className="flex items-center justify-center">
                       <div className="w-3/4 h-2 bg-gray-300 rounded-full">
@@ -178,8 +129,12 @@ const Status = () => {
                       <span className="ml-2 text-[#603F26] font-inter">{order.progress}%</span>
                     </div>
                   </td>
-                  <td className={`py-3 px-4 text-center font-bold font-inter ${getStatusColor(order.status)}`}>
-                    {order.status}
+                  <td className="py-3 px-4 text-[#28a745] font-bold font-inter text-center">
+                    {/* ปุ่ม Re-order */}
+                    <button className="text-green-500 font-bold flex items-center space-x-2">
+                      <span>RE-ORDER</span>
+                      <img src="/icon/Refresh.png" alt="Re-order Icon" className="w-4 h-4" />
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -191,4 +146,4 @@ const Status = () => {
   );
 };
 
-export default Status;
+export default HistoryPage;
