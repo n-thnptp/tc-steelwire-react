@@ -3,7 +3,7 @@ import Navbar from './Components/Navbar';
 import LoginForm from "./Components/LoginForm/LoginForm";
 import RegisterForm from "./Components/LoginForm/RegisterForm";
 import Homepage from "./Components/Homepage/Homepage";
-import OrderForm from './Components/OrderPage/OderForm';
+import OrderForm from './Components/OrderPage/OrderForm';
 import PurchasePage from './Components/PurchasePage/PurchasePage';
 import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
 import EditAddress from './Components/PurchasePage/EditAddress';
