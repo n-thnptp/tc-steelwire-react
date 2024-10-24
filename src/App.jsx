@@ -10,8 +10,8 @@ import EditAddress from './Components/PurchasePage/EditAddress';
 import Status from './Components/StatusPage/Status';
 import HistoryPage from './Components/HistoryPage/HistoryPage';
 import Bookmark from './Components/BookmarkPage/BookmarkPage';
+import ConfigurationForm from './Components/ConfigurationPage/ConfigurationForm';
 
-const Configuration = () => <h2>Configuration Page</h2>;
 
 function App() {
   const location = useLocation();
@@ -32,7 +32,7 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/editAddress" element={<EditAddress />} />
         <Route path="/status" element={<Status />} />
-        <Route path="/configuration" element={<Configuration />} />
+        <Route path="/configuration" element={<ConfigurationForm />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<RegisterForm />} />

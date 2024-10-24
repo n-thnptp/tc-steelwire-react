@@ -1,21 +1,20 @@
 import React from 'react';
 
-const ProductSelection = ({ rows, addRow, handleSelectChange, removeRow }) => {
+const ProductSelectionConfig = ({ rows, addRow, handleSelectChange, removeRowConfig }) => {  // เปลี่ยนเป็น removeRowConfig
   return (
     <div className="bg-white shadow-md p-6 rounded-lg w-4/6 h-full overflow-y-auto">
       {rows.map((_, index) => (
-        <div key={index} className="mb-4 p-4 bg-gray-100 rounded-lg shadow-lg relative"> {/* เพิ่มเงาให้กล่อง */}
+        <div key={index} className="mb-4 p-4 bg-gray-100 rounded-lg shadow-lg relative">
           {/* Icon Close_round_fill ที่มุมบนขวาของกล่อง */}
           <div className="absolute top-2 right-2 p-2 cursor-pointer">
             <img 
               src="/icon/Close_round_fill.png" 
               alt="Remove" 
               className="w-5 h-5"
-              onClick={() => removeRow(index)} // เมื่อกดไอคอนจะลบสินค้านั้น
+              onClick={() => removeRowConfig(index)} // เปลี่ยนเป็น removeRowConfig
             />
           </div>
           <div className="mb-2">
-            {/* PC WIRE, STRAND */}
             <select 
               className="w-1/5 p-2 border rounded text-accent-900 shadow" 
               defaultValue="" 
@@ -27,7 +26,6 @@ const ProductSelection = ({ rows, addRow, handleSelectChange, removeRow }) => {
             </select>
           </div>
           <div className="grid grid-cols-4 gap-6">
-            {/* SIZE, FEATURE, LENGTH, WEIGHT */}
             <select 
               className="p-2 border rounded text-accent-900 shadow" 
               defaultValue="" 
@@ -55,7 +53,7 @@ const ProductSelection = ({ rows, addRow, handleSelectChange, removeRow }) => {
             />
             <input 
               type="number"
-              step="0.1" // รับค่าทีละ 0.1
+              step="0.1"
               className="p-2 border rounded text-accent-900 shadow" 
               placeholder="WEIGHT" 
               onChange={(e) => handleSelectChange(e, index, 'weight')}
@@ -73,4 +71,4 @@ const ProductSelection = ({ rows, addRow, handleSelectChange, removeRow }) => {
   );
 };
 
-export default ProductSelection;
+export default ProductSelectionConfig;

@@ -121,13 +121,20 @@ const Bookmark = () => {
 
         {/* Search Box */}
         <div className="mb-4 flex justify-end text-[#603F26] font-inter opacity-[50%]">
-          <input
-            type="text"
-            placeholder="Search Product"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="p-2 border border-[#603F26] rounded-full w-1/4 text-[#603F26] font-inter"
-          />
+          <div className="relative w-1/4">
+            <img
+              src="/icon/search.png"
+              alt="Search Icon"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
+            />
+            <input
+              type="text"
+              placeholder="Search Product"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="p-2 pl-10 border border-[#603F26] rounded-full w-full text-[#603F26] font-inter"
+            />
+          </div>
         </div>
 
         {/* Order Table */}

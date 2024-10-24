@@ -74,7 +74,7 @@ const HistoryPage = () => {
             <img
               src="/icon/search.png"
               alt="Search Icon"
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 opacity-50"
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
             />
             <input
               type="text"

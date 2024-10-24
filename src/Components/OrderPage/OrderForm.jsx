@@ -1,125 +1,116 @@
 import React, { useState } from 'react';
+import SummaryView from './SummaryView';
+import ProductSelection from './ProductSelection';
 
 const OrderForm = () => {
   const [rows, setRows] = useState([{}]);
   const [summary, setSummary] = useState({
-    currentWeight: 'XX:XX / 03.80 TONS',
-    items: []
+    currentWeight: 0,
+    items: [{ product: "PC WIRE" }], // ตั้งค่าเริ่มต้น
   });
 
+  // Maximum allowed weight (in KG)
+  const maxWeight = 3800;
+
+  // Add a new row, but prevent adding if weight exceeds limit or if current row is incomplete
   const addRow = () => {
+    if (summary.currentWeight >= maxWeight) {
+      alert("ไม่สามารถเพิ่มสินค้าได้ เนื่องจากน้ำหนักครบ 3.8 ตันแล้ว");
+      return;
+    }
+
+    const currentItem = summary.items[summary.items.length - 1];
+    if (!currentItem.steelSize || !currentItem.steelFeature || !currentItem.length || !currentItem.weight) {
+      alert("กรุณากรอกข้อมูลให้ครบทุกฟิลด์ก่อนเพิ่มสินค้าใหม่");
+      return;
+    }
+
     setRows([...rows, {}]);
+    setSummary((prevSummary) => ({
+      ...prevSummary,
+      items: [...prevSummary.items, { product: "PC WIRE" }], // ตั้งค่าเริ่มต้นเป็น PC WIRE
+    }));
+  };
+
+  // Remove a row and update the weight
+  const removeRow = (index) => {
+    const updatedRows = [...rows];
+    updatedRows.splice(index, 1);
+
+    const updatedItems = [...summary.items];
+    updatedItems.splice(index, 1);
+
+    setRows(updatedRows);
+    updateWeight(updatedItems);
   };
 
   const handleSelectChange = (e, index, field) => {
     const updatedItems = [...summary.items];
     if (!updatedItems[index]) {
-      updatedItems[index] = {};
+      updatedItems[index] = { product: "PC WIRE" }; // ตั้งค่าเริ่มต้น
     }
     updatedItems[index][field] = e.target.value;
-    setSummary((prevSummary) => ({
-      ...prevSummary,
-      items: updatedItems,
-    }));
+
+    if (field === 'weight') {
+      updatedItems[index].weight = parseFloat(e.target.value) || 0;
+    }
+
+    updateWeight(updatedItems);
   };
 
-  // ฟังก์ชันบันทึกข้อมูลออเดอร์ไปยัง localStorage
+  // Update the total weight based on the items
+  const updateWeight = (updatedItems) => {
+    const totalWeight = updatedItems.reduce((acc, item) => acc + (parseFloat(item.weight) || 0), 0);
+    setSummary({
+      ...summary,
+      items: updatedItems,
+      currentWeight: totalWeight
+    });
+  };
+
+  // Handle order confirmation, prevent confirmation if weight exceeds the limit or if any field is incomplete
   const handleConfirm = () => {
-    const orders = JSON.parse(localStorage.getItem('orders')) || [];
-    const newOrder = {
-      items: summary.items,
-      currentWeight: summary.currentWeight,
-    };
-    orders.push(newOrder);
-    localStorage.setItem('orders', JSON.stringify(orders)); // บันทึกออเดอร์ไปยัง localStorage
-    alert("Order confirmed!");
+    const incompleteRow = summary.items.some(
+      (item) =>
+        !item.steelSize ||
+        !item.steelFeature ||
+        !item.length ||
+        !item.weight
+    );
+
+    if (incompleteRow) {
+      alert("กรุณากรอกข้อมูลให้ครบทุกฟิลด์ก่อนยืนยันการสั่งซื้อ");
+      return;
+    }
+
+    if (summary.currentWeight > maxWeight) {
+      alert(`ไม่สามารถสั่งซื้อได้เนื่องจากน้ำหนักรวมเกิน 3.8 ตัน (${maxWeight} KG)`);
+    } else {
+      const orders = JSON.parse(localStorage.getItem('orders')) || [];
+      const newOrder = {
+        items: summary.items,
+        currentWeight: summary.currentWeight,
+      };
+      orders.push(newOrder);
+      localStorage.setItem('orders', JSON.stringify(orders));
+      alert("สั่งซื้อสำเร็จ!");
+    }
   };
 
   return (
     <div className="p-4 items-start bg-white" style={{ height: 'calc(96.3vh - 50px)' }}>  
       <div className="p-4 flex h-[80vh]">
         <div className="w-full flex">
+          {/* Product Selection */}
+          <ProductSelection
+            rows={rows}
+            addRow={addRow}
+            handleSelectChange={handleSelectChange}
+            removeRow={removeRow}
+          />
 
-          {/* กล่องฟอร์มสั่งซื้อ */}
-          <div className="bg-white shadow-md p-6 rounded-lg w-4/6 h-full overflow-y-auto">
-            {rows.map((_, index) => (
-              <div key={index} className="mb-4 p-4 bg-gray-100 rounded-lg shadow-lg">
-                <div className="mb-2">
-                  <select 
-                    className="w-1/5 p-2 border rounded text-accent-900 shadow" 
-                    defaultValue="" 
-                    onChange={(e) => handleSelectChange(e, index, 'product')}
-                  >
-                    <option value="" disabled>PC WIRE</option>
-                    <option value="PC WIRE">PC WIRE</option>
-                    <option value="PC STRAND">PC STRAND</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-4 gap-6">
-                  <select 
-                    className="p-2 border rounded text-accent-900 shadow" 
-                    defaultValue="" 
-                    onChange={(e) => handleSelectChange(e, index, 'steelSize')}
-                  >
-                    <option value="" disabled>SIZE</option>
-                    <option value="10">10 MM</option>
-                    <option value="20">20 MM</option>
-                  </select>
-                  <select 
-                    className="p-2 border rounded text-accent-900 shadow" 
-                    defaultValue="" 
-                    onChange={(e) => handleSelectChange(e, index, 'steelFeature')}
-                  >
-                    <option value="" disabled>FEATURE</option>
-                    <option value="Smooth">Smooth</option>
-                    <option value="Rough">Rough</option>
-                  </select>
-                  <input 
-                    className="p-2 border rounded text-accent-900 shadow" 
-                    placeholder="LENGTH" 
-                    onChange={(e) => handleSelectChange(e, index, 'length')}
-                  />
-                  <input 
-                    className="p-2 border rounded text-accent-900 shadow" 
-                    placeholder="WEIGHT" 
-                    onChange={(e) => handleSelectChange(e, index, 'weight')}
-                  />
-                </div>
-              </div>
-            ))}
-            <button 
-              onClick={addRow}
-              className="w-full p-2 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center text-gray-500"
-            >
-              +
-            </button>
-          </div>
-
-          {/* กล่อง SUMMARY */}
-          <div className="bg-white p-6 rounded-lg w-2/6 h-full flex flex-col">
-            <div className="mb-4">
-              <h2 className="text-4xl font-bold text-accent-900 text-right font-inter">Summary</h2>
-            </div>
-
-            <div className="flex-grow overflow-y-auto bg-gray-100 rounded-lg shadow-lg p-4 mb-4">
-              <p className="mb-2 text-gray-500 font-inter">CURRENT WEIGHT : {summary.currentWeight}</p>
-              {summary.items.map((item, index) => (
-                <div key={index} className="text-accent-900 font-inter font-bold">
-                  <p>{item.product}</p>
-                  <p>STEEL SIZE : {item.steelSize} MM</p>
-                  <p>STEEL FEATURE : {item.steelFeature}</p>
-                  <p>LENGTH : {item.length} CM</p>
-                  <p>WEIGHT : {item.weight} KG</p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-4 flex justify-center">
-              <button onClick={handleConfirm} className="w-[30%] bg-accent-900 text-white p-4 rounded-full font-inter">
-                CONFIRM
-              </button>
-            </div>
-          </div>
+          {/* Summary View */}
+          <SummaryView summary={summary} handleConfirm={handleConfirm} />
         </div>
       </div>
     </div>
