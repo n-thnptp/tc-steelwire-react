@@ -19,8 +19,11 @@ function App() {
   // ตรวจสอบเส้นทางที่เป็น "/login" และ "/signup" เพื่อซ่อน Navbar
   const shouldShowNavbar = !['/login', '/signup'].includes(location.pathname);
 
+  // ตรวจสอบว่าอยู่ที่หน้า "/login" หรือไม่
+  const isLoginPage = location.pathname === '/login';
+
   return (
-    <>
+    <div className={!isLoginPage ? 'bg-secondary min-h-screen' : 'bg-primary min-h-screen'}>
       {shouldShowNavbar && <Navbar />}  {/* แสดง Navbar เฉพาะเมื่อเส้นทางไม่ใช่ /login หรือ /signup */}
       <Routes>
         <Route path="/" element={<Homepage />} />
@@ -34,7 +37,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<RegisterForm />} />
       </Routes>
-    </>
+    </div>
   );
 }
 
