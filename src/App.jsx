@@ -9,9 +9,9 @@ import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
 import EditAddress from './Components/PurchasePage/EditAddress';
 import Status from './Components/StatusPage/Status';
 import HistoryPage from './Components/HistoryPage/HistoryPage';
+import Bookmark from './Components/BookmarkPage/BookmarkPage';
 
 const Configuration = () => <h2>Configuration Page</h2>;
-const History = () => <h2>History Page</h2>;
 
 function App() {
   const location = useLocation();
@@ -36,6 +36,8 @@ function App() {
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<RegisterForm />} />
+        <Route path="/bookmark" element={<Bookmark />} />
+
       </Routes>
     </div>
   );
