@@ -1,10 +1,35 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const Navbar = () => {
   const [active, setActive] = useState('HOME');
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // ตรวจสอบเส้นทางปัจจุบันเมื่อกดรีหน้า
+  useEffect(() => {
+    const currentPath = location.pathname;
+    if (currentPath === '/') {
+      setActive('HOME');
+    } else if (currentPath.includes('order')) {
+      setActive('ORDER');
+    } else if (currentPath.includes('purchase')) {
+      setActive('PURCHASE');
+    } else if (currentPath.includes('status')) {
+      setActive('STATUS');
+    } else if (currentPath.includes('configuration')) {
+      setActive('CONFIGURATION');
+    } else if (currentPath.includes('history')) {
+      setActive('HISTORY');
+    } else if (currentPath.includes('bookmark')) {
+      setActive('Bookmark');
+    } else if (currentPath.includes('location')) {
+      setActive('Location');
+    } else if (currentPath.includes('profile')) {
+      setActive('Profile');
+    }
+  }, [location]);
 
   const handleMenuClick = (menu) => {
     setActive(menu);
@@ -31,28 +56,11 @@ const Navbar = () => {
         navigate('/history');
         break;
       case 'LOGIN':
-        navigate('/login');  // เปลี่ยนเส้นทางไปยังหน้า Login
+        navigate('/login');
         break;
       case 'SIGNUP':
-        navigate('/signup');  // เปลี่ยนเส้นทางไปยังหน้า Sign Up
+        navigate('/signup');
         break;
-        case 'Bookmark':
-          navigate('/bookmark');
-          break;
-        case 'Location':
-          navigate('/location');
-          break;
-        case 'Profile':
-          navigate('/profile');
-          break;
-      default:
-        navigate('/');
-    }
-  };
-
-  // ฟังก์ชันสำหรับการนำทางจากไอคอน
-  const handleIconClick = (page) => {
-    switch (page) {
       case 'Bookmark':
         navigate('/bookmark');
         break;
@@ -92,51 +100,48 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Icon (แทน LOGIN และ SIGN UP) */}
-        <div className="hidden lg:flex items-center space-x-4 ">
+        {/* Desktop Icon */}
+        <div className="hidden lg:flex items-center space-x-4">
           <img
             src="/icon/Bookmark.png"
             alt="Bookmark"
-            className="w-6 h-6 cursor-pointer"
-            onClick={() => handleIconClick('Bookmark')}
+            className={`w-6 h-6 cursor-pointer ${active === 'Bookmark' ? 'border-b-2 border-accent-900' : ''}`}
+            onClick={() => handleMenuClick('Bookmark')}
           />
           <img
             src="/icon/Pin_alt_fill.png"
             alt="Location"
-            className="w-6 h-6 cursor-pointer"
-            onClick={() => handleIconClick('Location')}
+            className={`w-6 h-6 cursor-pointer ${active === 'Location' ? 'border-b-2 border-accent-900' : ''}`}
+            onClick={() => handleMenuClick('Location')}
           />
           <img
             src="/icon/User_alt_fill.png"
             alt="Profile"
-            className="w-6 h-6 cursor-pointer"
-            onClick={() => handleIconClick('Profile')}
+            className={`w-6 h-6 cursor-pointer ${active === 'Profile' ? 'border-b-2 border-accent-900' : ''}`}
+            onClick={() => handleMenuClick('Profile')}
           />
         </div>
 
-        {/* Hidden Desktop Login/Signup (ยังอยู่แต่ซ่อน) */}
+        {/* Hidden Desktop Login/Signup */}
         <div className="hidden">
           <button
             className="bg-white text-accent-900 text-[10px] px-4 py-2 rounded font-inter font-bold"
             style={{ width: '75px', height: '35px' }}
-            onClick={() => handleMenuClick('LOGIN')}  // เมื่อคลิกจะไปหน้า LOGIN
+            onClick={() => handleMenuClick('LOGIN')}
           >
             LOGIN
           </button>
           <button
             className="bg-accent-900 text-white px-4 py-2 rounded font-inter text-[10px] font-bold"
             style={{ width: '75px', height: '35px' }}
-            onClick={() => handleMenuClick('SIGNUP')}  // เมื่อคลิกจะไปหน้า SIGN UP
+            onClick={() => handleMenuClick('SIGNUP')}
           >
             SIGN UP
           </button>
         </div>
 
         {/* Hamburger Menu */}
-        <button
-          className="lg:hidden"
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
           <svg
             className="w-6 h-6"
             fill="none"
@@ -144,12 +149,7 @@ const Navbar = () => {
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={isOpen ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16m-7 6h7'} />
           </svg>
         </button>
       </div>
@@ -171,21 +171,20 @@ const Navbar = () => {
             <img
               src="/icon/Bookmark.png"
               alt="Bookmark"
-              className="w-6 h-6 mx-auto"
-              onClick={() => handleIconClick('Bookmark')}
-              />
+              className={`w-6 h-6 mx-auto ${active === 'Bookmark' ? 'border-b-2 border-accent-900' : ''}`}
+              onClick={() => handleMenuClick('Bookmark')}
+            />
             <img
               src="/icon/Pin_alt_fill.png"
               alt="Location"
-              className="w-6 h-6 mx-auto"
-              onClick={() => handleIconClick('Location')}
+              className={`w-6 h-6 mx-auto ${active === 'Location' ? 'border-b-2 border-accent-900' : ''}`}
+              onClick={() => handleMenuClick('Location')}
             />
-
             <img
               src="/icon/User_alt_fill.png"
               alt="Profile"
-              className="w-6 h-6 mx-auto"
-              onClick={() => handleIconClick('Profile')}
+              className={`w-6 h-6 mx-auto ${active === 'Profile' ? 'border-b-2 border-accent-900' : ''}`}
+              onClick={() => handleMenuClick('Profile')}
             />
           </li>
         </ul>

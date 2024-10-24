@@ -9,9 +9,9 @@ import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
 import EditAddress from './Components/PurchasePage/EditAddress';
 import Status from './Components/StatusPage/Status';
 import HistoryPage from './Components/HistoryPage/HistoryPage';
+import Bookmark from './Components/BookmarkPage/BookmarkPage';
 
 const Configuration = () => <h2>Configuration Page</h2>;
-const History = () => <h2>History Page</h2>;
 
 function App() {
   const location = useLocation();
@@ -19,8 +19,11 @@ function App() {
   // ตรวจสอบเส้นทางที่เป็น "/login" และ "/signup" เพื่อซ่อน Navbar
   const shouldShowNavbar = !['/login', '/signup'].includes(location.pathname);
 
+  // ตรวจสอบว่าอยู่ที่หน้า "/login" หรือไม่
+  const isLoginPage = location.pathname === '/login';
+
   return (
-    <>
+    <div className={!isLoginPage ? 'bg-secondary min-h-screen' : 'bg-primary min-h-screen'}>
       {shouldShowNavbar && <Navbar />}  {/* แสดง Navbar เฉพาะเมื่อเส้นทางไม่ใช่ /login หรือ /signup */}
       <Routes>
         <Route path="/" element={<Homepage />} />
@@ -33,8 +36,10 @@ function App() {
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<RegisterForm />} />
+        <Route path="/bookmark" element={<Bookmark />} />
+
       </Routes>
-    </>
+    </div>
   );
 }
 

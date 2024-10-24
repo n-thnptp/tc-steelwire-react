@@ -1,11 +1,62 @@
 import React, { useState } from 'react';
 
-const HistoryPage = () => {
+const Bookmark = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
 
   const orders = [
+    {
+      name: 'PC WIRE',
+      size: '04.00 MM',
+      feature: 'SMOOTH',
+      length: '06.00 M',
+      weight: '2,000.00 KG',
+      price: 'XXXXX.XX BAHT',
+      progress: 100,
+      date: 'XX MONTH 20XX',
+    },
+    {
+      name: 'PC WIRE',
+      size: '04.00 MM',
+      feature: 'SMOOTH',
+      length: '06.00 M',
+      weight: '2,000.00 KG',
+      price: 'XXXXX.XX BAHT',
+      progress: 100,
+      date: 'XX MONTH 20XX',
+    },
+
+    {
+      name: 'PC WIRE',
+      size: '04.00 MM',
+      feature: 'SMOOTH',
+      length: '06.00 M',
+      weight: '2,000.00 KG',
+      price: 'XXXXX.XX BAHT',
+      progress: 100,
+      date: 'XX MONTH 20XX',
+    },
+    {
+      name: 'PC WIRE',
+      size: '04.00 MM',
+      feature: 'SMOOTH',
+      length: '06.00 M',
+      weight: '2,000.00 KG',
+      price: 'XXXXX.XX BAHT',
+      progress: 100,
+      date: 'XX MONTH 20XX',
+    },
+    {
+      name: 'PC WIRE',
+      size: '04.00 MM',
+      feature: 'SMOOTH',
+      length: '06.00 M',
+      weight: '2,000.00 KG',
+      price: 'XXXXX.XX BAHT',
+      progress: 100,
+      date: 'XX MONTH 20XX',
+    },
     {
       name: 'PC WIRE',
       size: '04.00 MM',
@@ -64,26 +115,19 @@ const HistoryPage = () => {
   });
 
   return (
-    <div className="flex flex-col lg:flex-row p-8 justify-center bg-white items-start h-full" style={{ height: 'calc(96.3vh - 50px)' }}>
+    <div className="flex flex-col lg:flex-row p-8 justify-center bg-white items-start h-full" style={{ height: 'calc(95.5vh - 50px)' }}>
       <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
-        <h2 className="text-3xl font-bold mb-4 text-[#603F26] font-inter">ORDER HISTORY</h2>
+        <h2 className="text-3xl font-bold mb-4 text-[#603F26] font-inter">ORDER FAVORITE</h2>
 
         {/* Search Box */}
         <div className="mb-4 flex justify-end text-[#603F26] font-inter opacity-[50%]">
-          <div className="relative w-1/4">
-            <img
-              src="/icon/search.png"
-              alt="Search Icon"
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 opacity-50"
-            />
-            <input
-              type="text"
-              placeholder="Search Product"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="p-2 pl-10 border border-[#603F26] rounded-full w-full text-[#603F26] font-inter"
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Search Product"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="p-2 border border-[#603F26] rounded-full w-1/4 text-[#603F26] font-inter"
+          />
         </div>
 
         {/* Order Table */}
@@ -97,14 +141,11 @@ const HistoryPage = () => {
                 <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('price')}>
                   PRICE {getSortIcon('price')}
                 </th>
-                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('date')}>
-                  DATE {getSortIcon('date')}
-                </th>
                 <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('progress')}>
                   PROGRESS {getSortIcon('progress')}
                 </th>
-                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tr-2xl" onClick={() => handleSort('reorder')}>
-                  RE-ORDER {getSortIcon('reorder')}
+                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tr-2xl">
+                  RE-ORDER
                 </th>
               </tr>
             </thead>
@@ -117,7 +158,6 @@ const HistoryPage = () => {
                     {`${order.length} / ${order.weight}`}
                   </td>
                   <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.price}</td>
-                  <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.date}</td>
                   <td className="py-3 px-4 text-center">
                     <div className="flex items-center justify-center">
                       <div className="w-3/4 h-2 bg-gray-300 rounded-full">
@@ -146,4 +186,4 @@ const HistoryPage = () => {
   );
 };
 
-export default HistoryPage;
+export default Bookmark;
