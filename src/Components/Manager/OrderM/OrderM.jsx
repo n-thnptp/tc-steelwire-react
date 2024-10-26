@@ -1,20 +1,19 @@
 import React, { useState } from 'react';
+import OrderDetailModal from './OrderDetailModal';
 
 const OrderM = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const orders = [
     {
       customerID: '123456789',
       phoneNo: 'ศูนย์เบ็ดเตล็ดสินค้าเปิดตู้โชว์',
       name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
+      id_order: '16',
       price: 'XXXXX.XX BAHT',
       status: 'PENDING',
     },
@@ -22,10 +21,7 @@ const OrderM = () => {
       customerID: '123456789',
       phoneNo: 'ศูนย์เบ็ดเตล็ดสินค้าเปิดตู้โชว์',
       name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
+      id_order: '0',
       price: 'XXXXX.XX BAHT',
       status: 'CANCEL',
     },
@@ -33,10 +29,7 @@ const OrderM = () => {
       customerID: '123456789',
       phoneNo: 'ศูนย์เบ็ดเตล็ดสินค้าเปิดตู้โชว์',
       name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
+      id_order: '1',
       price: 'XXXXX.XX BAHT',
       status: 'PAID',
     },
@@ -44,14 +37,15 @@ const OrderM = () => {
         customerID: '123456789',
         phoneNo: 'ศูนย์เบ็ดเตล็ดสินค้าเปิดตู้โชว์',
         name: 'PC WIRE',
-        size: '04.00 MM',
-        feature: 'SMOOTH',
-        length: '06.00 M',
-        weight: '2,000.00 KG',
+        id_order: '2',
         price: 'XXXXX.XX BAHT',
         status: 'PAID',
       },
   ];
+
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -143,7 +137,7 @@ const OrderM = () => {
               <tr className="bg-[#FFEAC5] text-[#603F26]">
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter rounded-tl-lg">CUSTOMER_ID</th>
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter">PHONE_NO</th>
-                <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter">PRODUCT</th>
+                <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter">Order ID</th>
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter">PRICE</th>
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter">PAYMENT STATUS</th>
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter rounded-tr-lg">DETAIL</th>
@@ -154,13 +148,7 @@ const OrderM = () => {
                 <tr key={index} className="border-b">
                   <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.customerID}</td>
                   <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.phoneNo}</td>
-                  <td className="py-3 px-4 text-[#603F26] font-inter">
-                    {`${order.name} / ${order.size}`}
-                    <br />
-                    {`${order.feature} / ${order.length}`}
-                    <br />
-                    {order.weight}
-                  </td>
+                  <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.id_order}</td>
                   <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.price}</td>
                   <td className={`py-3 px-4 text-center font-bold ${
                     order.status === 'PENDING' ? 'text-yellow-500' :
@@ -171,7 +159,7 @@ const OrderM = () => {
                     {order.status === 'CANCEL' && 'CANCEL'}
                     {order.status === 'PAID' && 'PAID'}
                   </td>
-                  <td className="py-3 px-4 text-center text-[#603F26] font-inter font-bold cursor-pointer underline">
+                  <td className="py-3 px-4 text-center text-[#603F26] font-inter font-bold cursor-pointer underline" onClick={toggleModal}>
                     Detail
                   </td>
                 </tr>
@@ -179,6 +167,7 @@ const OrderM = () => {
             </tbody>
           </table>
         </div>
+        <OrderDetailModal isOpen={modalOpen} onClose={toggleModal} />
       </div>
     </div>
   );

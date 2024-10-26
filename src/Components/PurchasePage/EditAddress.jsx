@@ -20,9 +20,22 @@ const EditAddress = ({ onClose }) => {
     onClose();
   };
 
+  const handleClickOutside = (e) => {
+    if (e.target.id === 'modal-overlay') {
+      onClose();
+    }
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg relative">
+    <div
+      id="modal-overlay"
+      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+      onClick={handleClickOutside}
+    >
+      <div
+        className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg relative"
+        onClick={(e) => e.stopPropagation()} // หยุดการคลิกใน Popup ไม่ให้ไปกระทบ modal-overlay
+      >
         {/* ปุ่มกากบาทสำหรับปิด */}
         <button
           onClick={onClose}
@@ -90,7 +103,7 @@ const EditAddress = ({ onClose }) => {
           </div>
 
           {/* ปุ่ม SAVE */}
-          <div className="flex justify-center  mt-4">
+          <div className="flex justify-center mt-4">
             <button
               type="submit"
               className="bg-[#6A462F] text-[#FFDBB5] p-2 rounded-full font-bold shadow-lg hover:bg-[#5A3C2F] w-[60%]"
