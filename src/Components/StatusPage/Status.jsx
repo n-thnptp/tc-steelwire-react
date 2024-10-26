@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // นำเข้า useNavigate เพื่อจัดการการนำทาง
 
 const Status = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
+
+  const navigate = useNavigate(); // ใช้ useNavigate สำหรับการนำทาง
+
 
   const orders = [
     {
@@ -46,27 +50,7 @@ const Status = () => {
       progress: 0,
       status: 'CANCEL',
     },
-    {
-      name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
-      price: 'XXXXX.XX BAHT',
-      progress: 0,
-      status: 'CANCEL',
-    },
-    {
-      name: 'PC WIRE',
-      size: '04.00 MM',
-      feature: 'SMOOTH',
-      length: '06.00 M',
-      weight: '2,000.00 KG',
-      price: 'XXXXX.XX BAHT',
-      progress: 0,
-      status: 'CANCEL',
-    },
-    // เพิ่มรายการอื่น ๆ ตามต้องการ
+    // เพิ่มรายการอื่น ๆ ได้ตามต้องการ
   ];
 
   const handleSort = (column) => {
@@ -116,6 +100,10 @@ const Status = () => {
     }
   });
 
+  const handleRowClick = (order) => {
+    navigate('/order-details', { state: { order, active: "STATUS" } }); // ส่งข้อมูล order และ active ไปยังหน้า OrderStatusDetails
+  };
+
   return (
     <div className="flex flex-col lg:flex-row p-8 justify-center bg-white items-start h-full" style={{ height: 'calc(96.3vh - 50px)' }}>
       <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
@@ -144,8 +132,8 @@ const Status = () => {
           <table className="min-w-full bg-white rounded-lg h-[70%]">
             <thead>
               <tr className="bg-[#FFEAC5] text-[#603F26]">
-                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tl-2xl" onClick={() => handleSort('product')}>
-                  PRODUCT {getSortIcon('product')}
+                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tl-2xl" onClick={() => handleSort('name')}>
+                  PRODUCT {getSortIcon('name')}
                 </th>
                 <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('price')}>
                   PRICE {getSortIcon('price')}
@@ -160,7 +148,7 @@ const Status = () => {
             </thead>
             <tbody className="space-y-2">
               {sortedOrders.map((order, index) => (
-                <tr key={index} className="border-b">
+                <tr key={index} className="border-b cursor-pointer" onClick={() => handleRowClick(order)}>
                   <td className="py-3 px-4 text-[#603F26] font-inter">
                     {`${order.name} / ${order.size} / ${order.feature}`}
                     <br />

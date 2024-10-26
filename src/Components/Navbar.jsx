@@ -9,25 +9,29 @@ const Navbar = () => {
 
   // ตรวจสอบเส้นทางปัจจุบันเมื่อกดรีหน้า
   useEffect(() => {
-    const currentPath = location.pathname;
-    if (currentPath === '/') {
-      setActive('HOME');
-    } else if (currentPath.includes('order')) {
-      setActive('ORDER');
-    } else if (currentPath.includes('purchase')) {
-      setActive('PURCHASE');
-    } else if (currentPath.includes('status')) {
-      setActive('STATUS');
-    } else if (currentPath.includes('configuration')) {
-      setActive('CONFIGURATION');
-    } else if (currentPath.includes('history')) {
-      setActive('HISTORY');
-    } else if (currentPath.includes('bookmark')) {
-      setActive('Bookmark');
-    } else if (currentPath.includes('location')) {
-      setActive('Location');
-    } else if (currentPath.includes('profile')) {
-      setActive('Profile');
+    if (location.state?.active) {
+      setActive(location.state.active); // ตั้งค่า active ตาม state ที่ส่งมา
+    } else {
+      const currentPath = location.pathname;
+      if (currentPath === '/') {
+        setActive('HOME');
+      } else if (currentPath.includes('order')) {
+        setActive('ORDER');
+      } else if (currentPath.includes('purchase')) {
+        setActive('PURCHASE');
+      } else if (currentPath.includes('status')) {
+        setActive('STATUS');
+      } else if (currentPath.includes('configuration')) {
+        setActive('CONFIGURATION');
+      } else if (currentPath.includes('history')) {
+        setActive('HISTORY');
+      } else if (currentPath.includes('bookmark')) {
+        setActive('Bookmark');
+      } else if (currentPath.includes('location')) {
+        setActive('Location');
+      } else if (currentPath.includes('profile')) {
+        setActive('Profile');
+      }
     }
   }, [location]);
 

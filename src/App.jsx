@@ -11,6 +11,7 @@ import Status from './Components/StatusPage/Status';
 import HistoryPage from './Components/HistoryPage/HistoryPage';
 import Bookmark from './Components/BookmarkPage/BookmarkPage';
 import ConfigurationForm from './Components/ConfigurationPage/ConfigurationForm';
+import OrderStatusDetails from './Components/StatusPage/OrderStatusDetails';
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
         <Route path="/payment" element={<PaymentPage />} />
         <Route path="/editAddress" element={<EditAddress />} />
         <Route path="/status" element={<Status />} />
+        <Route path="/order-details" element={<OrderStatusDetails />} />
         <Route path="/configuration" element={<ConfigurationForm />} />
         <Route path="/history" element={<HistoryPage />} />
         <Route path="/login" element={<LoginForm />} />
