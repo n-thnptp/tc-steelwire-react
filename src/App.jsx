@@ -12,6 +12,7 @@ import HistoryPage from './Components/HistoryPage/HistoryPage';
 import Bookmark from './Components/BookmarkPage/BookmarkPage';
 import ConfigurationForm from './Components/ConfigurationPage/ConfigurationForm';
 import OrderStatusDetails from './Components/StatusPage/OrderStatusDetails';
+import NavbarManager from './Components/NavbarManager';
 
 
 function App() {
@@ -23,9 +24,12 @@ function App() {
   // ตรวจสอบว่าอยู่ที่หน้า "/login" หรือไม่
   const isLoginPage = location.pathname === '/login';
 
+    // ตรวจสอบว่าอยู่ที่หน้า "/manager" หรือไม่
+    const isManagerPage = location.pathname.includes('/manager');
+
   return (
     <div className={!isLoginPage ? 'bg-secondary min-h-screen' : 'bg-primary min-h-screen'}>
-      {shouldShowNavbar && <Navbar />}  {/* แสดง Navbar เฉพาะเมื่อเส้นทางไม่ใช่ /login หรือ /signup */}
+      {shouldShowNavbar && (isManagerPage ? <NavbarManager /> : <Navbar />)}  {/* แสดง Navbar เฉพาะเมื่อเส้นทางไม่ใช่ /login หรือ /signup */}
       <Routes>
         <Route path="/" element={<Homepage />} />
         <Route path="/order" element={<OrderForm />} />

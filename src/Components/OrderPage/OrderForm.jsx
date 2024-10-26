@@ -98,7 +98,7 @@ const OrderForm = () => {
   };
 
   return (
-    <div className="p-4 items-start bg-white" style={{ height: 'calc(96.3vh - 50px)' }}>  
+    <div className="p-4 items-start bg-white">  
       <div className="p-4 flex h-[80vh]">
         <div className="w-full flex">
           {/* Product Selection */}

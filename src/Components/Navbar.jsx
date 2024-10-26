@@ -84,14 +84,13 @@ const Navbar = () => {
   return (
     <nav className="sticky top-0 bg-white shadow-md p-4 w-full z-50">
       <div className="flex items-center justify-between">
+        
         {/* Logo */}
-        <div className="flex items-center justify-between" style={{ width: '180px', height: '50px' }}>
-          <h1 className="text-lg font-inter font-bold text-accent-900 text-[20px] items-center justify-between ml-auto">
-            TC STEELWIRE
-          </h1>
+        <div className="flex items-center justify-center" style={{ width: '180px', height: '50px' }}>
+          <h1 className="text-lg font-inter font-bold text-accent-900 text-[20px]">TC STEELWIRE</h1>
         </div>
 
-        {/* Desktop Menu */}
+        {/* Menu Items */}
         <div className="hidden lg:flex items-center space-x-8 font-bold font-inter text-accent-900">
           {menuItems.map((menu) => (
             <span
@@ -104,44 +103,32 @@ const Navbar = () => {
           ))}
         </div>
 
-        {/* Desktop Icon */}
-        <div className="hidden lg:flex items-center space-x-4">
-          <img
-            src="/icon/Bookmark.png"
-            alt="Bookmark"
-            className={`w-6 h-6 cursor-pointer ${active === 'Bookmark' ? 'border-b-2 border-accent-900' : ''}`}
-            onClick={() => handleMenuClick('Bookmark')}
-          />
-          <img
-            src="/icon/Pin_alt_fill.png"
-            alt="Location"
-            className={`w-6 h-6 cursor-pointer ${active === 'Location' ? 'border-b-2 border-accent-900' : ''}`}
-            onClick={() => handleMenuClick('Location')}
-          />
-          <img
-            src="/icon/User_alt_fill.png"
-            alt="Profile"
-            className={`w-6 h-6 cursor-pointer ${active === 'Profile' ? 'border-b-2 border-accent-900' : ''}`}
-            onClick={() => handleMenuClick('Profile')}
-          />
-        </div>
-
-        {/* Hidden Desktop Login/Signup */}
-        <div className="hidden">
-          <button
-            className="bg-white text-accent-900 text-[10px] px-4 py-2 rounded font-inter font-bold"
-            style={{ width: '75px', height: '35px' }}
-            onClick={() => handleMenuClick('LOGIN')}
-          >
-            LOGIN
-          </button>
-          <button
-            className="bg-accent-900 text-white px-4 py-2 rounded font-inter text-[10px] font-bold"
-            style={{ width: '75px', height: '35px' }}
-            onClick={() => handleMenuClick('SIGNUP')}
-          >
-            SIGN UP
-          </button>
+        {/* Icons */}
+        <div className="hidden lg:flex space-x-4 ml-8"> {/* เพิ่ม ml-4 ให้ไอคอนขยับมาทางซ้าย */}
+          <div className="flex items-center justify-between w-8">
+            <img
+              src="/icon/Bookmark.png"
+              alt="Bookmark"
+              className={`w-6 h-6 cursor-pointer ${active === 'Bookmark' ? 'border-b-2 border-accent-900' : ''}`}
+              onClick={() => handleMenuClick('Bookmark')}
+            />
+          </div>
+          <div className="flex items-center justify-between w-8">
+            <img
+              src="/icon/Pin_alt_fill.png"
+              alt="Location"
+              className={`w-6 h-6 cursor-pointer ${active === 'Location' ? 'border-b-2 border-accent-900' : ''}`}
+              onClick={() => handleMenuClick('Location')}
+            />
+          </div>
+          <div className="flex items-center justify-between w-8">
+            <img
+              src="/icon/User_alt_fill.png"
+              alt="Profile"
+              className={`w-6 h-6 cursor-pointer ${active === 'Profile' ? 'border-b-2 border-accent-900' : ''}`}
+              onClick={() => handleMenuClick('Profile')}
+            />
+          </div>
         </div>
 
         {/* Hamburger Menu */}
@@ -171,25 +158,31 @@ const Navbar = () => {
             </li>
           ))}
           {/* Mobile Icon Menu */}
-          <li className="text-center py-2 flex">
-            <img
-              src="/icon/Bookmark.png"
-              alt="Bookmark"
-              className={`w-6 h-6 mx-auto ${active === 'Bookmark' ? 'border-b-2 border-accent-900' : ''}`}
-              onClick={() => handleMenuClick('Bookmark')}
-            />
-            <img
-              src="/icon/Pin_alt_fill.png"
-              alt="Location"
-              className={`w-6 h-6 mx-auto ${active === 'Location' ? 'border-b-2 border-accent-900' : ''}`}
-              onClick={() => handleMenuClick('Location')}
-            />
-            <img
-              src="/icon/User_alt_fill.png"
-              alt="Profile"
-              className={`w-6 h-6 mx-auto ${active === 'Profile' ? 'border-b-2 border-accent-900' : ''}`}
-              onClick={() => handleMenuClick('Profile')}
-            />
+          <li className="text-center py-2 flex justify-between w-full">
+            <div className="flex justify-center w-8">
+              <img
+                src="/icon/Bookmark.png"
+                alt="Bookmark"
+                className={`w-6 h-6 cursor-pointer ${active === 'Bookmark' ? 'border-b-2 border-accent-900' : ''}`}
+                onClick={() => handleMenuClick('Bookmark')}
+              />
+            </div>
+            <div className="flex justify-center w-8">
+              <img
+                src="/icon/Pin_alt_fill.png"
+                alt="Location"
+                className={`w-6 h-6 cursor-pointer ${active === 'Location' ? 'border-b-2 border-accent-900' : ''}`}
+                onClick={() => handleMenuClick('Location')}
+              />
+            </div>
+            <div className="flex justify-center w-8">
+              <img
+                src="/icon/User_alt_fill.png"
+                alt="Profile"
+                className={`w-6 h-6 cursor-pointer ${active === 'Profile' ? 'border-b-2 border-accent-900' : ''}`}
+                onClick={() => handleMenuClick('Profile')}
+              />
+            </div>
           </li>
         </ul>
       </div>

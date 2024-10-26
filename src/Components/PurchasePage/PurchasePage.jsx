@@ -4,7 +4,7 @@ import PurchaseSummary from './PurchaseSummary';
 
 const PurchasePage = () => {
   return (
-    <div className="flex flex-col lg:flex-row p-8 justify-between bg-white items-start h-full" style={{ height: 'calc(96.3vh - 50px)', backgroundColor: '#FFFFFF' }}>
+    <div className="flex flex-col lg:flex-row p-8 justify-between bg-white items-start h-full">
       {/* ส่วนแสดงรายการสินค้า */}
       <div 
         className="w-full lg:w-2/3 bg-white rounded-lg p-4 flex-grow mb-4 lg:mb-0 h-full">
