@@ -18,6 +18,7 @@ const UserSetting = () => {
     country: 'Thailand',
     city: 'Bangkok',
     postalCode: '10200',
+    FullName: 'Phone NO.',
     username: 'JackTennison',
     password: '********',
   });
