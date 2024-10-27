@@ -12,9 +12,12 @@ import HistoryPage from './Components/HistoryPage/HistoryPage';
 import Bookmark from './Components/BookmarkPage/BookmarkPage';
 import ConfigurationForm from './Components/ConfigurationPage/ConfigurationForm';
 import OrderStatusDetails from './Components/StatusPage/OrderStatusDetails';
+import UserSetting from './Components/Profile/UserSetting';
+
 import NavbarManager from './Components/NavbarManager';
 import OrderM from './Components/Manager/OrderM/OrderM';
 import StockTable from './Components/Manager/OrderM/StockTable';
+
 
 
 function App() {
@@ -45,6 +48,7 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<RegisterForm />} />
         <Route path="/bookmark" element={<Bookmark />} />
+        <Route path="/profile" element={<UserSetting />} />
 
         {/* manager */}
         <Route path="/manager/orderM" element={<OrderM />} />
