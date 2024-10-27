@@ -15,7 +15,6 @@ module.exports = withMT({
         inter: ["Inter", "sans-serif"],
       },
       colors: {
-<<<<<<< HEAD
         primary: {
           50: '#f7f7f8',
           100: '#eeedf1',
@@ -46,14 +45,6 @@ module.exports = withMT({
           100: '#FFEBC6',
           200: '#FFD388',
           300: '#FFB13C',
-=======
-        primary: '#FFDBB5',
-        secondary: '#FFFFFF',
-        accent: {
-          300: '#FFEAC5',
-          600: '#6C4E31',
-          900: '#603F26',
->>>>>>> c99d5ae7029a5a71888bc8e47bc1f3a4e375216a
         },
         neutral: {
           'white': '#FFFFFF',
