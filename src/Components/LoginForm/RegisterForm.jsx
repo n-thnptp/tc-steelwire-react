@@ -1,63 +1,55 @@
-import React, { useState } from "react";
+import React from "react";
 import "./RegisterForm.css";
-import AccountForm from "./AccountForm";
-import CompanyForm from "./CompanyForm";
-import RegisterDone from "./RegisterDone";
-
-class Page {
-    static AccountForm = 0;
-    static CompanyForm = 1;
-}
+import Forms from "./Forms";
+import useFormContext from "../Hooks/useFormContext";
 
 const StepsComponent = ({ highlight, number, text }) => {
-    return <div className="gap-5 flex items-center whitespace-nowrap">
-        <div className={`steps-circle ${highlight ? "text-accent-900":"bg-opacity-50 text-white"} items-center justify-center bg-primary flex-shrink-0`}>{number}</div>
-        <h3 className="content-center font-inter font-bold text-lg text-primary">{text}</h3>
-    </div>
-}
+    return (
+        <div className="gap-5 flex items-center whitespace-nowrap">
+            <div className={`steps-circle w-12 h-12 rounded-full flex items-center justify-center ${
+                highlight ? "bg-neutral-white text-primary-600" : "bg-neutral-white text-primary-600"
+            }`}>
+                {number}
+            </div>
+            <h3 className="content-center font-inter font-bold text-lg text-neutral-white">
+                {text}
+            </h3>
+        </div>
+    );
+};
 
 function RegisterForm() {
-    
-    const [page, setPage] = useState(Page.AccountForm);
-
-    const pageDisplay = () => {
-        switch (page) {
-            case Page.AccountForm:
-                return <AccountForm />; 
-            case Page.CompanyForm:
-                return <CompanyForm />; 
-        }
-
-    }
+    const { page } = useFormContext();
 
     return (
-        <section className="flex min-h-screen items-center justify-center bg-neutral-gray">
-
-            {/* form container */}
-            <div className="rounded-3xl flex w-fit shadow-lg bg-accent-900">
-                
-                {/* steps container */}
+        <div className="flex min-h-screen items-center justify-center bg-neutral-gray">
+            <div className="rounded-3xl flex w-[900px] shadow-lg bg-primary-600">
+                {/* Steps sidebar */}
                 <div className="p-16 my-10 h-auto flex flex-col gap-20 w-3/6 justify-center">
                     <StepsComponent
-                        highlight
+                        highlight={page >= 0}
                         number="1"
                         text="Personal Info"
                     />
                     <StepsComponent
+                        highlight={page >= 1}
                         number="2"
                         text="Address Info"
                     />
                     <StepsComponent
+                        highlight={page === 2}
                         number="3"
-                        text="Finish !"
+                        text="Finish Register"
                     />
                 </div>
                 
-                {/* form */}
-                <AccountForm />
+                {/* Form content */}
+                <div className="w-full flex">
+                    <Forms />
+                </div>
             </div>
-        </section>
-    )
+        </div>
+    );
 }
 
-export default RegisterForm
+export default RegisterForm;

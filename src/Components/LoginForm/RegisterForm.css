@@ -6,16 +6,16 @@
 
 .drag-and-drop {
     label {
-        color: theme("colors.accent.900");
-        border-color: theme("colors.accent.900");
+        color: theme("colors.primary.700");
+        border-color: theme("colors.primary.700");
     }
     svg {
         path {
-            fill: theme("colors.accent.600");
+            fill: theme("colors.primary.500");
         }
     }
     span {
-        color: theme("colors.accent.900");
+        color: theme("colors.primary.950");
     }
 }
 

@@ -11,7 +11,7 @@
 body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: theme(colors.primary);
+  background: theme(colors.primary.950);
 }
 
 .separator {
@@ -42,8 +42,10 @@ body {
   background-color: #FFF;
   margin: auto;
   padding: 5px;
-  border-radius: 20px;
-  color: theme(colors.accent.600);
+  border-radius: 10px;
+  border: 1px solid theme(colors.neutral.gray.200); /* Change this line */
+  color: theme(colors.primary.700);
+  resize: none;
 }
 
 .primary-buttons {
@@ -55,25 +57,25 @@ body {
   line-height: normal;
 
   height: 60px;
-  border-radius: 20px;
+  border-radius: 100px;
   border: none;
   position: relative;
   overflow: hidden;
   z-index: 1;
   padding: 10px;
-  background-color: theme(colors.accent.300);
-  color: theme(colors.accent.600);
+  background-color: theme(colors.primary.500);
+  color: theme(colors.neutral.white);
 }
 
 .primary-buttons::before {
   content: '';
   width: 0;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 101px;
   position: absolute;
   top: 0;
   left: 0;
-  background-image: linear-gradient(to right, theme(colors.accent.600) 0%, theme(colors.accent.900) 100%);
+  background-image: linear-gradient(to right, theme(colors.primary.900) 0%, theme(colors.primary.700) 100%);
   transition: .5s cubic-bezier(.31,.12,.33,1);
   display: block;
   z-index: -1;
@@ -85,7 +87,7 @@ body {
 }
 
 .primary-buttons:hover {
-  color: theme(colors.primary);
+  color: theme(colors.primary.200);
   transition: .5s cubic-bezier(.31,.12,.33,1);
 }
 
@@ -98,25 +100,27 @@ body {
   line-height: normal;
 
   height: 60px;
-  border-radius: 20px;
-  border: none;
+  border: solid;
+  border-width: 1px;
+  border-radius: 100px;
+  border-color: theme(colors.primary.200);
   position: relative;
   overflow: hidden;
   z-index: 1;
   padding: 10px;
   background-color: theme(colors.white);
-  color: theme(colors.accent.900);
+  color: theme(colors.secondary.500);
 }
 
 .secondary-buttons::before {
   content: '';
   width: 0;
   height: 100%;
-  border-radius: 20px;
+  border-radius: 101px;
   position: absolute;
   top: 0;
   left: 0;
-  background-image: linear-gradient(to right, theme(colors.accent.600) 0%, theme(colors.accent.900) 100%);
+  background-image: linear-gradient(to right, theme(colors.secondary.600) 0%, theme(colors.secondary.600) 100%);
   transition: .5s cubic-bezier(.31,.12,.33,1);
   display: block;
   z-index: -1;
@@ -128,7 +132,8 @@ body {
 }
 
 .secondary-buttons:hover {
-  color: theme(colors.primary);
+  color: theme(colors.neutral.white);
+  border-color: rgba(255, 0, 0, .0);
   transition: .5s cubic-bezier(.31,.12,.33,1);
 }
 
@@ -136,7 +141,7 @@ body {
   display: inline-block;
   position: relative;
   padding-bottom: 2px;
-  color: theme(colors.accent.900);
+  color: theme(colors.primary.700);
 }
 
 .button-underline::after {
@@ -147,7 +152,7 @@ body {
   height: 2px;
   bottom: 0;
   left: 0;
-  background-color: theme(colors.accent.900);
+  background-color: theme(colors.primary.700);
   transform-origin: bottom right;
   transition: transform 0.25s ease-out;
 }
