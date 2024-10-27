@@ -134,7 +134,7 @@ const OrderM = () => {
         <div className="overflow-y-auto max-h-[400px]">
           <table className="min-w-full bg-white rounded-lg">
             <thead>
-              <tr className="bg-[#FFEAC5] text-[#603F26]">
+              <tr className="bg-[#D3D3D3] text-[#603F26]">
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter rounded-tl-lg">CUSTOMER_ID</th>
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter">PHONE_NO</th>
                 <th className="py-3 px-4 text-center font-bold text-[#603F26] font-inter">Order ID</th>

@@ -14,6 +14,7 @@ import ConfigurationForm from './Components/ConfigurationPage/ConfigurationForm'
 import OrderStatusDetails from './Components/StatusPage/OrderStatusDetails';
 import NavbarManager from './Components/NavbarManager';
 import OrderM from './Components/Manager/OrderM/OrderM';
+import StockTable from './Components/Manager/OrderM/StockTable';
 
 
 function App() {
@@ -44,7 +45,10 @@ function App() {
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<RegisterForm />} />
         <Route path="/bookmark" element={<Bookmark />} />
+
+        {/* manager */}
         <Route path="/manager/orderM" element={<OrderM />} />
+        <Route path="/manager/stock" element={<StockTable />} />
 
       </Routes>
     </div>
