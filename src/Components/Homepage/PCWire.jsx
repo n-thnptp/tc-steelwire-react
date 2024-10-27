@@ -3,13 +3,20 @@ import React, { useState } from 'react';
 const PCWire = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // Array ของ URL ภาพใน Carousel
+  const images = [
+    '/pic/PC-wire1.png',
+    '/pic/PC-wire2.png',
+    '/pic/PC-wire3.png'
+  ]; // แค่เก็บเส้นทางรูป
+
   // ฟังก์ชันสำหรับการเลื่อนซ้าย-ขวา
   const handleNext = () => {
-    setCurrentIndex((prevIndex) => (prevIndex + 1) % 3); // จำนวนภาพทั้งหมดคือ 3
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length); // จำนวนภาพทั้งหมด
   };
 
   const handlePrevious = () => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + 3) % 3);
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
 
   return (
@@ -31,7 +38,7 @@ const PCWire = () => {
       {/* Left Section (Image) */}
       <div className="w-full lg:w-1/2 flex flex-col items-center order-2 lg:order-1">
         <img
-          src={require('../../pic/PC-wire1.png')}
+          src={images[currentIndex]}  // ใช้ URL ของรูป
           alt="PCWire"
           className="w-full max-w-[676px] h-auto rounded-lg shadow-lg"
         />
@@ -40,7 +47,7 @@ const PCWire = () => {
         <div className="flex items-center justify-center space-x-4 mt-4">
           <button onClick={handlePrevious} className="text-2xl px-4">{"<"}</button>
           <div className="flex space-x-2">
-            {[0, 1, 2].map((index) => (
+            {images.map((_, index) => (
               <span
                 key={index}
                 className={`w-3 h-3 rounded-full ${

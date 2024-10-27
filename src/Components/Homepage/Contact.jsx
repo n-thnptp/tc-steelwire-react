@@ -11,9 +11,9 @@ const Contact = () => {
         <div className="flex flex-col items-start text-right">
           <h3 className="text-lg font-bold mb-6">CONTACT</h3>
           <ul className="text-sm">
-            <li className="flex items-center"><span>🏳</span> <span className="ml-2">ADDRESS</span></li>
-            <li className="flex items-center"><span>📞</span> <span className="ml-2">TEL NO.</span></li>
-            <li className="flex items-center"><span>✉️</span> <span className="ml-2">EMAIL</span></li>
+            <li className="flex items-center font-inter font-bold"><span>🏳</span> <span className="ml-2">ADDRESS</span></li>
+            <li className="flex items-center font-inter font-bold"><span>📞</span> <span className="ml-2">TEL NO.</span></li>
+            <li className="flex items-center font-inter font-bold"><span>✉️</span> <span className="ml-2">EMAIL</span></li>
           </ul>
         </div>
 
@@ -21,9 +21,9 @@ const Contact = () => {
         <div className="flex flex-col items-start text-right">
           <h3 className="text-lg font-bold mb-6">FOLLOW US</h3>
           <ul className="text-sm">
-            <li className="flex items-center"><span>📸</span> <span className="ml-2"><a href="#">INSTAGRAM</a></span></li>
-            <li className="flex items-center"><span>📘</span> <span className="ml-2"><a href="#">FACEBOOK</a></span></li>
-            <li className="flex items-center"><span>🐦</span> <span className="ml-2"><a href="#">TWITTER</a></span></li>
+            <li className="flex items-center font-inter font-bold"><span>📸</span> <span className="ml-2"><a href="#">INSTAGRAM</a></span></li>
+            <li className="flex items-center font-inter font-bold"><span>📘</span> <span className="ml-2"><a href="#">FACEBOOK</a></span></li>
+            <li className="flex items-center font-inter font-bold"><span>🐦</span> <span className="ml-2"><a href="#">TWITTER</a></span></li>
           </ul>
         </div>
         
