@@ -118,7 +118,7 @@ const StockTable = () => {
                       href="/manager/stock"
                       className={`${item.available === 'OUT OF STOCK' ? 'text-red-600' : item.available === 'LOW STOCK' ? 'text-yellow-500' : 'text-green-600'}`}
                     >
-                      {item.available}
+                      {item.available} +
                     </a>
                   )}
                 </td>
