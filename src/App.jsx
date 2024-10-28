@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './Components/Navbar';
+import { LoginProvider } from './Components/Context/LoginContext';
 import LoginForm from "./Components/LoginForm/LoginForm";
 import { FormProvider } from "./Components/Context/RegisterContext";
 import RegisterForm from "./Components/LoginForm/RegisterForm";
@@ -54,7 +55,14 @@ function App() {
                 <Route path="/manager/stock" element={<StockTable />} />
 
                 {/* login & register pages */}
-                <Route path="/login" element={<LoginForm />} />
+                <Route
+                    path="/login"
+                    element={
+                        <LoginProvider>
+                            <LoginForm />
+                        </LoginProvider>
+                    }
+                />
                 <Route 
                     path="/signup" 
                     element={

@@ -359,9 +359,9 @@ const AccountForm = () => {
                     </Button>
                 </div>
 
-                <div className="flex py-8 gap-2 font-inter text-sm items-center justify-center text-accent-600">
+                <div className="flex py-8 gap-2 font-inter text-sm items-center justify-center text-primary-700">
                     <div>Already have an account ?</div>
-                    <a href="#" className="button-underline inline-flex items-center justify-center gap-1">
+                    <a href="/login" className="button-underline inline-flex items-center justify-center gap-1">
                         <RiLogoutBoxFill className="text-xl"/> Login
                     </a>
                 </div>

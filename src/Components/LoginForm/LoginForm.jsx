@@ -1,58 +1,95 @@
 import React from 'react';
+import useLoginContext from '../Hooks/useLoginContext';
 import FormInput from './FormInput';
-import { Button } from '@material-tailwind/react';
-import { MdEmail } from "react-icons/md";
-import { RiLockPasswordFill } from "react-icons/ri";
+import { IoMdMail } from "react-icons/io";
+import { FaLock } from "react-icons/fa";
+import { IoArrowBack } from "react-icons/io5";
 
 const LoginForm = () => {
+    const { loginData, error, loading, handleChange, handleLogin } = useLoginContext();
+
     return (
-        <div className="flex flex-row h-screen items-center justify-center">
-            <form action="" className="flex flex-nowrap flex-col">
-                
-                <h1 className="mb-10 font-inter font-bold text-accent-900 text-3xl text-center items-center justify-center">TC Steel Wire</h1>
+        <div className="min-h-screen relative">
+            {/* Back Button */}
+            <a 
+                href="/"
+                className="absolute top-8 left-8 flex items-center gap-2 text-neutral-white 
+                         hover:text-neutral-gray-300 transition-colors duration-200"
+            >
+                <IoArrowBack className="text-xl" />
+                <span className="font-medium">Back to Home</span>
+            </a>
 
-                {/* username/email and password fields */}
-                <div className="grid grid-rows-2 gap-6">
-                    <FormInput
-                        type="text"
-                        placeholder="Email / Username"
-                        icon={MdEmail}
-                        required
-                    />
-                    <FormInput
-                        type="password"
-                        placeholder="Password"
-                        icon={RiLockPasswordFill}
-                        required
-                    />
+            {/* Login Form */}
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+                    <div className="text-center mb-8">
+                        <h1 className="text-2xl font-bold text-primary-700 mb-2">Welcome Back</h1>
+                        <p className="text-gray-600">Please enter your details to sign in</p>
+                    </div>
+
+                    <form onSubmit={handleLogin}>
+                        <FormInput
+                            name="email"
+                            type="email"
+                            placeholder="Enter your email"
+                            value={loginData.email}
+                            onChange={handleChange}
+                            icon={IoMdMail}
+                            title="Email"
+                            required
+                        />
+
+                        <FormInput
+                            name="password"
+                            type="password"
+                            placeholder="Enter your password"
+                            value={loginData.password}
+                            onChange={handleChange}
+                            icon={FaLock}
+                            title="Password"
+                            required
+                        />
+
+                        {error && (
+                            <div className="mb-4 text-red-500 text-sm text-center">
+                                {error}
+                            </div>
+                        )}
+
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-primary-600 text-white py-3 rounded-md font-medium
+                         hover:bg-primary-700 transition-colors duration-200
+                         disabled:bg-primary-300 disabled:cursor-not-allowed"
+                        >
+                            {loading ? (
+                                <span className="flex items-center justify-center">
+                                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Signing in...
+                                </span>
+                            ) : (
+                                'Sign In'
+                            )}
+                        </button>
+                    </form>
+
+                    <div className="mt-6 text-center">
+                        <p className="text-gray-600">
+                            Don't have an account?{' '}
+                            <a href="/signup" className="button-underline">
+                                Register here
+                            </a>
+                        </p>
+                    </div>
                 </div>
-
-                {/* login button */}
-                <button type="submit" className="mt-6 primary-buttons">Login</button>
-
-                {/* register / forgot password page, relink href to corresponding pages later */}
-                <div className="my-2 text-xs text-gray-500 font-inter">
-                    <a href="#" className="me-[290px] hover:text-gray-900">Don't have an account?</a>
-                    <a href="#" className="hover:text-gray-900">Forgot password?</a>
-                </div>
-
-                {/* line separator */}
-                <div className="mt-7 line separator"> OR </div>
-
-                {/* alternate login buttons, via GOOGLE or FACEBOOK (add images later) */}
-                <div className="grid grid-cols-2 gap-5 mt-7">
-                    {/* <button className="white-buttons" type="button">GOOGLE</button> */}
-                    <Button href="#" size="lg" color="white" className="flex items-center justify-center">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" className="w-8 h-8"></img>
-                    </Button>
-                    <Button href="#" size="lg" color="white" className="flex items-center justify-center">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Facebook_icon_2013.svg" className="w-8 h-8"></img>
-                    </Button>
-                </div>
-
-            </form>
+            </div>
         </div>
-    )
-}
+    );
+};
 
-export default LoginForm
+export default LoginForm;
