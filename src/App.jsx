@@ -5,14 +5,13 @@ import LoginForm from "./Components/LoginForm/LoginForm";
 import { FormProvider } from "./Components/Context/RegisterContext";
 import RegisterForm from "./Components/LoginForm/RegisterForm";
 import Homepage from "./Components/Homepage/Homepage";
+import { OrderProvider } from './Components/Context/OrderContext';
 import OrderForm from './Components/OrderPage/OrderForm';
 import PurchasePage from './Components/PurchasePage/PurchasePage';
 import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
 import EditAddress from './Components/PurchasePage/EditAddress';
 import Status from './Components/StatusPage/Status';
 import HistoryPage from './Components/HistoryPage/HistoryPage';
-import Bookmark from './Components/BookmarkPage/BookmarkPage';
-import ConfigurationForm from './Components/ConfigurationPage/ConfigurationForm';
 import OrderStatusDetails from './Components/StatusPage/OrderStatusDetails';
 import UserSetting from './Components/Profile/UserSetting';
 
@@ -39,15 +38,20 @@ function App() {
             {shouldShowNavbar && (isManagerPage ? <NavbarManager /> : <Navbar />)}  {/* แสดง Navbar เฉพาะเมื่อเส้นทางไม่ใช่ /login หรือ /signup */}
             <Routes>
                 <Route path="/" element={<Homepage />} />
-                <Route path="/order" element={<OrderForm />} />
+                <Route
+                    path="/order"
+                    element={
+                        <OrderProvider>
+                            <OrderForm />
+                        </OrderProvider>
+                    }
+                />
                 <Route path="/purchase" element={<PurchasePage />} />
                 <Route path="/payment" element={<PaymentPage />} />
                 <Route path="/editAddress" element={<EditAddress />} />
                 <Route path="/status" element={<Status />} />
                 <Route path="/order-details" element={<OrderStatusDetails />} />
-                <Route path="/configuration" element={<ConfigurationForm />} />
                 <Route path="/history" element={<HistoryPage />} />
-                <Route path="/bookmark" element={<Bookmark />} />
                 <Route path="/profile" element={<UserSetting />} />
 
                 {/* manager */}

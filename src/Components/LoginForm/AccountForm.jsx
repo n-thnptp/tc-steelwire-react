@@ -13,7 +13,7 @@ import useFormContext from "../Hooks/useFormContext";
 // Updated Tooltip component with requirement list support
 const ValidationTooltip = ({ show, message, requirements }) => {
     const [isVisible, setIsVisible] = useState(false);
-    
+
     React.useEffect(() => {
         let timeoutId;
         if (show) {
@@ -26,12 +26,12 @@ const ValidationTooltip = ({ show, message, requirements }) => {
         }
         return () => clearTimeout(timeoutId);
     }, [show]);
-    
+
     if (!show && !isVisible) return null;
-    
+
     const baseTooltipClasses = "absolute z-10 transform translate-y-full left-0 transition-all duration-200 ease-in-out";
     const visibilityClasses = isVisible ? "opacity-100 translate-y-full" : "opacity-0 translate-y-[calc(100%+8px)]";
-    
+
     if (requirements) {
         return (
             <div className={`${baseTooltipClasses} ${visibilityClasses} px-4 py-3 text-sm bg-white border rounded shadow-lg -bottom-1 w-full`}>
@@ -53,7 +53,7 @@ const ValidationTooltip = ({ show, message, requirements }) => {
             </div>
         );
     }
-    
+
     return message ? (
         <div className={`${baseTooltipClasses} ${visibilityClasses} px-3 py-2 text-sm text-white bg-red-500 rounded shadow-lg -bottom-1`}>
             <div className="absolute -top-2 left-4 w-3 h-3 bg-red-500 transform rotate-45" />
@@ -67,7 +67,8 @@ const FileTypes = ["JPG", "JPEG", "PNG"];
 const AccountForm = () => {
     const { data, handleChange, handleFileChange, page, setPage } = useFormContext();
     const [errors, setErrors] = useState({
-        username: '',
+        firstName: '',
+        lastName: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -91,11 +92,11 @@ const AccountForm = () => {
         };
     }, []);
 
-    const validateUsername = (username) => {
-        if (!username) return 'Username is required';
-        if (username.length < 3) return 'Username must be at least 3 characters';
-        if (username.length > 20) return 'Username must be less than 20 characters';
-        if (!/^[a-zA-Z0-9_]+$/.test(username)) return 'Username can only contain letters, numbers, and underscores';
+    const validateName = (name, fieldName) => {
+        if (!name) return `${fieldName} is required`;
+        if (name.length < 2) return `${fieldName} must be at least 2 characters`;
+        if (name.length > 50) return `${fieldName} must be less than 50 characters`;
+        if (!/^[a-zA-Z\s-']+$/.test(name)) return `${fieldName} can only contain letters, spaces, hyphens, and apostrophes`;
         return '';
     };
 
@@ -114,9 +115,9 @@ const AccountForm = () => {
             number: { met: /[0-9]/.test(password), text: 'One number' },
             special: { met: /[!@#$%^&*]/.test(password), text: 'One special character' },
         };
-        
+
         setPasswordRequirements(requirements);
-        
+
         return Object.values(requirements).every(req => req.met) ? '' : 'Password requirements not met';
     };
 
@@ -132,8 +133,11 @@ const AccountForm = () => {
 
         let errorMessage = '';
         switch (name) {
-            case 'username':
-                errorMessage = validateUsername(value);
+            case 'firstName':
+                errorMessage = validateName(value, 'First name');
+                break;
+            case 'lastName':
+                errorMessage = validateName(value, 'Last name');
                 break;
             case 'email':
                 errorMessage = validateEmail(value);
@@ -161,12 +165,10 @@ const AccountForm = () => {
     };
 
     const handleFocus = (fieldName) => {
-        // Clear any existing timeout
         if (focusTimeoutRef.current) {
             clearTimeout(focusTimeoutRef.current);
             focusTimeoutRef.current = null;
         }
-        
         setFocusedField(fieldName);
         if (fieldName === 'password' && data.password) {
             checkPasswordRequirements(data.password);
@@ -174,17 +176,18 @@ const AccountForm = () => {
     };
 
     const handleBlur = (fieldName) => {
-        // Set timeout and store the reference
         focusTimeoutRef.current = setTimeout(() => {
-            // Only update if we're still focused on this field
             if (focusedField === fieldName) {
                 setFocusedField(null);
             }
-            
+
             let errorMessage = '';
             switch (fieldName) {
-                case 'username':
-                    errorMessage = validateUsername(data.username || '');
+                case 'firstName':
+                    errorMessage = validateName(data.firstName || '', 'First name');
+                    break;
+                case 'lastName':
+                    errorMessage = validateName(data.lastName || '', 'Last name');
                     break;
                 case 'email':
                     errorMessage = validateEmail(data.email || '');
@@ -198,19 +201,20 @@ const AccountForm = () => {
                 default:
                     break;
             }
-            
+
             setErrors(prev => ({
                 ...prev,
                 [fieldName]: errorMessage
             }));
-        }, 200); // Increased timeout for smoother transitions
+        }, 200);
     };
 
     const handleNext = (e) => {
         e.preventDefault();
-        
+
         const newErrors = {
-            username: validateUsername(data.username),
+            firstName: validateName(data.firstName || '', 'First name'),
+            lastName: validateName(data.lastName || '', 'Last name'),
             email: validateEmail(data.email),
             password: checkPasswordRequirements(data.password),
             confirmPassword: validateConfirmPassword(data.confirmPassword, data.password)
@@ -219,7 +223,7 @@ const AccountForm = () => {
         setErrors(newErrors);
 
         const hasErrors = Object.values(newErrors).some(error => error !== '');
-        
+
         if (!hasErrors) {
             setPage(prev => prev + 1);
         } else {
@@ -227,6 +231,7 @@ const AccountForm = () => {
             setFocusedField(firstErrorField);
         }
     };
+
 
     return (
         <form onSubmit={handleNext} className="flex flex-col rounded-3xl bg-neutral-white">
@@ -243,24 +248,43 @@ const AccountForm = () => {
                         types={FileTypes}
                     />
                 </div>
-                
+
                 <div className="flex flex-col gap-4">
-                    <div className="relative">
-                        <FormInput
-                            name="username"
-                            type="text"
-                            placeholder="Username"
-                            icon={FaUser}
-                            value={data.username || ""}
-                            onChange={handleInputChange}
-                            onFocus={() => handleFocus('username')}
-                            onBlur={() => handleBlur('username')}
-                            required
-                        />
-                        <ValidationTooltip 
-                            show={focusedField === 'username'} 
-                            message={errors.username}
-                        />
+                    {/* Name fields in a row */}
+                    <div className="flex gap-4">
+                        <div className="relative flex-1">
+                            <FormInput
+                                name="firstName"
+                                type="text"
+                                placeholder="First Name"
+                                value={data.firstName || ""}
+                                onChange={handleInputChange}
+                                onFocus={() => handleFocus('firstName')}
+                                onBlur={() => handleBlur('firstName')}
+                                required
+                            />
+                            <ValidationTooltip
+                                show={focusedField === 'firstName'}
+                                message={errors.firstName}
+                            />
+                        </div>
+
+                        <div className="relative flex-1">
+                            <FormInput
+                                name="lastName"
+                                type="text"
+                                placeholder="Last Name"
+                                value={data.lastName || ""}
+                                onChange={handleInputChange}
+                                onFocus={() => handleFocus('lastName')}
+                                onBlur={() => handleBlur('lastName')}
+                                required
+                            />
+                            <ValidationTooltip
+                                show={focusedField === 'lastName'}
+                                message={errors.lastName}
+                            />
+                        </div>
                     </div>
 
                     <div className="relative">

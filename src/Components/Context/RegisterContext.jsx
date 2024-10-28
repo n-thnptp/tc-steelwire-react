@@ -11,7 +11,6 @@ export const FormProvider = ({ children }) => {
 
     const [page, setPage] = useState(0);
     const [data, setData] = useState({
-        username: "",
         email: "",
         password: "",
         confirmPassword: "",
@@ -43,7 +42,6 @@ export const FormProvider = ({ children }) => {
     const validateFirstPage = () => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return (
-            data.username.length >= 3 &&
             emailRegex.test(data.email) &&
             data.password.length >= 6 &&
             data.password === data.confirmPassword

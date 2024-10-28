@@ -20,7 +20,7 @@ const PCStrand = () => {
     };
 
     return (
-        <div className="flex flex-col lg:flex-row justify-between items-center w-full p-10 bg-neutral-gray-100">
+        <div className="flex flex-col lg:flex-row justify-between items-center w-full h-[calc(100dvh-4rem)] p-10 bg-neutral-gray-100 snap-start">
             {/* Left Section (Text and Description) */}
             <div className="w-full lg:w-1/2 p-8">
                 <div className="flex items-center mb-4">

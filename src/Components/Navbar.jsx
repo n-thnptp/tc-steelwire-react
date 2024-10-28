@@ -27,8 +27,6 @@ const Navbar = () => {
 				setActive('PURCHASE');
 			} else if (currentPath.includes('status')) {
 				setActive('STATUS');
-			} else if (currentPath.includes('configuration')) {
-				setActive('CONFIGURATION');
 			} else if (currentPath.includes('history')) {
 				setActive('HISTORY');
 			} else if (currentPath.includes('bookmark')) {
@@ -58,9 +56,6 @@ const Navbar = () => {
 			case 'STATUS':
 				navigate('/status');
 				break;
-			case 'CONFIGURATION':
-				navigate('/configuration');
-				break;
 			case 'HISTORY':
 				navigate('/history');
 				break;
@@ -69,9 +64,6 @@ const Navbar = () => {
 				break;
 			case 'SIGNUP':
 				navigate('/signup');
-				break;
-			case 'Bookmark':
-				navigate('/bookmark');
 				break;
 			case 'Location':
 				navigate('/location');
@@ -84,10 +76,10 @@ const Navbar = () => {
 		}
 	};
 
-	const menuItems = ['HOME', 'ORDER', 'PURCHASE', 'STATUS', 'CONFIGURATION', 'HISTORY'];
+	const menuItems = ['HOME', 'ORDER', 'PURCHASE', 'STATUS', 'HISTORY'];
 
 	return (
-		<nav className="sticky top-0 bg-neutral-white shadow-md p-4 w-full z-50">
+		<nav className="sticky top-0 bg-neutral-white shadow-md p-2 w-full z-50 h-16">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center justify-center" style={{ width: '180px', height: '50px' }}>
 					<a
@@ -112,17 +104,6 @@ const Navbar = () => {
 				</div>
 
 				<div className="hidden lg:flex space-x-4 ml-8">
-					<IconButton
-						variant="text"
-						className={`rounded-full hover:bg-primary-50`}
-						onClick={() => handleMenuClick('Bookmark')}
-					>
-						{active === 'Bookmark' ? (
-							<BsBookmarksFill className="text-2xl text-primary-700" />
-						) : (
-							<BsBookmarks className="text-2xl text-gray-600 hover:text-primary-700 transition-colors" />
-						)}
-					</IconButton>
 					<IconButton
 						variant="text"
 						className={`rounded-full hover:bg-primary-50`}

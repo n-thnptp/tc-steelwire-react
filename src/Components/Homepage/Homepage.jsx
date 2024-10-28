@@ -5,18 +5,18 @@ import PCWire from './PCWire';
 import Contact from './Contact';
 
 const Homepage = () => {
-  return (
-    <div>
-      {/* <Navbar /> */}
-      
-      {/* Wrapper for all components */}
-      
-        <PCStrand />
-        <PCWire />
-        <Contact />
-      
-    </div>
-  );
+    return (
+        <div className="snap-y snap-mandatory h-[calc(100dvh-4rem)] overflow-y-scroll">
+            {/* <Navbar /> */}
+
+            {/* Wrapper for all components */}
+
+            <PCStrand />
+            <PCWire />
+            <Contact />
+
+        </div>
+    );
 };
 
 export default Homepage;
