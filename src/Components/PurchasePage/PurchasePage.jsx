@@ -3,21 +3,25 @@ import CartView from './CartView';
 import PurchaseSummary from './PurchaseSummary';
 
 const PurchasePage = () => {
-  return (
-    <div className="flex flex-col lg:flex-row p-8 justify-between bg-white items-start h-full">
-      {/* ส่วนแสดงรายการสินค้า */}
-      <div 
-        className="w-full lg:w-2/3 bg-white rounded-lg p-4 flex-grow mb-4 lg:mb-0 h-full">
-        <CartView />
-      </div>
+    return (
+        <div className="h-[calc(100dvh-4rem)] bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 py-8">
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Cart Items Section */}
+                    <div className="flex-grow lg:w-2/3">
+                        <CartView />
+                    </div>
 
-      {/* ส่วนสรุปยอดรวม */}
-      <div 
-        className="w-full lg:w-1/3 bg-white rounded-lg p-4 h-auto lg:h-auto lg:sticky top-0 h-full" >
-        <PurchaseSummary />
-      </div>
-    </div>
-  );
+                    {/* Summary Section */}
+                    <div className="lg:w-1/3">
+                        <div className="lg:sticky lg:top-8">
+                            <PurchaseSummary />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
 export default PurchasePage;

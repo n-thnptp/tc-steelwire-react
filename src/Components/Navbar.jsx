@@ -24,7 +24,7 @@ const Navbar = () => {
 			} else if (currentPath.includes('order')) {
 				setActive('ORDER');
 			} else if (currentPath.includes('purchase')) {
-				setActive('PURCHASE');
+				setActive('SHOPPING CART');
 			} else if (currentPath.includes('status')) {
 				setActive('STATUS');
 			} else if (currentPath.includes('history')) {
@@ -50,7 +50,7 @@ const Navbar = () => {
 			case 'ORDER':
 				navigate('/order');
 				break;
-			case 'PURCHASE':
+			case 'SHOPPING CART':
 				navigate('/purchase');
 				break;
 			case 'STATUS':
@@ -76,7 +76,7 @@ const Navbar = () => {
 		}
 	};
 
-	const menuItems = ['HOME', 'ORDER', 'PURCHASE', 'STATUS', 'HISTORY'];
+	const menuItems = ['HOME', 'ORDER', 'SHOPPING CART', 'STATUS', 'HISTORY'];
 
 	return (
 		<nav className="sticky top-0 bg-neutral-white shadow-md p-2 w-full z-50 h-16">

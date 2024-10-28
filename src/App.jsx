@@ -7,6 +7,7 @@ import RegisterForm from "./Components/LoginForm/RegisterForm";
 import Homepage from "./Components/Homepage/Homepage";
 import { OrderProvider } from './Components/Context/OrderContext';
 import OrderForm from './Components/OrderPage/OrderForm';
+import { CartProvider } from './Components/Context/CartContext';
 import PurchasePage from './Components/PurchasePage/PurchasePage';
 import PaymentPage from './Components/PurchasePage/PaymentPage/PaymentPage';
 import EditAddress from './Components/PurchasePage/EditAddress';
@@ -18,6 +19,7 @@ import UserSetting from './Components/Profile/UserSetting';
 import NavbarManager from './Components/NavbarManager';
 import OrderM from './Components/Manager/OrderM/OrderM';
 import StockTable from './Components/Manager/OrderM/StockTable';
+import CartView from './Components/PurchasePage/CartView';
 
 
 
@@ -46,8 +48,16 @@ function App() {
                         </OrderProvider>
                     }
                 />
-                <Route path="/purchase" element={<PurchasePage />} />
+                <Route
+                    path="/purchase"
+                    element={
+                        <CartProvider>
+                            <PurchasePage />
+                        </CartProvider>
+                    }
+                />
                 <Route path="/payment" element={<PaymentPage />} />
+                <Route path="/purchase" element={<PurchasePage />} />
                 <Route path="/editAddress" element={<EditAddress />} />
                 <Route path="/status" element={<Status />} />
                 <Route path="/order-details" element={<OrderStatusDetails />} />
