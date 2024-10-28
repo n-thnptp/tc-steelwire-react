@@ -22,6 +22,8 @@ import StockTable from './Components/Manager/OrderM/StockTable';
 
 
 function App() {
+    const location = useLocation();
+    
     // ตรวจสอบเส้นทางที่เป็น "/login" และ "/signup" เพื่อซ่อน Navbar
     const shouldShowNavbar = !['/login', '/signup'].includes(location.pathname);
 

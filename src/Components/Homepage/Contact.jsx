@@ -2,7 +2,7 @@ import React from 'react';
 
 const Contact = () => {
   return (
-    <div className="flex justify-end items-start bg-[#FFEAC5] p-10 w-full">
+    <div className="flex justify-end items-start bg-neutral-gray-100 p-10 w-full">
       
       {/* กล่องที่ครอบ Contact และ Follow Us */}
       <div className="flex justify-end space-x-24 max-w-screen-lg w-full items-start">

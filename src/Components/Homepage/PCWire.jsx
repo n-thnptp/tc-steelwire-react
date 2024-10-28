@@ -24,11 +24,11 @@ const PCWire = () => {
       {/* Right Section (Text and Description) */}
       <div className="w-full lg:w-1/2 p-8 order-1 lg:order-2">
         <div className="flex items-center mb-4">
-          <div className="bg-[#F8D4A0] px-4 py-2 text-4xl lg:text-6xl font-inter font-bold rounded-l-lg text-[#603F26] h-[70px] lg:h-[100px]">PC</div>
-          <div className="bg-[#6A462F] px-4 py-2 text-4xl lg:text-6xl font-inter font-bold rounded-r-lg h-[70px] lg:h-[100px] text-[#F8D4A0]">WIRE</div>
+          <div className="bg-primary-400 px-4 py-2 text-4xl lg:text-6xl font-inter font-bold rounded-l-lg text-neutral-white h-[70px] lg:h-[100px]">PC</div>
+          <div className="bg-primary-600 px-4 py-2 text-4xl lg:text-6xl font-inter font-bold rounded-r-lg text-neutral-white h-[70px] lg:h-[100px]">WIRE</div>
         </div>
-        <h2 className="text-lg font-inter font-bold mb-4 text-[#603F26]">PRODUCTION DESCRIPTION :</h2>
-        <div className="text-sm font-inter w-3/4 text-[#603F26]" style={{ whiteSpace: 'pre-line' }}>
+        <h2 className="text-lg font-inter font-bold mb-4 text-primary-700">PRODUCTION DESCRIPTION :</h2>
+        <div className="text-sm font-inter w-3/4 text-primary-700" style={{ whiteSpace: 'pre-line' }}>
           Pre-stressed Concrete wire คือ ลวดเหล็กที่ถูกออกแบบมาเพื่อใช้ในงานคอนกรีตอัดแรง 
           (Prestressed Concrete) โดยทั่วไปแล้วลวดพีซีจะถูกใช้ในงานก่อสร้างที่ต้องการโครงสร้างที่แข็งแรง
           และสามารถรับน้ำหนักได้มาก สินค้า PC Wire ผลิตได้ทั้งแบบผิวเรียบ, แบบมีรอยย้ำ, แบบหยัก หรือแบบบั้ง
@@ -51,7 +51,7 @@ const PCWire = () => {
               <span
                 key={index}
                 className={`w-3 h-3 rounded-full ${
-                  currentIndex === index ? 'bg-brown-500' : 'bg-gray-300'
+                  currentIndex === index ? 'bg-primary-700' : 'bg-neutral-gray-300'
                 }`}
               />
             ))}
