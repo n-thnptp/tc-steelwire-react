@@ -1,7 +1,6 @@
 import React from "react";
-import "./RegisterForm.css";
 import Forms from "./Forms";
-import useFormContext from "../Hooks/useFormContext";
+import useFormContext from "../Hooks/useFormContext";  // Updated import path
 
 const StepsComponent = ({ highlight, number, text }) => {
     return (
@@ -17,6 +16,7 @@ const StepsComponent = ({ highlight, number, text }) => {
         </div>
     );
 };
+
 
 function RegisterForm() {
     const { page } = useFormContext();
@@ -42,7 +42,7 @@ function RegisterForm() {
                         text="Finish Register"
                     />
                 </div>
-                
+
                 {/* Form content */}
                 <div className="w-full flex">
                     <Forms />

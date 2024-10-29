@@ -6,7 +6,15 @@ import { FaLock } from "react-icons/fa";
 import { IoArrowBack } from "react-icons/io5";
 
 const LoginForm = () => {
-    const { loginData, error, loading, handleChange, handleLogin } = useLoginContext();
+    const { 
+        loginData, 
+        error, 
+        loading, 
+        showSignupPrompt,
+        handleChange, 
+        handleLogin,
+        navigateToSignup 
+    } = useLoginContext();
 
     return (
         <div className="min-h-screen relative">
@@ -61,8 +69,8 @@ const LoginForm = () => {
                             type="submit"
                             disabled={loading}
                             className="w-full bg-primary-600 text-white py-3 rounded-md font-medium
-                         hover:bg-primary-700 transition-colors duration-200
-                         disabled:bg-primary-300 disabled:cursor-not-allowed"
+                                     hover:bg-primary-700 transition-colors duration-200
+                                     disabled:bg-primary-300 disabled:cursor-not-allowed"
                         >
                             {loading ? (
                                 <span className="flex items-center justify-center">
@@ -81,9 +89,12 @@ const LoginForm = () => {
                     <div className="mt-6 text-center">
                         <p className="text-gray-600">
                             Don't have an account?{' '}
-                            <a href="/signup" className="button-underline">
+                            <button 
+                                onClick={navigateToSignup}
+                                className="button-underline font-medium"
+                            >
                                 Register here
-                            </a>
+                            </button>
                         </p>
                     </div>
                 </div>

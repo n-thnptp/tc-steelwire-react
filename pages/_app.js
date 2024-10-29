@@ -1,10 +1,12 @@
 import { LoginProvider } from '../components/Context/LoginContext'
 import { CartProvider } from '../components/Context/CartContext'
+import { FormProvider } from '../components/Context/RegisterContext' // Updated import path
 import Navbar from '../components/Navbar'
 import NavbarManager from '../components/NavbarManager'
 import { useRouter } from 'next/router'
 // Import global styles
 import '../styles/globals.css'
+import '../styles/RegisterForm.css';
 
 function MyApp({ Component, pageProps }) {
     const router = useRouter()
@@ -15,10 +17,12 @@ function MyApp({ Component, pageProps }) {
     return (
         <LoginProvider>
             <CartProvider>
-                <div className={`min-h-screen ${!isLoginPage ? 'bg-secondary' : 'bg-primary'}`}>
-                    {shouldShowNavbar && (isManagerPage ? <NavbarManager /> : <Navbar />)}
-                    <Component {...pageProps} />
-                </div>
+                <FormProvider>  {/* Added FormProvider here */}
+                    <div className={`min-h-screen ${!isLoginPage ? 'bg-secondary' : 'bg-primary'}`}>
+                        {shouldShowNavbar && (isManagerPage ? <NavbarManager /> : <Navbar />)}
+                        <Component {...pageProps} />
+                    </div>
+                </FormProvider>
             </CartProvider>
         </LoginProvider>
     )

@@ -3,10 +3,53 @@ import FormInput from './FormInput';
 import { RiContractRightLine } from "react-icons/ri";
 import useFormContext from "../Hooks/useFormContext";
 
+const FormSelect = ({
+    name,
+    title,
+    options = [], // Provide default empty array
+    value,
+    onChange,
+    onFocus,
+    onBlur,
+    disabled,
+    loading,
+    required
+}) => {
+    return (
+        <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+                {title} {required && <span className="text-red-500">*</span>}
+            </label>
+            <select
+                name={name}
+                value={value}
+                onChange={onChange}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                disabled={disabled || loading}
+                className={`w-full p-2 border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 ${disabled ? 'bg-gray-100' : 'bg-white'
+                    }`}
+                required={required}
+            >
+                <option value="">Select {title}</option>
+                {loading ? (
+                    <option value="" disabled>Loading...</option>
+                ) : (
+                    Array.isArray(options) && options.map((option) => (
+                        <option key={option.id} value={option.id}>
+                            {option.name}
+                        </option>
+                    ))
+                )}
+            </select>
+        </div>
+    );
+};
+
 // Reusing the ValidationTooltip component
 const ValidationTooltip = ({ show, message }) => {
     const [isVisible, setIsVisible] = useState(false);
-    
+
     React.useEffect(() => {
         let timeoutId;
         if (show) {
@@ -18,12 +61,12 @@ const ValidationTooltip = ({ show, message }) => {
         }
         return () => clearTimeout(timeoutId);
     }, [show]);
-    
+
     if (!show && !isVisible) return null;
-    
+
     const baseTooltipClasses = "absolute z-10 transform translate-y-full left-0 transition-all duration-200 ease-in-out";
     const visibilityClasses = isVisible ? "opacity-100 translate-y-full" : "opacity-0 translate-y-[calc(100%+8px)]";
-    
+
     return message ? (
         <div className={`${baseTooltipClasses} ${visibilityClasses} px-3 py-2 text-sm text-white bg-red-500 rounded shadow-lg -bottom-1`}>
             <div className="absolute -top-2 left-4 w-3 h-3 bg-red-500 transform rotate-45" />
@@ -33,14 +76,52 @@ const ValidationTooltip = ({ show, message }) => {
 };
 
 const CompanyForm = () => {
-    const { data, handleChange, setPage, handleSubmit } = useFormContext();
-    const [errors, setErrors] = useState({
+    const {
+        data,
+        handleChange: handleContextChange,
+        setPage,
+        handleSubmit,
+        loading,
+        error: registrationError,
+        showLoginPrompt,
+        navigateToLogin,
+        locationOptions,
+        loadingStates,
+        fetchProvinces,
+    } = useFormContext();
+
+    // Add useEffect to fetch provinces on mount
+    useEffect(() => {
+        fetchProvinces();
+    }, []);
+
+    const [validationErrors, setValidationErrors] = useState({
         companyName: '',
         phoneNumber: '',
         address: '',
-        city: '',
+        province: '',
+        amphur: '',
+        tambon: '',
         postcode: ''
     });
+
+    // Update validation functions
+    const validateProvince = (value) => {
+        if (!value) return 'Province is required';
+        return '';
+    };
+
+    const validateAmphur = (value) => {
+        console.log(`validating ${value}`)
+        if (!value) return 'Amphur is required';
+        return '';
+    };
+
+    const validateTambon = (value) => {
+        if (!value) return 'Tambon is required';
+        return '';
+    };
+
     const [focusedField, setFocusedField] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const focusTimeoutRef = useRef(null);
@@ -57,16 +138,6 @@ const CompanyForm = () => {
             }
         };
     }, []);
-
-    // Effect to handle focusing input when error is shown after submit
-    useEffect(() => {
-        if (isSubmitting && focusedField) {
-            const input = document.querySelector(`input[name="${focusedField}"], textarea[name="${focusedField}"]`);
-            if (input) {
-                input.focus();
-            }
-        }
-    }, [isSubmitting, focusedField]);
 
     // Validation functions remain the same...
     const validateCompanyName = (value) => {
@@ -90,13 +161,6 @@ const CompanyForm = () => {
         return '';
     };
 
-    const validateCity = (value) => {
-        if (!value) return 'City is required';
-        if (value.length < 2) return 'City must be at least 2 characters';
-        if (value.length > 50) return 'City must be less than 50 characters';
-        return '';
-    };
-
     const validatePostcode = (value) => {
         if (!value) return 'Postcode is required';
         const postcodeRegex = /^[A-Za-z0-9\s-]{4,10}$/;
@@ -106,7 +170,7 @@ const CompanyForm = () => {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        handleChange(e);
+        handleContextChange(e);
         setIsSubmitting(false);
 
         let errorMessage = '';
@@ -130,7 +194,7 @@ const CompanyForm = () => {
                 break;
         }
 
-        setErrors(prev => ({
+        setValidationErrors(prev => ({
             ...prev,
             [name]: errorMessage
         }));
@@ -145,18 +209,17 @@ const CompanyForm = () => {
             clearTimeout(submitTimeoutRef.current);
             submitTimeoutRef.current = null;
         }
-        
+
         setFocusedField(fieldName);
     };
 
     const handleBlur = (fieldName) => {
-        // Only set blur timeout if we're not in submit mode
         if (!isSubmitting) {
             focusTimeoutRef.current = setTimeout(() => {
                 if (focusedField === fieldName) {
                     setFocusedField(null);
                 }
-                
+
                 let errorMessage = '';
                 switch (fieldName) {
                     case 'companyName':
@@ -177,8 +240,8 @@ const CompanyForm = () => {
                     default:
                         break;
                 }
-                
-                setErrors(prev => ({
+
+                setValidationErrors(prev => ({
                     ...prev,
                     [fieldName]: errorMessage
                 }));
@@ -191,26 +254,26 @@ const CompanyForm = () => {
         setPage(prev => prev - 1);
     };
 
-    const handleSubmitForm = () => {
+    const handleSubmitForm = async () => {
         setIsSubmitting(true);
-        
-        const newErrors = {
-            companyName: validateCompanyName(data.companyName),
-            phoneNumber: validatePhoneNumber(data.phoneNumber),
-            address: validateAddress(data.address),
-            city: validateCity(data.city),
-            postcode: validatePostcode(data.postcode)
+
+        const newValidationErrors = {
+            companyName: validateCompanyName(data.companyName || ''),
+            phoneNumber: validatePhoneNumber(data.phoneNumber || ''),
+            address: validateAddress(data.address || ''),
+            province: validateProvince(data.province || ''),
+            amphur: validateAmphur(data.amphur || ''),
+            tambon: validateTambon(data.tambon || ''),
+            postcode: validatePostcode(data.postcode || '')
         };
 
-        setErrors(newErrors);
+        setValidationErrors(newValidationErrors);
 
-        const hasErrors = Object.values(newErrors).some(error => error !== '');
-        
-        if (!hasErrors) {
-            setIsSubmitting(false);
-            handleSubmit();
+        const hasValidationErrors = Object.values(newValidationErrors).some(error => error !== '');
+        if (!hasValidationErrors) {
+            await handleSubmit();
         } else {
-            const firstErrorField = Object.keys(newErrors).find(key => newErrors[key]);
+            const firstErrorField = Object.keys(newValidationErrors).find(key => newValidationErrors[key]);
             setFocusedField(firstErrorField);
         }
     };
@@ -220,8 +283,9 @@ const CompanyForm = () => {
             <h1 className="mb-5 font-inter font-bold text-lg text-left underline underline-offset-4 text-primary-700">
                 Step 2
             </h1>
-            
+
             <div className="flex flex-col">
+                {/* Form inputs remain the same but use validationErrors instead of errors */}
                 <div className="relative">
                     <FormInput
                         name="companyName"
@@ -234,9 +298,9 @@ const CompanyForm = () => {
                         onBlur={() => handleBlur('companyName')}
                         required
                     />
-                    <ValidationTooltip 
-                        show={focusedField === 'companyName'} 
-                        message={errors.companyName}
+                    <ValidationTooltip
+                        show={focusedField === 'companyName'}
+                        message={validationErrors.companyName}
                     />
                 </div>
 
@@ -252,9 +316,9 @@ const CompanyForm = () => {
                         onBlur={() => handleBlur('phoneNumber')}
                         required
                     />
-                    <ValidationTooltip 
-                        show={focusedField === 'phoneNumber'} 
-                        message={errors.phoneNumber}
+                    <ValidationTooltip
+                        show={focusedField === 'phoneNumber'}
+                        message={validationErrors.phoneNumber}
                     />
                 </div>
 
@@ -271,27 +335,70 @@ const CompanyForm = () => {
                         onBlur={() => handleBlur('address')}
                         required
                     />
-                    <ValidationTooltip 
-                        show={focusedField === 'address'} 
-                        message={errors.address}
+                    <ValidationTooltip
+                        show={focusedField === 'address'}
+                        message={validationErrors.address}
                     />
                 </div>
 
                 <div className="relative">
-                    <FormInput
-                        name="city"
-                        title="City"
-                        type="text"
-                        placeholder="City"
-                        value={data.city || ""}
+                    <FormSelect
+                        name="province"
+                        title="Province"
+                        options={locationOptions.provinces}
+                        value={data.province}
                         onChange={handleInputChange}
-                        onFocus={() => handleFocus('city')}
-                        onBlur={() => handleBlur('city')}
+                        onFocus={() => handleFocus('province')}
+                        onBlur={() => handleBlur('province')}
+                        loading={loadingStates.provinces}
+                        required
+                        renderOption={(option) => (
+                            <option key={option.id} value={option.id}>
+                                {option.name} ({option.nameEn})
+                            </option>
+                        )}
+                    />
+                    <ValidationTooltip
+                        show={focusedField === 'province'}
+                        message={validationErrors.province}
+                    />
+                </div>
+
+                <div className="relative">
+                    <FormSelect
+                        name="amphur"
+                        title="Amphur"
+                        options={locationOptions.amphurs}
+                        value={data.amphur || ""}
+                        onChange={handleInputChange}
+                        onFocus={() => handleFocus('amphur')}
+                        onBlur={() => handleBlur('amphur')}
+                        loading={loadingStates.amphurs}
+                        disabled={!data.province}
                         required
                     />
-                    <ValidationTooltip 
-                        show={focusedField === 'city'} 
-                        message={errors.city}
+                    <ValidationTooltip
+                        show={focusedField === 'amphur'}
+                        message={validationErrors.amphur}
+                    />
+                </div>
+
+                <div className="relative">
+                    <FormSelect
+                        name="tambon"
+                        title="Tambon"
+                        options={locationOptions.tambons}
+                        value={data.tambon || ""}
+                        onChange={handleInputChange}
+                        onFocus={() => handleFocus('tambon')}
+                        onBlur={() => handleBlur('tambon')}
+                        loading={loadingStates.tambons}
+                        disabled={!data.amphur}
+                        required
+                    />
+                    <ValidationTooltip
+                        show={focusedField === 'tambon'}
+                        message={validationErrors.tambon}
                     />
                 </div>
 
@@ -307,11 +414,32 @@ const CompanyForm = () => {
                         onBlur={() => handleBlur('postcode')}
                         required
                     />
-                    <ValidationTooltip 
-                        show={focusedField === 'postcode'} 
-                        message={errors.postcode}
+                    <ValidationTooltip
+                        show={focusedField === 'postcode'}
+                        message={validationErrors.postcode}
                     />
                 </div>
+
+                {registrationError && (
+                    <div className="mb-4 text-status-error text-sm text-center">
+                        {registrationError}
+                    </div>
+                )}
+
+                {showLoginPrompt && (
+                    <div className="mb-4 text-center">
+                        <p className="text-gray-600 mb-2">
+                            Already have an account?
+                        </p>
+                        <button
+                            type="button"
+                            onClick={navigateToLogin}
+                            className="text-primary-600 hover:text-primary-700 font-medium"
+                        >
+                            Log in here
+                        </button>
+                    </div>
+                )}
 
                 {/* Navigation buttons */}
                 <div className="flex justify-between gap-4 mt-4">
@@ -325,9 +453,22 @@ const CompanyForm = () => {
                     <button
                         type="button"
                         onClick={handleSubmitForm}
+                        disabled={loading}
                         className="primary-buttons inline-flex w-full items-center justify-center gap-2"
                     >
-                        Submit <RiContractRightLine className="text-accent-900" />
+                        {loading ? (
+                            <span className="flex items-center justify-center">
+                                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Registering...
+                            </span>
+                        ) : (
+                            <>
+                                Submit <RiContractRightLine className="text-accent-900" />
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
