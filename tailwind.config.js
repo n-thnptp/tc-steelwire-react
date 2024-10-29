@@ -4,7 +4,9 @@ const withMT = require("@material-tailwind/react/utils/withMT");
 
 module.exports = withMT({
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "node_modules/react-icons/lib/esm/*.{js,jsx,ts,tsx}",
     "node_modules/@material-tailwind/react/components/**/*.{js,ts,jsx,tsx}",
     "node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
