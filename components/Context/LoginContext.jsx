@@ -16,23 +16,27 @@ export const LoginProvider = ({ children }) => {
 
     useEffect(() => {
         const validateSession = async () => {
-            try {
-                const response = await fetch('/api/auth/validate');
-                if (response.ok) {
-                    const userData = await response.json();
-                    setUser(userData.user);
-                } else {
-                    console.error("Fetching /api/auth/validate failed")
-                }
-            } catch (err) {
-                // Only log unexpected errors
-                if (!err.message.includes('failed with status 401')) {
-                    console.error('Session validation error:', err);
-                }
-                setUser(null);
-            } finally {
-                setLoading(false); // Always set loading to false when done
-            }
+            const data = await (await fetch('/api/auth/validate')).json();
+            console.log(data);
+            setUser(data.user);
+            setLoading(false)
+            // try {
+            //     const response = await fetch('/api/auth/validate');
+            //     if (response.ok) {
+            //         const userData = await response.json();
+            //         setUser(userData.user);
+            //     } else {
+            //         console.error("Fetching /api/auth/validate failed")
+            //     }
+            // } catch (err) {
+            //     // Only log unexpected errors
+            //     if (!err.message.includes('failed with status 401')) {
+            //         console.error('Session validation error:', err);
+            //     }
+            //     setUser(null);
+            // } finally {
+            //     setLoading(false); // Always set loading to false when done
+            // }
         };
 
         validateSession();
@@ -72,16 +76,16 @@ export const LoginProvider = ({ children }) => {
             }
 
             // Validate session to get user data
-            const userResponse = await fetch('/api/auth/validate');
+            // const userResponse = await fetch('/api/auth/validate');
 
-            if (!userResponse.ok) {
-                throw new Error("Oh no! Something went wrong in the back end.")
-            }
-            const userData = await userResponse.json();
-            if (!userData.success) {
-                throw new Error("Oh no! Something went wrong in the back end.")
-            }
-            setUser(userData);
+            // if (!userResponse.ok) {
+            //     throw new Error("Oh no! Something went wrong in the back end.")
+            // }
+            // const userData = await userResponse.json();
+            // if (!userData.success) {
+            //     throw new Error("Oh no! Something went wrong in the back end.")
+            // }
+            // setUser(userData);
             router.push('/');
             
         } catch (err) {
