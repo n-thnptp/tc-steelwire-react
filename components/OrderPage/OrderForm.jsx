@@ -1,10 +1,26 @@
 import React from 'react';
-import useOrderContext from '../Hooks/useOrderContext';
-import ProductSelection from './ProductSelection'
+import useOrderContext from '../../components/Hooks/useOrderContext';
+import useLoginContext from '../../components/Hooks/useLoginContext';
+import ProductSelection from './ProductSelection';
 import SummaryView from './SummaryView';
 
 const OrderForm = () => {
     const { error } = useOrderContext();
+    const { user, loading } = useLoginContext();
+
+    // Show loading state while checking authentication
+    if (loading) {
+        return (
+            <div className="h-[calc(100dvh-4rem)] bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+            </div>
+        );
+    }
+
+    // If no user, don't render anything
+    if (!user) {
+        return null;
+    }
 
     return (
         <div className="h-[calc(100dvh-4rem)] bg-gray-50 overflow-hidden">
@@ -24,3 +40,4 @@ const OrderForm = () => {
 };
 
 export default OrderForm;
+

@@ -5,11 +5,16 @@ import { calculateMinimumWeight } from '../Utils/weightCalculations';
 const SummaryView = () => {
     const { orderState, handleConfirm, loading } = useOrderContext();
 
+    if (!orderState) {
+        return <div>Loading...</div>;
+    }
+
     const isFormValid = () => {
-        return orderState.items.every(item => {
+        return orderState.items?.every(item => {
             const length = parseFloat(item.length);
             const weight = parseFloat(item.weight);
             const minWeight = calculateMinimumWeight(item.length, item.steelSize);
+            const size = orderState.sizes.find(s => s.size.toString() === item.steelSize);
 
             return (
                 item.steelSize &&
@@ -20,33 +25,18 @@ const SummaryView = () => {
                 typeof weight === 'number' &&
                 !isNaN(weight) &&
                 weight >= minWeight &&
-                orderState.currentWeight <= 3800
+                (orderState.currentWeight ?? 0) <= 3800 &&
+                size // Ensure the selected size exists
             );
-        });
+        }) ?? false;
     };
 
-    // Convert cm to meters with 2 decimal places
-    const formatLength = (lengthInCm) => {
-        if (!lengthInCm) return '';
-        const meters = parseFloat(lengthInCm) / 100;
-        return meters.toFixed(2);
-    };
-
-    const handleSubmit = () => {
-        console.log('Submitting order with details:', {
-            totalWeight: orderState.currentWeight,
-            numberOfItems: orderState.items.length,
-            items: orderState.items.map(item => ({
-                product: item.product,
-                steelSize: `${item.steelSize} MM`,
-                steelFeature: item.steelFeature,
-                length: `${formatLength(item.length)} M`,
-                weight: `${item.weight} KG`,
-                minWeightRequired: `${calculateMinimumWeight(item.length, item.steelSize)} KG`
-            }))
-        });
-
-        handleConfirm();
+    // Calculate total price
+    const calculateTotalPrice = () => {
+        return orderState.items.reduce((total, item) => {
+            const size = orderState.sizes.find(s => s.size.toString() === item.steelSize);
+            return total + (parseFloat(item.weight) * (size?.price || 0));
+        }, 0);
     };
 
     return (
@@ -59,51 +49,18 @@ const SummaryView = () => {
                 <div className="bg-gray-100 rounded-lg shadow-lg p-4">
                     <p className={`mb-2 font-inter ${orderState.currentWeight > 3800 ? 'text-status-error font-bold' : 'text-gray-500'}`}>
                         CURRENT WEIGHT: {orderState.currentWeight.toFixed(2)} KG / 3800 KG
-                        {orderState.currentWeight > 3800 && (
-                            <span className="block text-sm mt-1">
-                                Weight exceeds maximum limit of 3800 KG
-                            </span>
-                        )}
                     </p>
-                    
-                    {orderState.items.map((item, index) => {
-                        const minWeight = calculateMinimumWeight(item.length, item.steelSize);
-                        return (
-                            <div key={index} className="text-accent-900 font-inter font-bold mb-4 last:mb-0">
-                                <div className="bg-white rounded-lg p-3 shadow">
-                                    <p className="text-primary-700"><span className="text-gray-600">TYPE: </span> {item.product}</p>
-                                    <p className="text-primary-700"><span className="text-gray-600">STEEL SIZE: </span> {item.steelSize} MM</p>
-                                    <p className="text-primary-700"><span className="text-gray-600">STEEL FEATURE: </span> {item.steelFeature}</p>
-                                    <p className="text-primary-700"><span className="text-gray-600">LENGTH: </span> {formatLength(item.length)} M</p>
-                                    <p className="text-primary-700"><span className="text-gray-600">WEIGHT: </span> {item.weight} KG</p>
-                                    
-                                    {/* Validation Messages */}
-                                    <div className="mt-2 text-status-error text-sm">
-                                        {!item.steelSize && (
-                                            <p>• Steel size is required</p>
-                                        )}
-                                        {!item.steelFeature && (
-                                            <p>• Steel feature is required</p>
-                                        )}
-                                        {(!item.length || parseFloat(item.length) <= 0) && (
-                                            <p>• Valid length is required</p>
-                                        )}
-                                        {(!item.weight || parseFloat(item.weight) < minWeight) && (
-                                            <p>
-                                                • Minimum weight required: {minWeight} KG
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        );
-                    })}
+                    <p className="mb-4 font-inter text-gray-500">
+                        TOTAL PRICE: ฿{calculateTotalPrice().toFixed(2)}
+                    </p>
+
+                    {/* Rest of your summary view code... */}
                 </div>
             </div>
-    
-            <div className="pt-4 border-t mt-auto"> {/* Added mt-auto */}
-                <button 
-                    onClick={handleSubmit}
+
+            <div className="pt-4 border-t mt-auto">
+                <button
+                    onClick={handleConfirm}
                     disabled={!isFormValid() || loading}
                     className={`primary-buttons w-full transition-colors
                         ${isFormValid() ? 'primary-buttons' : 'disabled'}`}

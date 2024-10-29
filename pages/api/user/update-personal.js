@@ -22,7 +22,7 @@ export default async function handler(req, res) {
         }
 
         const userId = sessions[0].c_id;
-        const { firstname, lastname, email, phone_number, company } = req.body;
+        const { firstname, lastname, email, phone_number } = req.body;
 
         // Update customer information
         await query(
@@ -30,10 +30,9 @@ export default async function handler(req, res) {
              SET firstname = ?, 
                  lastname = ?, 
                  email = ?, 
-                 phone_number = ?,
-                 company = ?
+                 phone_number = ?
              WHERE c_id = ?`,
-            [firstname, lastname, email, phone_number, company, userId]
+            [firstname, lastname, email, phone_number, userId]
         );
 
         // Get updated user data
@@ -43,8 +42,7 @@ export default async function handler(req, res) {
                 c.firstname,
                 c.lastname,
                 c.email,
-                c.phone_number,
-                c.company
+                c.phone_number
              FROM customer c
              WHERE c.c_id = ?`,
             [userId]
