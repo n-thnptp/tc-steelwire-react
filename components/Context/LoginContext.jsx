@@ -64,8 +64,7 @@ export const LoginProvider = ({ children }) => {
             });
 
             const data = await response.json();
-
-            if (!response.success) {
+            if (!data.success) {
                 if (data.code === 'ACCOUNT_NOT_FOUND') {
                     setShowSignupPrompt(true);
                 }
@@ -74,11 +73,17 @@ export const LoginProvider = ({ children }) => {
 
             // Validate session to get user data
             const userResponse = await fetch('/api/auth/validate');
-            if (userResponse.success) {
-                const userData = await userResponse.json();
-                setUser(userData);
-                router.push('/');
+
+            if (!userResponse.ok) {
+                throw new Error("Oh no! Something went wrong in the back end.")
             }
+            const userData = await userResponse.json();
+            if (!userData.success) {
+                throw new Error("Oh no! Something went wrong in the back end.")
+            }
+            setUser(userData);
+            router.push('/');
+            
         } catch (err) {
             setError(err.message);
         } finally {

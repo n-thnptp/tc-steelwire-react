@@ -36,7 +36,7 @@ export default async function handler(req, res) {
             });
         }
 
-        res.json({user: sessions[0]});
+        res.json({success: true, user: sessions[0]});
     } catch (error) {
         console.error('Session validation error:', error);
         res.status(500).json({ error: 'Internal server error' });

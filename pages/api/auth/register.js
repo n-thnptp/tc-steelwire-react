@@ -66,7 +66,6 @@ export default async function handler(req, res) {
         // Hash password
         console.log('Hashing password...');
         const hashedPassword = await hashPassword(password);
-
         // Create shipping address
         console.log('Creating shipping address...');
         console.log(tambons[0].tambon_id)
