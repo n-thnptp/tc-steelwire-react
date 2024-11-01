@@ -8,7 +8,7 @@ const NavbarManager = () => {
 
     useEffect(() => {
         const currentPath = router.pathname;
-        if (currentPath.includes('orderM')) {
+        if (currentPath.includes('customer-order')) {
             setActive('ORDER');
         } else if (currentPath.includes('stock')) {
             setActive('STOCK');
@@ -25,7 +25,7 @@ const NavbarManager = () => {
 
         switch (menu) {
             case 'ORDER':
-                router.push('/manager/orderM');
+                router.push('/manager/customer-order');
                 break;
             case 'STOCK':
                 router.push('/manager/stock');

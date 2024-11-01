@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 28, 2024 at 07:11 PM
+-- Generation Time: Nov 01, 2024 at 07:30 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- PHP Version: 8.0.30
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -20,24 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `tc_steelwire_system`
 --
-
--- --------------------------------------------------------
-
---
--- Table structure for table `admin`
---
-
-CREATE TABLE `admin` (
-  `username` varchar(10) NOT NULL,
-  `hashedpassword` varchar(32) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `admin`
---
-
-INSERT INTO `admin` (`username`, `hashedpassword`) VALUES
-('tcadmin', '1234');
 
 -- --------------------------------------------------------
 
@@ -997,23 +979,6 @@ CREATE TABLE `courier` (
   `courier_id` int(11) NOT NULL,
   `name` varchar(50) NOT NULL,
   `phone_number` varchar(10) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `customer`
---
-
-CREATE TABLE `customer` (
-  `c_id` int(16) NOT NULL,
-  `firstname` varchar(50) NOT NULL,
-  `lastname` varchar(50) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `password_hashed` varchar(255) NOT NULL,
-  `phone_number` varchar(10) NOT NULL,
-  `company` varchar(50) DEFAULT NULL,
-  `sh_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -8804,16 +8769,27 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 (961302, 96130, 'บูกิต', 'Bukit', 9613),
 (961303, 96130, 'มะรือโบออก', 'Maruebo Ok', 9613);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user`
+--
+
+CREATE TABLE `user` (
+  `c_id` int(16) NOT NULL,
+  `firstname` varchar(50) NOT NULL,
+  `lastname` varchar(50) NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `password_hashed` varchar(255) NOT NULL,
+  `phone_number` varchar(10) NOT NULL,
+  `company` varchar(50) DEFAULT NULL,
+  `sh_id` int(11) DEFAULT NULL,
+  `role` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 --
 -- Indexes for dumped tables
 --
-
---
--- Indexes for table `admin`
---
-ALTER TABLE `admin`
-  ADD PRIMARY KEY (`username`),
-  ADD UNIQUE KEY `username` (`username`);
 
 --
 -- Indexes for table `amphurs`
@@ -8826,15 +8802,6 @@ ALTER TABLE `amphurs`
 --
 ALTER TABLE `courier`
   ADD PRIMARY KEY (`courier_id`);
-
---
--- Indexes for table `customer`
---
-ALTER TABLE `customer`
-  ADD PRIMARY KEY (`c_id`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `c_id` (`c_id`),
-  ADD KEY `sh_id` (`sh_id`);
 
 --
 -- Indexes for table `geography`
@@ -8925,6 +8892,15 @@ ALTER TABLE `tambons`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `user`
+--
+ALTER TABLE `user`
+  ADD PRIMARY KEY (`c_id`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD UNIQUE KEY `c_id` (`c_id`),
+  ADD KEY `sh_id` (`sh_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -8987,16 +8963,10 @@ ALTER TABLE `shop_material_order_status`
 --
 
 --
--- Constraints for table `customer`
---
-ALTER TABLE `customer`
-  ADD CONSTRAINT `customer_ibfk_1` FOREIGN KEY (`sh_id`) REFERENCES `shipping_address` (`sh_id`);
-
---
 -- Constraints for table `order`
 --
 ALTER TABLE `order`
-  ADD CONSTRAINT `order_ibfk_1` FOREIGN KEY (`c_id`) REFERENCES `customer` (`c_id`),
+  ADD CONSTRAINT `order_ibfk_1` FOREIGN KEY (`c_id`) REFERENCES `user` (`c_id`),
   ADD CONSTRAINT `order_ibfk_2` FOREIGN KEY (`o_status_id`) REFERENCES `order_status` (`o_status_id`),
   ADD CONSTRAINT `order_ibfk_3` FOREIGN KEY (`p_id`) REFERENCES `product` (`p_id`);
 
@@ -9010,7 +8980,7 @@ ALTER TABLE `product`
 -- Constraints for table `sessions`
 --
 ALTER TABLE `sessions`
-  ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`c_id`) REFERENCES `customer` (`c_id`);
+  ADD CONSTRAINT `sessions_ibfk_1` FOREIGN KEY (`c_id`) REFERENCES `user` (`c_id`);
 
 --
 -- Constraints for table `shop_material`
@@ -9025,6 +8995,12 @@ ALTER TABLE `shop_material`
 ALTER TABLE `shop_material_order`
   ADD CONSTRAINT `shop_material_order_ibfk_1` FOREIGN KEY (`sm_id`) REFERENCES `shop_material` (`sm_id`),
   ADD CONSTRAINT `shop_material_order_ibfk_2` FOREIGN KEY (`smos_id`) REFERENCES `shop_material_order_status` (`smos_id`);
+
+--
+-- Constraints for table `user`
+--
+ALTER TABLE `user`
+  ADD CONSTRAINT `user_ibfk_1` FOREIGN KEY (`sh_id`) REFERENCES `shipping_address` (`sh_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

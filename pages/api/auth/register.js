@@ -35,7 +35,7 @@ export default async function handler(req, res) {
         // Check if user exists
         console.log('Checking existing user:', email);
         const existingUsers = await query(
-            'SELECT email FROM customer WHERE email = ?',
+            'SELECT email FROM user WHERE email = ?',
             [email]
         );
 
@@ -68,28 +68,30 @@ export default async function handler(req, res) {
         const hashedPassword = await hashPassword(password);
         // Create shipping address
         console.log('Creating shipping address...');
-        console.log(tambons[0].tambon_id)
+        console.log(tambons)
         const addressResult = await query(
             'INSERT INTO shipping_address (tambon_id, address) VALUES (?, ?)',
-            [tambons[0].tambon_id, address]
+            [tambons[0].id, address]
         );
         console.log('Shipping address created:', addressResult);
 
         // Get the auto-generated sh_id
         const shippingId = addressResult.insertId;
+        
 
         // Create customer record
         console.log('Creating customer record...');
         const customerResult = await query(
-            `INSERT INTO customer (
+            `INSERT INTO user (
                 firstname,
                 lastname,
                 email,
                 password_hashed,
                 phone_number,
                 company,
-                sh_id
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                sh_id,
+                role
+            ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 firstName,
                 lastName,
@@ -97,7 +99,8 @@ export default async function handler(req, res) {
                 hashedPassword,
                 phoneNumber,
                 companyName || null,
-                shippingId
+                shippingId,
+                'customer'
             ]
         );
         console.log('Customer created:', customerResult);

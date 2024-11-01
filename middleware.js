@@ -72,10 +72,19 @@ export async function middleware(request) {
                 return redirectResponse;
             }
 
-            // Session is valid, attach user data to headers
+            // Session is valid, get user data
             const data = await response.json();
+            const user = data.user;
+            console.log(user);
+            // Check if the user is an admin
+            if (user.role === 'admin' && !pathname.startsWith('/manager/orderM')) {
+                // Redirect admin to manager order page
+                return NextResponse.redirect(new URL('/manager/orderM', request.url));
+            }
+
+            // Session is valid, proceed with user data in headers
             const nextResponse = NextResponse.next();
-            nextResponse.headers.set('x-user', JSON.stringify(data.user));
+            nextResponse.headers.set('x-user', JSON.stringify(user));
             return nextResponse;
         } catch (error) {
             console.error('Middleware error:', error);

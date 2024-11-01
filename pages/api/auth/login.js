@@ -12,7 +12,7 @@ export default async function handler(req, res) {
 
         // 1. Get user from database
         const [user] = await query(
-            'SELECT c_id, email, password_hashed FROM customer WHERE email = ?',
+            'SELECT c_id, email, password_hashed FROM user WHERE email = ?',
             [email]
         );
 

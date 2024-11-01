@@ -57,6 +57,7 @@ export const LoginProvider = ({ children }) => {
         setLoading(true);
         setError("");
         setShowSignupPrompt(false);
+        console.log("asdas");
 
         try {
             const response = await fetch('/api/auth/login', {
