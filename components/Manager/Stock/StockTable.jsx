@@ -148,188 +148,190 @@ const StockTable = () => {
   };
 
   return (
-    <div className="p-8 bg-white rounded-lg shadow-lg max-w-5xl mx-auto relative">
-      <div className='flex items-center justify-between'>
+    <div className="flex flex-col p-8 justify-center bg-white items-center h-full pb-60">
+      <div className="p-8 bg-white rounded-lg shadow-lg max-w-7xl mx-auto relative">
         <div className='flex items-center gap-6'>
-          <h2 className="text-3xl font-bold text-primary-800 mb-4 font-inter">STOCK</h2>
-          {/* Order By Button */}
-          <div className="mb-4 flex justify-end">
-            <div className="relative">
-              <button
-                onClick={() => setIsOrderMenuOpen(!isOrderMenuOpen)}
-                className="flex items-center gap-2 bg-primary-600 text-white py-4 px-4 rounded-lg font-inter text-sm"
-              >
-                <TbArrowsSort size={20} />
-                <span>Order By</span>
-                {isOrderMenuOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
-              </button>
-              {isOrderMenuOpen && (
-                <ul className="absolute right-0 mt-2 py-2 bg-white rounded-lg shadow-lg w-36">
-                  <li
-                    onClick={() => handleSort('size')}
-                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold" 
-                  >
-                    Size
-                  </li>
-                  <li
-                    onClick={() => handleSort('amount')}
-                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold" 
-                  >
-                    Amount
-                  </li>
-                  <li
-                    onClick={() => handleSort('price')}
-                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold" 
-                  >
-                    Price
-                  </li>
-                  <li
-                    onClick={() => handleSort('available')}
-                    className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold" 
-                  >
-                    Available
-                  </li>
-                </ul>
-              )}
-            </div>
-          </div>
-        </div>
-        {/* Search Box */}
-        <div className="relative w-1/3">
-          <div className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4'>
-            <IoSearchOutline />
-          </div>
-          <input
-            type="text"
-            placeholder="Search Order"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="p-2 pl-10 border border-primary-500 rounded-xl w-full text-primary-500 font-inter"
-          />
-        </div>
-      </div>
-
-
-      {/* Stock Table */}
-      <div className="overflow-y-auto max-h-90">
-        <table className="min-w-full bg-white rounded-lg text-primary-600 font-bold font-inter text-base">
-          <thead className="bg-[#D3D3D3] rounded-t-lg">
-            <tr>
-              <th className="py-3 px-4 text-center font-bold rounded-tl-lg">MATERIAL ID</th>
-              <th className="py-3 px-4 text-center font-bold">STEEL TYPE</th>
-              <th className="py-3 px-4 text-center font-bold">STEEL SIZE</th>
-              <th className="py-3 px-4 text-center font-bold">AMOUNT</th>
-              <th className="py-3 px-4 text-center font-bold">PRICE</th>
-              <th className="py-3 px-4 text-center font-bold">AVAILABLE</th>
-              <th className="py-3 px-4 text-center font-bold rounded-tr-lg"></th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAndSortedData.map((item, index) => (
-              <tr key={index} className="border-b border-gray-300 cursor-pointer h-24">
-                <td className="py-3 px-4 text-center">{item.sm_id}</td>
-                <td className="py-3 px-4 text-center">PC {item.type}</td>
-                <td className="py-3 px-4 text-center">{item.size} MM</td>
-                <td className="py-3 px-4 text-center">{formatNumber(item.total_amount)} KG</td>
-                <td className="py-3 px-4 text-center">{item.price}</td>
-                <td className="py-3 px-4 text-center">
-                  <span className={
-                    item.total_amount >= item.min_amount
-                      ? 'text-status-success'
-                      : item.total_amount > 0
-                        ? 'text-status-warning'
-                        : 'text-status-error'
-                  }>
-                    {item.total_amount >= item.min_amount
-                      ? 'IN STOCK'
-                      : item.total_amount > 0
-                        ? 'LOW STOCK'
-                        : 'OUT OF STOCK'}
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-center">
-                  <button
-                    onClick={() => handleRequisitionClick(item)}
-                    className='bg-primary-700 font-medium p-2 rounded-3xl text-white w-full'
-                  >
-                    REQUISITION
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Requisition Modal */}
-      {isRequisitionModalOpen && selectedMaterial && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-          onClick={() => setIsRequisitionModalOpen(false)} // Add click handler to backdrop
-        >
-          <div
-            className="bg-white relative rounded-lg p-8 w-full max-w-md shadow-lg"
-            onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside
-          >
-            <h2 className="text-2xl font-bold text-primary-800 mb-6 text-center">REQUISITION</h2>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-primary-500 mb-2">MATERIAL ID</label>
-                <input
-                  type="text"
-                  value={selectedMaterial.sm_id}
-                  disabled
-                  className="w-full py-3 px-5 opacity-50 border border-primary-400 rounded-xl bg-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-primary-500 mb-2">TYPE</label>
-                <input
-                  type="text"
-                  value={`PC ${selectedMaterial.type}`}
-                  disabled
-                  className="w-full py-3 px-5 opacity-50 border border-primary-400 rounded-xl bg-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-primary-500 mb-2">AMOUNT</label>
-                <input
-                  type="text"
-                  value={selectedMaterial.size === 4 ? "40000" : "20000"}
-                  disabled
-                  className="w-full py-3 px-5 opacity-50 border border-primary-400 rounded-xl bg-white"
-                />
-              </div>
-
-              <div className='w-full flex justify-center'>
+          <div className="mb-4 w-full items-center flex justify-between">
+            <h2 className="text-xl font-bold text-primary-800 font-inter">STOCK</h2>
+            <div className='flex items-center w-full justify-end gap-4'>
+              {/* Order By Button */}
+              <div className="relative">
                 <button
-                  onClick={handleSendRequisition}
-                  className="w-1/2 bg-primary-700 text-white py-4 rounded-3xl mt-4"
+                  onClick={() => setIsOrderMenuOpen(!isOrderMenuOpen)}
+                  className="flex items-center gap-2 bg-primary-600 text-white py-4 px-4 rounded-lg font-inter text-sm"
                 >
-                  SEND REQUISITION
+                  <TbArrowsSort size={20} />
+                  <span>Order By</span>
+                  {isOrderMenuOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
                 </button>
+                {isOrderMenuOpen && (
+                  <ul className="absolute right-0 mt-2 py-2 bg-white rounded-lg shadow-lg w-36">
+                    <li
+                      onClick={() => handleSort('size')}
+                      className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold"
+                    >
+                      Size
+                    </li>
+                    <li
+                      onClick={() => handleSort('amount')}
+                      className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold"
+                    >
+                      Amount
+                    </li>
+                    <li
+                      onClick={() => handleSort('price')}
+                      className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold"
+                    >
+                      Price
+                    </li>
+                    <li
+                      onClick={() => handleSort('available')}
+                      className="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm text-primary-500 font-semibold"
+                    >
+                      Available
+                    </li>
+                  </ul>
+                )}
+              </div>
+              {/* Search Box */}
+              <div className="relative w-1/2">
+                <div className='absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4'>
+                  <IoSearchOutline />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Search Material"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="p-2 pl-10 border border-primary-500 rounded-xl w-full text-primary-500 font-inter"
+                />
               </div>
             </div>
-
-            <button
-              onClick={() => setIsRequisitionModalOpen(false)}
-              className="absolute top-2 right-5 text-gray-500 hover:text-gray-700 text-2xl"
-            >
-              x
-            </button>
           </div>
         </div>
-      )}
-      <AlertModal
-        isOpen={alertModal.isOpen}
-        onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
-        title={alertModal.title}
-        message={alertModal.message}
-        type={alertModal.type}
-      />
+
+
+        {/* Stock Table */}
+        <div className="overflow-y-auto max-h-90">
+          <table className="min-w-full bg-white rounded-lg text-primary-600 font-bold font-inter text-base">
+            <thead className="bg-[#D3D3D3] rounded-t-lg">
+              <tr>
+                <th className="py-3 px-4 text-center font-bold rounded-tl-lg">MATERIAL ID</th>
+                <th className="py-3 px-4 text-center font-bold">STEEL TYPE</th>
+                <th className="py-3 px-4 text-center font-bold">STEEL SIZE</th>
+                <th className="py-3 px-4 text-center font-bold">AMOUNT</th>
+                <th className="py-3 px-4 text-center font-bold">PRICE</th>
+                <th className="py-3 px-4 text-center font-bold">AVAILABLE</th>
+                <th className="py-3 px-4 text-center font-bold rounded-tr-lg"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAndSortedData.map((item, index) => (
+                <tr key={index} className="border-b border-gray-300 cursor-pointer h-24">
+                  <td className="py-3 px-4 text-center">{item.sm_id}</td>
+                  <td className="py-3 px-4 text-center">PC {item.type}</td>
+                  <td className="py-3 px-4 text-center">{item.size} MM</td>
+                  <td className="py-3 px-4 text-center">{formatNumber(item.total_amount)} KG</td>
+                  <td className="py-3 px-4 text-center">{item.price}</td>
+                  <td className="py-3 px-4 text-center">
+                    <span className={
+                      item.total_amount >= item.min_amount
+                        ? 'text-status-success'
+                        : item.total_amount > 0
+                          ? 'text-status-warning'
+                          : 'text-status-error'
+                    }>
+                      {item.total_amount >= item.min_amount
+                        ? 'IN STOCK'
+                        : item.total_amount > 0
+                          ? 'LOW STOCK'
+                          : 'OUT OF STOCK'}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <button
+                      onClick={() => handleRequisitionClick(item)}
+                      className='bg-primary-700 font-medium p-2 rounded-3xl text-white w-full'
+                    >
+                      REQUISITION
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Requisition Modal */}
+        {isRequisitionModalOpen && selectedMaterial && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
+            onClick={() => setIsRequisitionModalOpen(false)} // Add click handler to backdrop
+          >
+            <div
+              className="bg-white relative rounded-lg p-8 w-full max-w-md shadow-lg"
+              onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside
+            >
+              <h2 className="text-2xl font-bold text-primary-800 mb-6 text-center">REQUISITION</h2>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-primary-500 mb-2">MATERIAL ID</label>
+                  <input
+                    type="text"
+                    value={selectedMaterial.sm_id}
+                    disabled
+                    className="w-full py-3 px-5 opacity-50 border border-primary-400 rounded-xl bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-primary-500 mb-2">TYPE</label>
+                  <input
+                    type="text"
+                    value={`PC ${selectedMaterial.type}`}
+                    disabled
+                    className="w-full py-3 px-5 opacity-50 border border-primary-400 rounded-xl bg-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-primary-500 mb-2">AMOUNT</label>
+                  <input
+                    type="text"
+                    value={selectedMaterial.size === 4 ? "40000" : "20000"}
+                    disabled
+                    className="w-full py-3 px-5 opacity-50 border border-primary-400 rounded-xl bg-white"
+                  />
+                </div>
+
+                <div className='w-full flex justify-center'>
+                  <button
+                    onClick={handleSendRequisition}
+                    className="w-1/2 bg-primary-700 text-white py-4 rounded-3xl mt-4"
+                  >
+                    SEND REQUISITION
+                  </button>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsRequisitionModalOpen(false)}
+                className="absolute top-2 right-5 text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                x
+              </button>
+            </div>
+          </div>
+        )}
+        <AlertModal
+          isOpen={alertModal.isOpen}
+          onClose={() => setAlertModal(prev => ({ ...prev, isOpen: false }))}
+          title={alertModal.title}
+          message={alertModal.message}
+          type={alertModal.type}
+        />
+      </div>
     </div>
   );
 };
