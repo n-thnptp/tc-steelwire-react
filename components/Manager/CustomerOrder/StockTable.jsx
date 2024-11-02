@@ -1,21 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const StockTable = () => {
   const [sortColumn, setSortColumn] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
   const [isOrderMenuOpen, setIsOrderMenuOpen] = useState(false);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [materials, setMaterials] = useState([]);
 
-  const stockData = [
-    { type: 'PC WIRE', size: '03.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'LOW STOCK' },
-    { type: 'PC WIRE', size: '04.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'OUT OF STOCK' },
-    { type: 'PC STRAND', size: '05.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
-    { type: 'PC STRAND', size: '06.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
-    { type: 'PC STRAND', size: '07.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
-    { type: 'PC STRAND', size: '08.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
-    { type: 'PC STRAND', size: '09.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
-    // เพิ่มข้อมูลเพิ่มเติมเพื่อทดสอบการเลื่อน
-  ];
+  useEffect(() => {
+    const fetchStock = async () => {
+      const data = await (await fetch('/api/manager/stock')).json();
+      setMaterials(data.materials);
+      console.log(data.materials);
+    };
+    fetchStock();
+  }, []);
+
+  // const stockData = [
+  //   { type: 'PC WIRE', size: '03.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'LOW STOCK' },
+  //   { type: 'PC WIRE', size: '04.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'OUT OF STOCK' },
+  //   { type: 'PC STRAND', size: '05.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
+  //   { type: 'PC STRAND', size: '06.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
+  //   { type: 'PC STRAND', size: '07.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
+  //   { type: 'PC STRAND', size: '08.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
+  //   { type: 'PC STRAND', size: '09.00 MM', amount: 'XXX.XX KG', price: 'XXXXX.XX BAHT', available: 'IN STOCK' },
+  //   // เพิ่มข้อมูลเพิ่มเติมเพื่อทดสอบการเลื่อน
+  // ];
 
   const handleSort = (column) => {
     setIsOrderMenuOpen(false);
@@ -27,7 +37,7 @@ const StockTable = () => {
     }
   };
 
-  const sortedStockData = [...stockData].sort((a, b) => {
+  const sortedStockData = [...materials].sort((a, b) => {
     if (!sortColumn) return 0;
     const aValue = a[sortColumn];
     const bValue = b[sortColumn];
@@ -90,7 +100,7 @@ const StockTable = () => {
                   className="py-3 px-4 text-center"
                   onClick={() => handleRowClick('type', item)}
                 >
-                  {item.type}
+                  PC {item.type}
                 </td>
                 <td
                   className="py-3 px-4 text-center"
@@ -102,7 +112,7 @@ const StockTable = () => {
                   className="py-3 px-4 text-center"
                   onClick={() => handleRowClick('amount', item)}
                 >
-                  {item.amount}
+                  {item.total_amount}
                 </td>
                 <td
                   className="py-3 px-4 text-center"
@@ -111,16 +121,7 @@ const StockTable = () => {
                   {item.price}
                 </td>
                 <td className="py-3 px-4 text-center">
-                  {item.available === 'IN STOCK' ? (
-                    <span className="text-green-600" onClick={() => handleRowClick('price', item)}>{item.available}</span>
-                  ) : (
-                    <a
-                      href="/manager/stock"
-                      className={`${item.available === 'OUT OF STOCK' ? 'text-red-600' : item.available === 'LOW STOCK' ? 'text-yellow-500' : 'text-green-600'}`}
-                    >
-                      {item.available} +
-                    </a>
-                  )}
+                  <span className={item.total_amount >= item.min_amount ? 'text-status-success' : item.total_amount > 0 ? 'text-status-warning' : 'text-status-error'}>{item.total_amount >= item.min_amount ? 'IN STOCK' : item.total_amount > 0 ? 'LOW STOCK' : 'OUT OF STOCK'}</span>
                 </td>
               </tr>
             ))}

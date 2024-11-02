@@ -6,10 +6,21 @@ export default async function handler(req, res) {
     }
 
     try {
-        // 1. Get order from database
-        const [order] = await query(
-            'SELECT * FROM `order`'
+        const order = await query(
+        `
+        SELECT 
+            o_id, 
+            c_id, 
+            o_date, 
+            o_status_id as status, 
+            o_total_price, 
+            o_estimated_shipping_day, 
+            courier_id
+        FROM \`order\`
+        `
         );
+
+        console.log(order);
         return res.status(200).json({ order });
 
     } catch (error) {

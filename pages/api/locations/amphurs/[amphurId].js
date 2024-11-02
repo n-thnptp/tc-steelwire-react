@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     try {
         const rows = await query(
-            'SELECT id, name_th as name, zip_code FROM tambons WHERE amphur_id = ? ORDER BY name_th',
+            'SELECT amphur_id, name_th as name, zip_code FROM tambons WHERE amphur_id = ? ORDER BY name_th',
             [amphurId]
         );
 

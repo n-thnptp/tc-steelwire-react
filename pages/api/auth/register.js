@@ -71,7 +71,7 @@ export default async function handler(req, res) {
         console.log(tambons)
         const addressResult = await query(
             'INSERT INTO shipping_address (tambon_id, address) VALUES (?, ?)',
-            [tambons[0].id, address]
+            [tambons[0].tambon_id, address]
         );
         console.log('Shipping address created:', addressResult);
 

@@ -13,8 +13,9 @@ export default async function handler(req, res) {
 
     try {
         const sessions = await query(
-            'SELECT c.c_id, c.email, c.firstname, c.lastname, c.role FROM sessions s ' +
+            'SELECT c.c_id, c.email, c.firstname, c.lastname, r.name as role FROM sessions s ' +
             'JOIN user c ON s.c_id = c.c_id ' +
+            'JOIN role r ON c.role_id = r.id ' +
             'WHERE s.session_id = ? AND s.expiration > NOW()',
             [sessionId]
         );

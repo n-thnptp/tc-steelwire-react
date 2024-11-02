@@ -34,9 +34,9 @@ export default async function handler(req, res) {
                 a.name_th as amphur,
                 p.name_th as province,
                 t.zip_code as postalCode
-            FROM customer c
+            FROM user c
             LEFT JOIN shipping_address sa ON c.sh_id = sa.sh_id
-            LEFT JOIN tambons t ON sa.tambon_id = t.tambon_id
+            LEFT JOIN tambons t ON sa.sh_id = t.tambon_id
             LEFT JOIN amphurs a ON t.amphur_id = a.amphur_id
             LEFT JOIN provinces p ON a.province_id = p.province_id
             WHERE c.c_id = ?`,
