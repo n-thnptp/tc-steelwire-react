@@ -20,6 +20,7 @@ export default async function handler(req, res) {
             o.o_date,
             o.o_total_price, 
             o.o_estimated_shipping_day,
+            o.shipping_fee,
             c.name as courier_name,
             u.firstname,
             u.lastname,

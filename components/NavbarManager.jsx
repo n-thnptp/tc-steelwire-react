@@ -9,13 +9,15 @@ const NavbarManager = () => {
     useEffect(() => {
         const currentPath = router.pathname;
         if (currentPath.includes('customer-order')) {
-            setActive('ORDER');
+            setActive('CUSTOMER ORDER');
+        } else if (currentPath.includes('update-stock')) {
+            setActive('UPDATE STOCK');
         } else if (currentPath.includes('stock')) {
             setActive('STOCK');
+        } else if (currentPath.includes('material-order')) {
+            setActive('MATERIAL ORDER');
         } else if (currentPath.includes('transaction')) {
             setActive('TRANSACTION');
-        } else if (currentPath.includes('update-order')) {
-            setActive('UPDATE ORDER');
         }
     }, [router.pathname]);
 
@@ -24,17 +26,20 @@ const NavbarManager = () => {
         setIsOpen(false);
 
         switch (menu) {
-            case 'ORDER':
+            case 'CUSTOMER ORDER':
                 router.push('/manager/customer-order');
                 break;
             case 'STOCK':
                 router.push('/manager/stock');
                 break;
+            case 'UPDATE STOCK':
+                router.push('/manager/update-stock');
+                break;
+            case 'MATERIAL ORDER':
+                router.push('/manager/material-order');
+                break;
             case 'TRANSACTION':
                 router.push('/manager/transaction');
-                break;
-            case 'UPDATE ORDER':
-                router.push('/manager/update-order');
                 break;
             default:
                 router.push('/');
@@ -47,7 +52,7 @@ const NavbarManager = () => {
         router.push('/login');
     };
 
-    const menuItems = ['ORDER', 'STOCK', 'TRANSACTION', 'UPDATE ORDER'];
+    const menuItems = ['CUSTOMER ORDER', 'STOCK', 'UPDATE STOCK', 'MATERIAL ORDER', 'TRANSACTION'];
 
     return (
         <nav className="sticky top-0 bg-neutral-white shadow-md p-4 w-full z-50">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { formatDate } from '../../Utils/formatDate';
 import { calculateDeliveryDate } from '../../Utils/calculateDeliveryDate';
+import { formatNumber } from '../../Utils/formatNumber';
 
 const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
   const [order, setOrder] = useState(null);
@@ -102,8 +103,8 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
                   <td className="py-2 px-4 text-[#603F26] font-inter">{product?.size ?? ''}</td>
                   <td className="py-2 px-4 text-[#603F26] font-inter">{product?.feature ?? ''}</td>
                   <td className="py-2 px-4 text-[#603F26] font-inter">{product?.quantity ?? ''} KG</td>
-                  <td className="py-2 px-4 text-[#603F26] font-inter">{product?.price ?? ''}</td>
-                  <td className="py-2 px-4 text-[#603F26] font-inter">{product?.quantity * product?.price ?? ''}</td>
+                  <td className="py-2 px-4 text-[#603F26] font-inter">{formatNumber(product?.price) ?? ''}</td>
+                  <td className="py-2 px-4 text-[#603F26] font-inter">{formatNumber(product?.quantity * product?.price) ?? ''}</td>
                 </tr>
               ))}
 
@@ -118,11 +119,11 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
         <div className="text-[#603F26] text-sm">
           <div className="flex justify-between">
             <p>Subtotal</p>
-            <p>{order?.o_total_price ?? ''}</p>
+            <p>{formatNumber(order?.o_total_price) ?? ''}</p>
           </div>
           <div className="flex justify-between">
             <p>Shipping & Handling</p>
-            <p>3500</p>
+            <p>{formatNumber(order?.shipping_fee)}</p>
           </div>
         </div>
 
@@ -132,7 +133,7 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
 
         <div className="flex justify-between font-bold text-[#603F26] text-sm">
           <p>Total</p>
-          <p>xx,xxx.xx</p>
+          <p>{formatNumber(order?.shipping_fee + order?.o_total_price)}</p>
         </div>
       </div>
     </div>
