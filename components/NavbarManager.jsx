@@ -8,7 +8,9 @@ const NavbarManager = () => {
 
     useEffect(() => {
         const currentPath = router.pathname;
-        if (currentPath.includes('customer-order')) {
+        if (currentPath.includes('dashboard')) {
+            setActive('DASHBOARD');
+        } else if (currentPath.includes('customer-order')) {
             setActive('CUSTOMER ORDER');
         } else if (currentPath.includes('update-stock')) {
             setActive('UPDATE STOCK');
@@ -26,6 +28,9 @@ const NavbarManager = () => {
         setIsOpen(false);
 
         switch (menu) {
+            case 'DASHBOARD':
+                router.push('/manager/dashboard');
+                break;
             case 'CUSTOMER ORDER':
                 router.push('/manager/customer-order');
                 break;
@@ -52,7 +57,7 @@ const NavbarManager = () => {
         router.push('/login');
     };
 
-    const menuItems = ['CUSTOMER ORDER', 'STOCK', 'UPDATE STOCK', 'MATERIAL ORDER', 'TRANSACTION'];
+    const menuItems = ['DASHBOARD', 'CUSTOMER ORDER', 'STOCK', 'UPDATE STOCK', 'MATERIAL ORDER', 'TRANSACTION'];
 
     return (
         <nav className="sticky top-0 bg-neutral-white shadow-md p-4 w-full z-50">

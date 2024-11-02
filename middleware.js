@@ -79,7 +79,7 @@ export async function middleware(request) {
             // Check if the user is an admin
             if (user.role === 'admin' && !pathname.startsWith('/manager')) {
                 // Redirect admin to manager order page
-                return NextResponse.redirect(new URL('/manager/customer-order', request.url));
+                return NextResponse.redirect(new URL('/manager/dashboard', request.url));
             }
 
             // Session is valid, proceed with user data in headers
