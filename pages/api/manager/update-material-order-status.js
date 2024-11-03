@@ -8,8 +8,6 @@ export default async function handler(req, res) {
   try {
     const { orderId, newStatus } = req.body;
 
-    console.log(orderId, newStatus);
-
     if (!orderId || !newStatus) {
       return res.status(400).json({ error: 'Order ID and new status are required' });
     }
@@ -33,12 +31,30 @@ export default async function handler(req, res) {
 
     const updatedOrder = await query(
       `
-            SELECT smo_id, smos_id 
+            SELECT smo_id, smos_id, quantity 
             FROM shop_material_order 
             WHERE smo_id = ?
             `,
       [orderId]
     );
+
+    console.log(updatedOrder);
+
+    const materialUpdate = await query(
+      `
+      UPDATE shop_material SET total_amount= total_amount + ?
+      WHERE sm_id = (
+      SELECT sm_id
+      FROM shop_material_order
+      WHERE smo_id = ?
+      )
+    `,
+      [updatedOrder[0].quantity, orderId]
+    );
+
+    if (materialUpdate.affectedRows === 0) {
+      return res.status(404).json({ error: 'Material not found' });
+    }
 
     return res.status(200).json({
       message: 'Order status updated successfully',
