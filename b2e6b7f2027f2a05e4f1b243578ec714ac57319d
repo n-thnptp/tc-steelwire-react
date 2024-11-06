@@ -1,0 +1,365 @@
+[33mcommit b2e6b7f2027f2a05e4f1b243578ec714ac57319d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature-purchase[m[33m, [m[1;31morigin/feature-purchase[m[33m)[m
+Author: minkz <natthapat.y@ku.th>
+Date:   Wed Nov 6 14:44:03 2024 +0700
+
+    fix: set default role_id=1 for new user registration
+
+[33mcommit 8cc2a133b928c7593dc33ad171fa02d8a6dfe0d8[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m
+Author: annchana <annchanaoat@gmail.com>
+Date:   Sun Nov 3 22:18:41 2024 +0700
+
+    fix update material order
+
+[33mcommit d427d4b46ba34ba88f214e52eac37c55fc83338a[m
+Author: annchana <annchanaoat@gmail.com>
+Date:   Sun Nov 3 02:31:02 2024 +0700
+
+    dashboard
+
+[33mcommit 531080c32b38fe08a686b4a4c5f9dd6daa00fbcb[m
+Author: annchana <annchanaoat@gmail.com>
+Date:   Sun Nov 3 01:44:36 2024 +0700
+
+    material order and transaction
+
+[33mcommit e409dc4bf91ed404081dbcca087b6b697efdfbb1[m
+Author: annchana <annchanaoat@gmail.com>
+Date:   Sat Nov 2 23:55:01 2024 +0700
+
+    update stock
+
+[33mcommit 466aada2471b25dc223fbebf27350f29de9d416c[m
+Author: annchana <annchanaoat@gmail.com>
+Date:   Sat Nov 2 21:20:58 2024 +0700
+
+    add role admin and fix customer order
+
+[33mcommit 5fe6a6e0c686dd2ecea1b6dce28737abd9f0d3c0[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Fri Nov 1 22:58:14 2024 +0700
+
+    sent to Oan
+
+[33mcommit 3569d6bda224a9a9d9eb28193751e8cd4e2f3362[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Wed Oct 30 04:49:53 2024 +0700
+
+    ✨ added user settings page back-end & order page unfinished
+
+[33mcommit 71577415d4e52d0717d4a647a6b42599a9bf4c20[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Wed Oct 30 02:15:34 2024 +0700
+
+    ✨ added login system & improved user setting page styling
+
+[33mcommit e84da753dfc4f00a3058fab2d0a5f4a640b33958[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Tue Oct 29 22:36:16 2024 +0700
+
+    ✨ added back-end to login page
+    
+    Co-authored-by: WingedSeal <WingedSeal@users.noreply.github.com>
+
+[33mcommit 99e12454061f9a3771ce7cc9c0d666acaef89eeb[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Tue Oct 29 20:55:07 2024 +0700
+
+    ✨ added back-end to registration pages, login unfinished
+    
+    Co-authored-by: WingedSeal <WingedSeal@users.noreply.github.com>
+
+[33mcommit 922844d5fe3a4f62a211ae73dcaf3c2088148fab[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Tue Oct 29 17:00:20 2024 +0700
+
+    ✨ added database wrapper & getdata for api testing
+
+[33mcommit 9c9fd19957b0e884feffdf05071105402beb1265[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Tue Oct 29 16:32:33 2024 +0700
+
+    💥 breaking changes: restructured to next router & added postcss nextjs mysql2 argon2 dependencies
+
+[33mcommit a8c75ec09d658789f969e74536cc7e2b318e076d[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Tue Oct 29 01:55:24 2024 +0700
+
+    💄 updated shopping cart styling & added logic
+
+[33mcommit bdfc712ff067d9707b36ff024a80e7b8392e3a0f[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Tue Oct 29 00:28:21 2024 +0700
+
+    ✨ added logic to order page & fixed styling to landing page
+
+[33mcommit a066528a715e0e234018a99f58a318bd133ecf1d[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 28 18:04:48 2024 +0700
+
+    ✨ added login logic and context
+
+[33mcommit eeb4e7add7c1a19d56fbad0860b5f6371c242cfa[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 28 17:35:30 2024 +0700
+
+    🎨 improved navbar buttons + styling & fixed homepage styling
+
+[33mcommit 8100d0660dbb351f8fec8f6427357c6ae5186c2d[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 28 05:00:03 2024 +0700
+
+    💄 updated tailwind.config.js styles
+
+[33mcommit 92e25e500fd777e447b04e96527ec43830af82e0[m
+Merge: 99ca281 c99d5ae
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 28 04:58:55 2024 +0700
+
+    Merge branch 'develop' of https://github.com/n-thnptp/tc-steelwire-react into develop
+
+[33mcommit 99ca28123c1ab24a4326da4390159fd58b60be26[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 28 04:54:52 2024 +0700
+
+    ✨ added logic + finishing register pages & updated styling to match the current design
+
+[33mcommit c99d5ae7029a5a71888bc8e47bc1f3a4e375216a[m
+Merge: cc8a35b 88ad160
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 27 20:06:53 2024 +0700
+
+    Merge branch 'feature/Profile' into develop
+
+[33mcommit 88ad16071782709bee644e3262ec5895d5a69c00[m[33m ([m[1;31morigin/feature/Profile[m[33m)[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 27 20:06:01 2024 +0700
+
+    edit address not yet
+
+[33mcommit 192e2b92e30861e96bcc254fb0ce60684b746487[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 27 17:19:44 2024 +0700
+
+    UserSetting Done! But all edit popup not yet
+
+[33mcommit cc8a35bec74be1e5ec4f9dff9c2b888e246f661a[m
+Merge: 2ce4b66 59e16b1
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 27 14:43:46 2024 +0700
+
+    Merge branch 'feature/stock' into develop
+
+[33mcommit 59e16b19d23228d43fc9b6f0743b305a7590bf08[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 27 14:40:54 2024 +0700
+
+    StockTable Done!
+
+[33mcommit 2ce4b666a908035e2dd9d6175b3adc064d0647ef[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 27 00:13:54 2024 +0700
+
+    OderM done!
+
+[33mcommit 6796b2ac9ef80990ecad26d59570787d9a00c3c5[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sat Oct 26 22:09:23 2024 +0700
+
+    orderM done!
+
+[33mcommit 33dbfb31bca46d554ef94ab15801cf0a636851a4[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sat Oct 26 20:30:00 2024 +0700
+
+    NavbarManager done!
+
+[33mcommit b4f64b73be9a23f8881a687f4b53fc17fdc6cccc[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sat Oct 26 19:28:08 2024 +0700
+
+    Status Done!
+
+[33mcommit add8f0ce14fef661ae9a173fa57513f62c52bc40[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Fri Oct 25 01:22:01 2024 +0700
+
+    ConfigPage Done! and fix logic in orderPage
+
+[33mcommit 490d49ca55b34569eb62f8a7c5ac37503dae99ce[m
+Merge: 36d4404 e5b4cdc
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Thu Oct 24 20:35:32 2024 +0700
+
+    Merge branch 'feature/Bookmark' into develop
+
+[33mcommit e5b4cdcdead310230c84f2bbde678624c3a7f4df[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Thu Oct 24 20:11:55 2024 +0700
+
+    Bookmark Done!
+
+[33mcommit ec5527d043cf8160bd1c6f7f1dbe583a530f5566[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Thu Oct 24 19:49:42 2024 +0700
+
+    update secondary bg for all page except for login
+
+[33mcommit 36d4404537fb7947e58beffbab500112a05f7cdf[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 13 17:30:53 2024 +0700
+
+    navbarV2 done!
+
+[33mcommit 765c6b5ffc95872888e57c8540135b58599834d3[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 13 16:31:37 2024 +0700
+
+    change oderForm to OderForm
+
+[33mcommit f107c6f122e49fe976169843aaed73d44a4272b3[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 13 16:29:16 2024 +0700
+
+    fix Page height: 'calc(96vh - 50px)' history, OrderPage, PurchasePage, status
+
+[33mcommit 204afa03e027363609f5ce1972b97a478808ab77[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 13 16:17:18 2024 +0700
+
+    fix PurchasePage
+
+[33mcommit f2a0f0db0124442f64cc094d2c8f825ed4cf0c19[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 13 15:05:35 2024 +0700
+
+    historyPage done!
+
+[33mcommit 6f20471c8bce4f6fcc567ba10e86d5f82da7918a[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Thu Oct 10 23:02:53 2024 +0700
+
+    Status done!
+
+[33mcommit 54e79ca5c162b81a77c772968436dde11655e6b4[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Wed Oct 9 21:21:00 2024 +0700
+
+    Payment 100% and EditAddress 100%
+
+[33mcommit 40732a6f914f864a21ad2bf5236f1184ca98286c[m
+Merge: 7daca64 ba79a31
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Tue Oct 8 21:46:32 2024 +0700
+
+    Merge branch 'develop' of https://github.com/n-thnptp/tc-steelwire-react into develop
+
+[33mcommit 7daca642260ff2f074e978fcddc5cfa49bce3dbb[m
+Merge: ec8f209 1e82e32
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Tue Oct 8 21:43:46 2024 +0700
+
+    Merge branch 'feature/PurchasePage' into develop
+
+[33mcommit 1e82e32a1b22eebef66206d26c7b6c70bf92d033[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Tue Oct 8 21:36:16 2024 +0700
+
+    100% PurchasePage but No payment and edit address
+
+[33mcommit ba79a3185ec55b5d744b0379fccd819ab23584e3[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Tue Oct 8 01:31:40 2024 +0700
+
+    ✨register page stylings completed
+
+[33mcommit f365500156880a83f90c5c1ca0e2adf97e3291ae[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Mon Oct 7 23:16:58 2024 +0700
+
+    fix Homepage and PurchasePage about pic and layout
+
+[33mcommit e21e7deef2b170b5028a003c181446cc9d5dd7e3[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 7 23:07:39 2024 +0700
+
+    💄 updated styling for register form, account form
+
+[33mcommit 4fba023dfd9eea8c7c4c1b47ead4d13e7105f65a[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 7 18:02:50 2024 +0700
+
+    🎨 added & reformatted styles
+
+[33mcommit ec8f20978e7f12afa58c64c784cf1dec49c1a364[m
+Merge: 26d0a14 fe641ab
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 7 16:12:47 2024 +0700
+
+    🩹 Solved Merge Conflict
+
+[33mcommit 26d0a14c58bd48cd65793fa9ca77900368ed876d[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Mon Oct 7 16:07:53 2024 +0700
+
+    ✨ Register Form (Account page) done  & � reformatted login form
+
+[33mcommit 9adf71ee0f3d3bece8d97df3ed293c3b5856c18a[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sun Oct 6 11:05:58 2024 +0700
+
+    Pruchase 1 80%
+
+[33mcommit fe641ab18e029250111f89e077802259a240ffe5[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Sat Oct 5 20:13:26 2024 +0700
+
+    finish OrderForm
+
+[33mcommit 298e5d378aafe22d94ee7270c9bd36a6e4089f21[m
+Merge: 0ebbca4 c9f9829
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Thu Oct 3 00:07:42 2024 +0700
+
+    Merge branch 'feature/homepage' into develop
+
+[33mcommit c9f9829ebba9f4e6886f1657be732bc3de6f5a21[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Wed Oct 2 22:35:37 2024 +0700
+
+    finish homepage, add react-router-dom in pageage.json by npm install react-router-dom on terminal for link any pages on Navbar
+
+[33mcommit cf692e671dcb12be24a8c6c9c86d08b4606bc9f1[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Tue Oct 1 14:44:48 2024 +0700
+
+    hamburger menu in Navbar
+
+[33mcommit 3de2746f80b18bdfa4fc1b90fd45f10bd1904800[m
+Author: Thirawatz <thirawat.ku@ku.th>
+Date:   Tue Oct 1 01:46:52 2024 +0700
+
+    add folder HomePage, folder pic in src: homepage ui 90%
+
+[33mcommit 0ebbca44d81d48f6c0c637f5ed9f93b3a9e5ca7f[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Wed Sep 11 19:08:44 2024 +0700
+
+    📝 Updated README.md
+
+[33mcommit 9fcca459984cbe38d6c11193cd35454630e1f7fe[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Wed Sep 11 18:03:52 2024 +0700
+
+    ✨ Login page (Front end) done!
+
+[33mcommit 117184acb214d1810455001cb7b84925d049ad35[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: n.thnptp <noppadol196@gmail.com>
+Date:   Fri Aug 23 19:33:27 2024 +0700
+
+    React + Tailwind template
+
+[33mcommit 26d3a39aa241579b14585c72b9a32511c9ff4028[m
+Author: Noppadol Thanapatipol <96496274+n-thnptp@users.noreply.github.com>
+Date:   Fri Aug 23 17:48:44 2024 +0700
+
+    Initial commit

@@ -16,6 +16,11 @@ const LoginForm = () => {
         navigateToSignup 
     } = useLoginContext();
 
+    const onSubmit = async (e) => {
+        e.preventDefault();
+        await handleLogin();
+    };
+
     return (
         <div className="min-h-screen relative">
             {/* Back Button */}
@@ -36,7 +41,7 @@ const LoginForm = () => {
                         <p className="text-gray-600">Please enter your details to sign in</p>
                     </div>
 
-                    <form onSubmit={handleLogin}>
+                    <form onSubmit={onSubmit}>
                         <FormInput
                             name="email"
                             type="email"

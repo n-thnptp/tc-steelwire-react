@@ -6,26 +6,39 @@ export default async function handler(req, res) {
     }
 
     const sessionId = req.cookies.sessionId;
+    console.log('Validating session:', sessionId);
 
     if (!sessionId) {
+        console.log('No session ID found');
         return res.status(401).json({ error: 'No session found' });
     }
 
     try {
-        const sessions = await query(
-            'SELECT c.c_id, c.email, c.firstname, c.lastname, r.name as role FROM sessions s ' +
-            'JOIN user c ON s.c_id = c.c_id ' +
-            'JOIN role r ON c.role_id = r.id ' +
-            'WHERE s.session_id = ? AND s.expiration > NOW()',
+        const [session] = await query(
+            `SELECT 
+                u.c_id, 
+                u.email, 
+                u.role_id
+            FROM sessions s 
+            JOIN user u ON s.c_id = u.c_id 
+            WHERE s.session_id = ? AND s.expiration > NOW()`,
             [sessionId]
         );
 
-        if (sessions.length === 0) {
+        console.log('Session query result:', session);
+
+        if (!session) {
+            console.log('No valid session found');
             return res.status(401).json({ error: 'Invalid or expired session' });
         }
 
-        const user = sessions[0];
-        return res.status(200).json({ user });
+        return res.status(200).json({ 
+            user: {
+                id: session.c_id,
+                email: session.email,
+                role_id: session.role_id
+            }
+        });
     } catch (error) {
         console.error('Session validation error:', error);
         return res.status(500).json({ error: 'Internal server error' });
