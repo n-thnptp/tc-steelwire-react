@@ -90,8 +90,8 @@ export default async function handler(req, res) {
                 phone_number,
                 company,
                 sh_id,
-                role
-            ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)`,
+                role_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 firstName,
                 lastName,
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
                 phoneNumber,
                 companyName || null,
                 shippingId,
-                'customer'
+                1
             ]
         );
         console.log('Customer created:', customerResult);
