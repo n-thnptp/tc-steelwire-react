@@ -2,13 +2,39 @@ import { serialize } from 'cookie';
 import query from '../../../lib/db';
 import { hashPassword, generateSessionId } from '../../../lib/auth';
 
+// Utility function to generate numeric IDs
+function generateNumericId(length) {
+    let result = '';
+    result += Math.floor(Math.random() * 9) + 1; // First digit non-zero
+    for (let i = 1; i < length; i++) {
+        result += Math.floor(Math.random() * 10);
+    }
+    return result;
+}
+
+// ID generation functions
+async function generateUniqueCustomerId() {
+    while (true) {
+        const c_id = generateNumericId(16);
+        const existing = await query('SELECT c_id FROM user WHERE c_id = ?', [c_id]);
+        if (existing.length === 0) return c_id;
+    }
+}
+
+async function generateUniqueShippingId() {
+    while (true) {
+        const sh_id = generateNumericId(11);
+        const existing = await query('SELECT sh_id FROM shipping_address WHERE sh_id = ?', [sh_id]);
+        if (existing.length === 0) return sh_id;
+    }
+}
+
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
     try {
-        // Log received data
         console.log('Request body:', req.body);
 
         const {
@@ -19,11 +45,12 @@ export default async function handler(req, res) {
             companyName,
             phoneNumber,
             address,
-            province, // ID String
-            amphur, // ID String
-            tambon, // ID String
+            province,
+            amphur,
+            tambon,
             postcode
         } = req.body;
+
         // Validate required fields
         if (!email || !password || !firstName || !lastName || !phoneNumber || !address || !province || !amphur || !tambon || !postcode) {
             return res.status(400).json({
@@ -46,7 +73,7 @@ export default async function handler(req, res) {
             });
         }
 
-        // Find tambon based on tambon name
+        // Find tambon
         console.log('Looking up tambon for tambon:', tambon);
         const tambonQuery = `
             SELECT * from tambons 
@@ -63,26 +90,29 @@ export default async function handler(req, res) {
             });
         }
 
+        // Generate unique IDs
+        const customerId = await generateUniqueCustomerId();
+        console.log("GENERATED CUSTOMER ID: ", customerId);
+        const shippingId = await generateUniqueShippingId();
+        console.log("GENERATED SHIPPING ID: ", shippingId);
+
         // Hash password
         console.log('Hashing password...');
         const hashedPassword = await hashPassword(password);
-        // Create shipping address
+
+        // Create shipping address with generated sh_id
         console.log('Creating shipping address...');
-        console.log(tambons)
-        const addressResult = await query(
-            'INSERT INTO shipping_address (tambon_id, address) VALUES (?, ?)',
-            [tambons[0].tambon_id, address]
+        await query(
+            'INSERT INTO shipping_address (sh_id, tambon_id, address) VALUES (?, ?, ?)',
+            [shippingId, tambons[0].tambon_id, address]
         );
-        console.log('Shipping address created:', addressResult);
+        console.log('Shipping address created with ID:', shippingId);
 
-        // Get the auto-generated sh_id
-        const shippingId = addressResult.insertId;
-        
-
-        // Create customer record
+        // Create customer record with generated c_id
         console.log('Creating customer record...');
-        const customerResult = await query(
+        await query(
             `INSERT INTO user (
+                c_id,
                 firstname,
                 lastname,
                 email,
@@ -90,9 +120,10 @@ export default async function handler(req, res) {
                 phone_number,
                 company,
                 sh_id,
-                role
-            ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?)`,
+                role_id
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
+                customerId,
                 firstName,
                 lastName,
                 email,
@@ -100,10 +131,10 @@ export default async function handler(req, res) {
                 phoneNumber,
                 companyName || null,
                 shippingId,
-                'customer'
+                1
             ]
         );
-        console.log('Customer created:', customerResult);
+        console.log('Customer created with ID:', customerId);
 
         // Create session
         const sessionId = generateSessionId();
@@ -111,7 +142,7 @@ export default async function handler(req, res) {
 
         await query(
             'INSERT INTO sessions (session_id, c_id, expiration) VALUES (?, ?, ?)',
-            [sessionId, customerResult.insertId, expirationDate]
+            [sessionId, customerId, expirationDate]
         );
 
         // Set session cookie
