@@ -192,7 +192,7 @@ export const OrderProvider = ({ children }) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    customer_id: 1, // You should get this from your login context
+                    customer_id: user.c_id, // Get from auth context or session
                     total_price,
                     products: orderState.items.map(item => ({
                         feature: item.steelFeature,

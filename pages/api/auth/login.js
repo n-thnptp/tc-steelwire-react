@@ -9,12 +9,26 @@ export default async function handler(req, res) {
 
     try {
         const { email, password } = req.body;
+        
+        // Debug log
+        console.log('Login attempt with data:', req.body);
+
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({
+                error: 'Missing credentials',
+                message: 'Email and password are required'
+            });
+        }
 
         // 1. Get user from database
         const [user] = await query(
-            'SELECT c_id, email, password_hashed FROM user WHERE email = ?',
+            'SELECT c_id, email, password_hashed, role_id FROM user WHERE LOWER(email) = LOWER(?)',
             [email]
         );
+
+        // Debug: Log the query results
+        console.log('Database query result:', user);
 
         if (!user) {
             return res.status(200).json({ 
@@ -37,31 +51,41 @@ export default async function handler(req, res) {
         // 3. Clean up existing sessions
         await query(
             'DELETE FROM sessions WHERE c_id = ? OR expiration < NOW()',
-            [user.c_id]
+            [user.c_id || null]
         );
 
         // 4. Create new session
         const sessionId = generateSessionId();
         const expirationDate = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
+        
         await query(
             'INSERT INTO sessions (session_id, c_id, expiration) VALUES (?, ?, ?)',
-            [sessionId, user.c_id, expirationDate]
+            [sessionId || null, user.c_id || null, expirationDate || null]
         );
 
-        // 5. Set cookie
-        res.setHeader('Set-Cookie', serialize('sessionId', sessionId, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            expires: expirationDate
-        }));
+        // 5. Set cookie and return response
+        res.setHeader(
+            'Set-Cookie',
+            serialize('sessionId', sessionId, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                path: '/',
+                expires: expirationDate
+            })
+        );
 
-        res.json({ success: true });
+        return res.status(200).json({ 
+            success: true,
+            user: {
+                id: user.c_id,
+                email: user.email,
+                role_id: user.role_id
+            }
+        });
 
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: 'Internal server error' });
     }
 }

@@ -22,6 +22,14 @@ const OrderForm = () => {
         return null;
     }
 
+    // Add this function to your component
+    const handleNumberOnly = (e) => {
+        // Prevent non-numeric input
+        if (!/^\d*$/.test(e.target.value)) {
+            e.target.value = e.target.value.replace(/[^\d]/g, '');
+        }
+    };
+
     return (
         <div className="h-[calc(100dvh-4rem)] bg-gray-50 overflow-hidden">
             <main className="h-full max-w-7xl mx-auto px-4 py-6">

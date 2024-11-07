@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 01, 2024 at 07:30 AM
+-- Generation Time: Nov 06, 2024 at 07:08 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `tc_steelwire_system`
+-- Database: `tc_steelwires_system`
 --
 
 -- --------------------------------------------------------
@@ -981,6 +981,13 @@ CREATE TABLE `courier` (
   `phone_number` varchar(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `courier`
+--
+
+INSERT INTO `courier` (`courier_id`, `name`, `phone_number`) VALUES
+(1, 'สมชาย ก้องเกื้อ', '0626100039');
+
 -- --------------------------------------------------------
 
 --
@@ -1057,10 +1064,38 @@ CREATE TABLE `order` (
   `c_id` int(16) DEFAULT NULL,
   `o_date` date NOT NULL,
   `o_status_id` int(11) DEFAULT NULL,
+  `shipping_fee` int(10) NOT NULL,
   `o_total_price` float NOT NULL,
   `o_estimated_shipping_day` int(11) DEFAULT NULL,
-  `p_id` int(11) DEFAULT NULL
+  `courier_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `order`
+--
+
+INSERT INTO `order` (`o_id`, `c_id`, `o_date`, `o_status_id`, `shipping_fee`, `o_total_price`, `o_estimated_shipping_day`, `courier_id`) VALUES
+(1, 123456789, '2024-10-29', 1, 0, 5000, 5, 1),
+(2, 234567890, '2024-10-30', 2, 0, 7500, 7, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_product`
+--
+
+CREATE TABLE `order_product` (
+  `o_id` int(11) DEFAULT NULL,
+  `p_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_product`
+--
+
+INSERT INTO `order_product` (`o_id`, `p_id`) VALUES
+(1, 1),
+(2, 2);
 
 -- --------------------------------------------------------
 
@@ -1081,7 +1116,8 @@ INSERT INTO `order_status` (`o_status_id`, `name`) VALUES
 (1, 'ยืนยันออเดอร์แล้ว'),
 (2, 'จ่ายเงินแล้ว'),
 (3, 'กำลังจัดส่ง'),
-(4, 'เสร็จสิ้น');
+(4, 'เสร็จสิ้น'),
+(5, 'ยกเลิกออร์เดอร์');
 
 -- --------------------------------------------------------
 
@@ -1091,14 +1127,19 @@ INSERT INTO `order_status` (`o_status_id`, `name`) VALUES
 
 CREATE TABLE `product` (
   `p_id` int(11) NOT NULL,
-  `description` varchar(100) NOT NULL,
   `feature` varchar(50) NOT NULL,
   `weight` float NOT NULL,
   `length` float NOT NULL,
-  `material_size` int(11) DEFAULT NULL,
-  `material_type` int(11) DEFAULT NULL,
   `sm_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `product`
+--
+
+INSERT INTO `product` (`p_id`, `feature`, `weight`, `length`, `sm_id`) VALUES
+(1, 'Indented', 200, 100, 1),
+(2, 'Plain', 300, 150, 2);
 
 -- --------------------------------------------------------
 
@@ -1199,6 +1240,25 @@ INSERT INTO `provinces` (`province_id`, `name_th`, `name_en`, `geography_id`) VA
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `role`
+--
+
+CREATE TABLE `role` (
+  `id` int(10) NOT NULL,
+  `name` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `role`
+--
+
+INSERT INTO `role` (`id`, `name`) VALUES
+(1, 'customer'),
+(2, 'admin');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `sessions`
 --
 
@@ -1220,6 +1280,14 @@ CREATE TABLE `shipping_address` (
   `address` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `shipping_address`
+--
+
+INSERT INTO `shipping_address` (`sh_id`, `tambon_id`, `address`) VALUES
+(1, 100101, '89/2 ถนนซัมติง เขตซัมวัน'),
+(2, 100102, '91/8 ถนนซัมวัน เขตซัมติง');
+
 -- --------------------------------------------------------
 
 --
@@ -1230,8 +1298,26 @@ CREATE TABLE `shop_material` (
   `sm_id` int(11) NOT NULL,
   `mt_id` int(11) DEFAULT NULL,
   `ms_id` int(11) DEFAULT NULL,
-  `amount_left` float NOT NULL
+  `total_amount` float NOT NULL,
+  `min_amount` int(11) DEFAULT NULL,
+  `date_added` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `shop_material`
+--
+
+INSERT INTO `shop_material` (`sm_id`, `mt_id`, `ms_id`, `total_amount`, `min_amount`, `date_added`) VALUES
+(1, 1, 1, 40000, 3800, '2024-11-03'),
+(2, 1, 2, 40000, 3800, '2024-11-03'),
+(3, 1, 3, 40000, 3800, '2024-11-03'),
+(4, 1, 4, 40000, 3800, '2024-11-03'),
+(5, 1, 5, 40000, 3800, '2024-11-03'),
+(6, 2, 1, 40000, 3800, '2024-11-03'),
+(7, 2, 2, 40000, 3800, '2024-11-03'),
+(8, 2, 3, 40000, 3800, '2024-11-03'),
+(9, 2, 4, 40000, 3800, '2024-11-03'),
+(10, 2, 5, 40000, 3800, '2024-11-03');
 
 -- --------------------------------------------------------
 
@@ -1264,7 +1350,8 @@ CREATE TABLE `shop_material_order_status` (
 
 INSERT INTO `shop_material_order_status` (`smos_id`, `name`) VALUES
 (1, 'สั่งซื้อ'),
-(2, 'สั่งซื้อเสร็จสิ้น');
+(2, 'สั่งซื้อเสร็จสิ้น'),
+(3, 'ยกเลิกออร์เดอร์');
 
 -- --------------------------------------------------------
 
@@ -1273,7 +1360,7 @@ INSERT INTO `shop_material_order_status` (`smos_id`, `name`) VALUES
 --
 
 CREATE TABLE `tambons` (
-  `id` int(11) NOT NULL,
+  `tambon_id` int(11) NOT NULL,
   `zip_code` int(11) NOT NULL,
   `name_th` varchar(150) NOT NULL,
   `name_en` varchar(150) NOT NULL,
@@ -1284,7 +1371,7 @@ CREATE TABLE `tambons` (
 -- Dumping data for table `tambons`
 --
 
-INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
 (100101, 10200, 'พระบรมมหาราชวัง', 'Phra Borom Maha Ratchawang', 1001),
 (100102, 10200, 'วังบูรพาภิรมย์', 'Wang Burapha Phirom', 1001),
 (100103, 10200, 'วัดราชบพิธ', 'Wat Ratchabophit', 1001),
@@ -2350,9 +2437,9 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 (210105, 21160, 'เพ', 'Phe', 2101),
 (210106, 21160, 'แกลง', 'Klaeng', 2101),
 (210107, 21000, 'บ้านแลง', 'Ban Laeng', 2101),
-(210108, 21000, 'นาตาขวัญ', 'Na Ta Khwan', 2101),
-(210109, 21000, 'เนินพระ', 'Noen Phra', 2101);
-INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(210108, 21000, 'นาตาขวัญ', 'Na Ta Khwan', 2101);
+INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(210109, 21000, 'เนินพระ', 'Noen Phra', 2101),
 (210110, 21100, 'กะเฉด', 'Kachet', 2101),
 (210111, 21000, 'ทับมา', 'Thap Ma', 2101),
 (210112, 21000, 'น้ำคอก', 'Nam Khok', 2101),
@@ -3448,9 +3535,9 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 (330118, 33000, 'ทุ่ม', 'Thum', 3301),
 (330119, 33000, 'หนองไฮ', 'Nong Hai', 3301),
 (330121, 33000, 'หนองแก้ว', 'Nong Kaeo', 3301),
-(330122, 33000, 'น้ำคำ', 'Nam Kham', 3301),
-(330123, 33000, 'โพธิ์', 'Pho', 3301);
-INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(330122, 33000, 'น้ำคำ', 'Nam Kham', 3301);
+INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(330123, 33000, 'โพธิ์', 'Pho', 3301),
 (330124, 33000, 'หมากเขียบ', 'Mak Khiap', 3301),
 (330127, 33000, 'หนองไผ่', 'Nong Phai', 3301),
 (330201, 33190, 'ยางชุมน้อย', 'Yang Chum Noi', 3302),
@@ -4562,9 +4649,9 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 (411908, 41150, 'จอมศรี', 'Chom Si', 4119),
 (411909, 41150, 'เตาไห', 'Tao Hai', 4119),
 (411910, 41150, 'โคกกลาง', 'Khok Klang', 4119),
-(411911, 41150, 'สร้างแป้น', 'Sang Paen', 4119),
-(412001, 41260, 'สร้างคอม', 'Sang Khom', 4120);
-INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(411911, 41150, 'สร้างแป้น', 'Sang Paen', 4119);
+INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(412001, 41260, 'สร้างคอม', 'Sang Khom', 4120),
 (412002, 41260, 'เชียงดา', 'Chiang Da', 4120),
 (412003, 41260, 'บ้านยวด', 'Ban Yuat', 4120),
 (412004, 41260, 'บ้านโคก', 'Ban Khok', 4120),
@@ -5669,9 +5756,9 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 (502103, 50320, 'แม่ทะลบ', 'Mae Thalop', 5021),
 (502104, 50320, 'หนองบัว', 'Nong Bua', 5021),
 (502201, 50360, 'บ้านกาด', 'Ban Kat', 5022),
-(502202, 50360, 'ทุ่งปี้', 'Thung Pi', 5022),
-(502203, 50360, 'ทุ่งรวงทอง', 'Thung Ruang Thong', 5022);
-INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(502202, 50360, 'ทุ่งปี้', 'Thung Pi', 5022);
+INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(502203, 50360, 'ทุ่งรวงทอง', 'Thung Ruang Thong', 5022),
 (502204, 50360, 'แม่วิน', 'Mae Win', 5022),
 (502205, 50360, 'ดอนเปา', 'Don Pao', 5022),
 (502301, 50130, 'ออนเหนือ', 'On Nuea', 5023),
@@ -6768,9 +6855,9 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 (650119, 65000, 'ไผ่ขอดอน', 'Phai Kho Don', 6501),
 (650120, 65230, 'งิ้วงาม', 'Ngio Ngam', 6501),
 (650201, 65120, 'นครไทย', 'Nakhon Thai', 6502),
-(650202, 65120, 'หนองกะท้าว', 'Nong Kathao', 6502),
-(650203, 65120, 'บ้านแยง', 'Ban Yaeng', 6502);
-INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(650202, 65120, 'หนองกะท้าว', 'Nong Kathao', 6502);
+INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(650203, 65120, 'บ้านแยง', 'Ban Yaeng', 6502),
 (650204, 65120, 'เนินเพิ่ม', 'Noen Phoem', 6502),
 (650205, 65120, 'นาบัว', 'Na Bua', 6502),
 (650206, 65120, 'นครชุม', 'Nakhon Chum', 6502),
@@ -7853,9 +7940,9 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 (802302, 80290, 'ดอนตรอ', 'Don Tro', 8023),
 (802303, 80190, 'สวนหลวง', 'Suan Luang', 8023),
 (802304, 80290, 'ทางพูน', 'Thang Phun', 8023),
-(810101, 81000, 'ปากน้ำ', 'Pak Nam', 8101),
-(810102, 81000, 'กระบี่ใหญ่', 'Krabi Yai', 8101);
-INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(810101, 81000, 'ปากน้ำ', 'Pak Nam', 8101);
+INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALUES
+(810102, 81000, 'กระบี่ใหญ่', 'Krabi Yai', 8101),
 (810103, 81000, 'กระบี่น้อย', 'Krabi Noi', 8101),
 (810105, 81000, 'เขาคราม', 'Khao Khram', 8101),
 (810106, 81000, 'เขาทอง', 'Khao Thong', 8101),
@@ -8772,6 +8859,19 @@ INSERT INTO `tambons` (`id`, `zip_code`, `name_th`, `name_en`, `amphur_id`) VALU
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `transaction_history`
+--
+
+CREATE TABLE `transaction_history` (
+  `transaction_id` int(11) NOT NULL,
+  `o_id` int(11) NOT NULL,
+  `method` varchar(50) NOT NULL,
+  `price` decimal(10,2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `user`
 --
 
@@ -8784,7 +8884,7 @@ CREATE TABLE `user` (
   `phone_number` varchar(10) NOT NULL,
   `company` varchar(50) DEFAULT NULL,
   `sh_id` int(11) DEFAULT NULL,
-  `role` varchar(10) NOT NULL
+  `role_id` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -8828,7 +8928,13 @@ ALTER TABLE `order`
   ADD PRIMARY KEY (`o_id`),
   ADD UNIQUE KEY `o_id` (`o_id`),
   ADD KEY `c_id` (`c_id`),
-  ADD KEY `o_status_id` (`o_status_id`),
+  ADD KEY `o_status_id` (`o_status_id`);
+
+--
+-- Indexes for table `order_product`
+--
+ALTER TABLE `order_product`
+  ADD KEY `o_id` (`o_id`),
   ADD KEY `p_id` (`p_id`);
 
 --
@@ -8849,6 +8955,12 @@ ALTER TABLE `product`
 --
 ALTER TABLE `provinces`
   ADD PRIMARY KEY (`province_id`);
+
+--
+-- Indexes for table `role`
+--
+ALTER TABLE `role`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `sessions`
@@ -8889,7 +9001,14 @@ ALTER TABLE `shop_material_order_status`
 -- Indexes for table `tambons`
 --
 ALTER TABLE `tambons`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`tambon_id`);
+
+--
+-- Indexes for table `transaction_history`
+--
+ALTER TABLE `transaction_history`
+  ADD PRIMARY KEY (`transaction_id`),
+  ADD KEY `o_id` (`o_id`);
 
 --
 -- Indexes for table `user`
@@ -8908,7 +9027,7 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `courier`
 --
 ALTER TABLE `courier`
-  MODIFY `courier_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `courier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `material_size`
@@ -8926,25 +9045,31 @@ ALTER TABLE `material_type`
 -- AUTO_INCREMENT for table `order_status`
 --
 ALTER TABLE `order_status`
-  MODIFY `o_status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `o_status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `p_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `p_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `role`
+--
+ALTER TABLE `role`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `shipping_address`
 --
 ALTER TABLE `shipping_address`
-  MODIFY `sh_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `sh_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `shop_material`
 --
 ALTER TABLE `shop_material`
-  MODIFY `sm_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `sm_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `shop_material_order`
@@ -8956,7 +9081,7 @@ ALTER TABLE `shop_material_order`
 -- AUTO_INCREMENT for table `shop_material_order_status`
 --
 ALTER TABLE `shop_material_order_status`
-  MODIFY `smos_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `smos_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Constraints for dumped tables
@@ -8966,9 +9091,14 @@ ALTER TABLE `shop_material_order_status`
 -- Constraints for table `order`
 --
 ALTER TABLE `order`
-  ADD CONSTRAINT `order_ibfk_1` FOREIGN KEY (`c_id`) REFERENCES `user` (`c_id`),
-  ADD CONSTRAINT `order_ibfk_2` FOREIGN KEY (`o_status_id`) REFERENCES `order_status` (`o_status_id`),
-  ADD CONSTRAINT `order_ibfk_3` FOREIGN KEY (`p_id`) REFERENCES `product` (`p_id`);
+  ADD CONSTRAINT `order_ibfk_2` FOREIGN KEY (`o_status_id`) REFERENCES `order_status` (`o_status_id`);
+
+--
+-- Constraints for table `order_product`
+--
+ALTER TABLE `order_product`
+  ADD CONSTRAINT `order_product_ibfk_1` FOREIGN KEY (`o_id`) REFERENCES `order` (`o_id`),
+  ADD CONSTRAINT `order_product_ibfk_2` FOREIGN KEY (`p_id`) REFERENCES `product` (`p_id`);
 
 --
 -- Constraints for table `product`
@@ -8995,6 +9125,12 @@ ALTER TABLE `shop_material`
 ALTER TABLE `shop_material_order`
   ADD CONSTRAINT `shop_material_order_ibfk_1` FOREIGN KEY (`sm_id`) REFERENCES `shop_material` (`sm_id`),
   ADD CONSTRAINT `shop_material_order_ibfk_2` FOREIGN KEY (`smos_id`) REFERENCES `shop_material_order_status` (`smos_id`);
+
+--
+-- Constraints for table `transaction_history`
+--
+ALTER TABLE `transaction_history`
+  ADD CONSTRAINT `transaction_history_ibfk_1` FOREIGN KEY (`o_id`) REFERENCES `order` (`o_id`);
 
 --
 -- Constraints for table `user`

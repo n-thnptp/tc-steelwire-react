@@ -1,5 +1,20 @@
-import DashBoard from '../../components/Manager/Dashboard/Dashboard';
+import { useEffect } from 'react';
+import AdminRoute from '../../components/Auth/AdminRoute';
+import useLoginContext from '../../components/Hooks/useLoginContext';
+import ManagerDashboard from '../../components/Manager/Dashboard/Dashboard';
 
-export default function Dashboard() {
-  return <DashBoard/>;
-}
+const ManagerDashboardPage = () => {
+    const { user } = useLoginContext();
+
+    useEffect(() => {
+        console.log('Dashboard mounted - Current user:', user);
+    }, [user]);
+
+    return (
+        <AdminRoute>
+            <ManagerDashboard />
+        </AdminRoute>
+    );
+};
+
+export default ManagerDashboardPage;

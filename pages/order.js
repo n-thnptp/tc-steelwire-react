@@ -8,13 +8,22 @@ export default function OrderPage() {
     const router = useRouter();
 
     useEffect(() => {
-        // If not loading and no user, redirect to login
-        if (!loading && !user) {
-            router.push('/login');
+        // Add more detailed logging
+        console.log('OrderPage - Loading:', loading);
+        console.log('OrderPage - User:', user);
+        console.log('OrderPage - LocalStorage:', localStorage.getItem('user'));
+
+        if (!loading) {
+            if (!user) {
+                console.log('OrderPage - No user, redirecting to login');
+                router.push('/login');
+            } else {
+                console.log('OrderPage - User role:', user.role_id);
+            }
         }
     }, [user, loading, router]);
 
-    // Show loading state while checking authentication
+    // Keep your existing loading and auth checks
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -23,11 +32,9 @@ export default function OrderPage() {
         );
     }
 
-    // If not authenticated, don't render anything (redirect will happen)
-    if (!user) {
+    if (!user || ![1, 2].includes(user.role_id)) {
         return null;
     }
 
-    // If authenticated, render the order form
     return <OrderForm />;
 }
