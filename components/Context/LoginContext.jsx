@@ -9,23 +9,34 @@ export const LoginProvider = ({ children }) => {
         password: ''
     });
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false);
-    const [user, setUser] = useState(() => {
-        if (typeof window !== 'undefined') {
-            const savedUser = localStorage.getItem('user');
-            return savedUser ? JSON.parse(savedUser) : null;
-        }
-        return null;
-    });
+    const [loading, setLoading] = useState(true);
+    const [user, setUser] = useState(null);
     const [showSignupPrompt, setShowSignupPrompt] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
-        if (user) {
-            localStorage.setItem('user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('user');
-        }
+        const loadUser = () => {
+            try {
+                const savedUser = localStorage.getItem('user');
+                console.log('Saved user data:', savedUser);
+                
+                if (savedUser) {
+                    const userData = JSON.parse(savedUser);
+                    console.log('Parsed user data:', userData);
+                    setUser(userData);
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadUser();
+    }, []);
+
+    useEffect(() => {
+        console.log('LoginContext - Current user:', user);
     }, [user]);
 
     const handleChange = (e) => {
@@ -83,9 +94,12 @@ export const LoginProvider = ({ children }) => {
                 if (data.user.role_id === 2) {
                     console.log('Admin user detected, redirecting to dashboard');
                     await router.replace('/manager/dashboard');
+                } else if (data.user.role_id === 1) {
+                    console.log('Regular user detected, redirecting to home');
+                    await router.replace('/');
                 } else {
-                    console.log('Regular user detected, redirecting to dashboard');
-                    await router.replace('/dashboard');
+                    console.log('Unknown user role');
+                    await router.replace('/');
                 }
             }
 

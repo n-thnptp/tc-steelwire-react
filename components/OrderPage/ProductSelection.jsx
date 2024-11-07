@@ -31,8 +31,14 @@ const ProductSelection = () => {
         fetchMaterials();
     }, []);
 
-    const handleNumberInput = (e, index, field) => {
-        const value = e.target.value;
+    const handleNumberOnly = (e, index, field) => {
+        const value = e.target.value.replace(/[^\d]/g, '');
+
+        if (value === '0') {
+            alert(`${field.charAt(0).toUpperCase() + field.slice(1)} ค่าไม่สามารถเป็น 0 ได้`);
+            return;
+        }
+
         updateItem(index, field, value);
 
         if (field === 'weight' && value) {
@@ -115,14 +121,24 @@ const ProductSelection = () => {
                                 className="p-2 border rounded text-primary-700 shadow"
                                 placeholder="LENGTH (CM)"
                                 value={item.length || ""}
-                                onChange={(e) => updateItem(index, 'length', e.target.value)}
+                                onChange={(e) => handleNumberOnly(e, index, 'length')}
+                                onKeyPress={(e) => {
+                                    if (!/[0-9]/.test(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                             <input
                                 type="text"
                                 className="p-2 border rounded text-primary-700 shadow"
                                 placeholder="WEIGHT (KG)"
                                 value={item.weight || ""}
-                                onChange={(e) => handleNumberInput(e, index, 'weight')}
+                                onChange={(e) => handleNumberOnly(e, index, 'weight')}
+                                onKeyPress={(e) => {
+                                    if (!/[0-9]/.test(e.key)) {
+                                        e.preventDefault();
+                                    }
+                                }}
                             />
                         </div>
                         {item.steelSize && (
