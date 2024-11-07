@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import useLoginContext from './Hooks/useLoginContext';
 
 const NavbarManager = () => {
     const [active, setActive] = useState('ORDER');
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
+    const { handleLogout: contextLogout } = useLoginContext();
 
     useEffect(() => {
         const currentPath = router.pathname;
@@ -51,10 +53,12 @@ const NavbarManager = () => {
         }
     };
 
-    const handleLogout = () => {
-        sessionStorage.clear();
-        localStorage.clear();
-        router.push('/login');
+    const handleLogout = async () => {
+        try {
+            await contextLogout();
+        } catch (error) {
+            console.error('Logout error:', error);
+        }
     };
 
     const menuItems = ['DASHBOARD', 'CUSTOMER ORDER', 'STOCK', 'UPDATE STOCK', 'MATERIAL ORDER', 'TRANSACTION'];
