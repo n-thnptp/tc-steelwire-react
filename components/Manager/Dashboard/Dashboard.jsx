@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { formatNumber } from '../../Utils/formatNumber';
 
-const Dashboard = () => {
+const ManagerDashboard = () => {
   const [timeframe, setTimeframe] = useState('WEEK');
   const [dashboardData, setDashboardData] = useState({
     salesData: [],
@@ -210,4 +210,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default ManagerDashboard;

@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
 import AdminRoute from '../../components/Auth/AdminRoute';
 import useLoginContext from '../../components/Hooks/useLoginContext';
+import ManagerDashboard from '../../components/Manager/Dashboard/Dashboard';
 
-const ManagerDashboard = () => {
+const ManagerDashboardPage = () => {
     const { user } = useLoginContext();
 
     useEffect(() => {
@@ -11,12 +12,9 @@ const ManagerDashboard = () => {
 
     return (
         <AdminRoute>
-            <div className="container mx-auto p-4">
-                <h1 className="text-2xl font-bold mb-4">Manager Dashboard</h1>
-                {/* Your dashboard content */}
-            </div>
+            <ManagerDashboard />
         </AdminRoute>
     );
 };
 
-export default ManagerDashboard;
+export default ManagerDashboardPage;
