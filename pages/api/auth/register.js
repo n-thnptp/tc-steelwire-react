@@ -15,7 +15,7 @@ function generateNumericId(length) {
 // ID generation functions
 async function generateUniqueCustomerId() {
     while (true) {
-        const c_id = generateNumericId(16);
+        const c_id = generateNumericId(5);
         const existing = await query('SELECT c_id FROM user WHERE c_id = ?', [c_id]);
         if (existing.length === 0) return c_id;
     }
@@ -23,7 +23,7 @@ async function generateUniqueCustomerId() {
 
 async function generateUniqueShippingId() {
     while (true) {
-        const sh_id = generateNumericId(11);
+        const sh_id = generateNumericId(5);
         const existing = await query('SELECT sh_id FROM shipping_address WHERE sh_id = ?', [sh_id]);
         if (existing.length === 0) return sh_id;
     }

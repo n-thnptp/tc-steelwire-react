@@ -19,7 +19,7 @@ export const LoginProvider = ({ children }) => {
             try {
                 const savedUser = localStorage.getItem('user');
                 console.log('Saved user data:', savedUser);
-                
+
                 if (savedUser) {
                     const userData = JSON.parse(savedUser);
                     console.log('Parsed user data:', userData);
@@ -52,9 +52,9 @@ export const LoginProvider = ({ children }) => {
 
     const handleLogin = async (e) => {
         if (e) e.preventDefault();
-        
+
         console.log('Login attempt with data:', loginData);
-        
+
         if (!loginData.email || !loginData.password) {
             setError('Email and password are required');
             return;
@@ -79,7 +79,19 @@ export const LoginProvider = ({ children }) => {
             const data = await response.json();
             console.log('Login response:', data);
 
-            if (data.error) {
+            // Handle different response cases
+            if (data.code === 'ACCOUNT_NOT_FOUND') {
+                setError(data.message);
+                setShowSignupPrompt(true);
+                return;
+            }
+
+            if (data.code === 'INVALID_PASSWORD') {
+                setError(data.message);
+                return;
+            }
+
+            if (data.error && !data.code) {
                 throw new Error(data.message || 'Login failed');
             }
 
@@ -88,9 +100,9 @@ export const LoginProvider = ({ children }) => {
                 if (typeof window !== 'undefined') {
                     localStorage.setItem('user', JSON.stringify(data.user));
                 }
-                
+
                 await new Promise(resolve => setTimeout(resolve, 100));
-                
+
                 if (data.user.role_id === 2) {
                     console.log('Admin user detected, redirecting to dashboard');
                     await router.replace('/manager/dashboard');
@@ -105,8 +117,7 @@ export const LoginProvider = ({ children }) => {
 
         } catch (error) {
             console.error('Login error:', error);
-            setError(error.message || 'Login failed');
-            setShowSignupPrompt(error.message?.includes('not registered'));
+            setError('An unexpected error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
