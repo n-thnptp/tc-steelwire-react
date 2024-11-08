@@ -153,7 +153,7 @@ const UserSetting = () => {
     }
 
     return (
-        <div className="p-4 items-start bg-white">
+        <div className="p-4 h-[calc(100dvh-4rem)] items-start bg-white">
 
             <div className="p-4 flex h-[80vh] w-full flex-col items-center bg-gray-50 max-w-4xl mx-auto">
 
@@ -172,7 +172,7 @@ const UserSetting = () => {
                         className={`flex items-center space-x-2 px-6 py-2 rounded-lg font-bold w-60 justify-center ${activeTab === 'privacy' ? 'bg-primary-700 text-neutral-white' : 'bg-neutral-white text-primary-700 border border-primary-700'
                             }`}
                     >
-                            {activeTab === 'profile' ? <BsShieldCheck className="mr-2" /> : <BsShieldFillCheck className="mr-2" />}
+                        {activeTab === 'profile' ? <BsShieldCheck className="mr-2" /> : <BsShieldFillCheck className="mr-2" />}
                         Privacy & Security
                     </button>
                 </div>

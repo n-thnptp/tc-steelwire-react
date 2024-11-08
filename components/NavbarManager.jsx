@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import useLoginContext from './Hooks/useLoginContext';
+import { Button } from "@material-tailwind/react";
+import { RiLogoutBoxFill } from "react-icons/ri";
 
 const NavbarManager = () => {
     const [active, setActive] = useState('ORDER');
@@ -64,17 +66,22 @@ const NavbarManager = () => {
     const menuItems = ['DASHBOARD', 'CUSTOMER ORDER', 'STOCK', 'UPDATE STOCK', 'MATERIAL ORDER', 'TRANSACTION'];
 
     return (
-        <nav className="sticky top-0 bg-neutral-white shadow-md p-4 w-full z-50">
+        <nav className="sticky top-0 bg-neutral-white shadow-md p-2 w-full z-50 h-16">
             <div className="flex items-center justify-between">
                 <div className="flex items-center justify-center" style={{ width: '180px', height: '50px' }}>
-                    <h1 className="text-lg font-inter font-bold text-primary-700 text-[20px]">TC STEELWIRE</h1>
+                    <a
+                        className="cursor-pointer text-lg font-inter font-bold text-accent-900 text-[20px]"
+                        onClick={() => handleMenuClick('HOME')}
+                    >
+                        TC STEELWIRE
+                    </a>
                 </div>
 
-                <div className="hidden lg:flex items-center space-x-8 font-bold font-inter text-primary-700">
+                <div className="hidden lg:flex items-center space-x-8 font-bold font-inter text-accent-900">
                     {menuItems.map((menu) => (
                         <li
                             key={menu}
-                            className={`button-underline hover:text-primary-700 ${active === menu ? 'border-b-2 border-accent-900' : ''}`}
+                            className={`cursor-pointer button-underline hover:text-primary-700 ${active === menu ? 'selected' : ''}`}
                             onClick={() => handleMenuClick(menu)}
                         >
                             {menu}
@@ -83,12 +90,16 @@ const NavbarManager = () => {
                 </div>
 
                 <div className="mr-2">
-                    <button
-                        className="hidden lg:block px-4 py-2 bg-[#CD3535] text-white font-bold font-inter rounded-[20px]"
+                    <Button
+                        variant="outlined"
+                        className="inline-flex mr-3 border-status-error text-status-error"
                         onClick={handleLogout}
                     >
-                        Logout
-                    </button>
+                        <div className="relative flex items-center">
+                            <RiLogoutBoxFill className="text-xl" />
+                            Logout
+                        </div>
+                    </Button>
                 </div>
 
                 <button className="lg:hidden" onClick={() => setIsOpen(!isOpen)}>
