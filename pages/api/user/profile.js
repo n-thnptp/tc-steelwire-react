@@ -22,24 +22,26 @@ export default async function handler(req, res) {
 
         // Get user details including shipping address
         const users = await query(
-            `SELECT 
-                c.c_id,
-                c.firstname,
-                c.lastname,
-                c.email,
-                c.phone_number,
-                c.company,
+            `SELECT
+                u.c_id,
+                u.firstname,
+                u.lastname,
+                u.email,
+                u.phone_number,
+                u.company,
+                sa.tambon_id,
                 sa.address,
-                t.name_th as tambon,
-                a.name_th as amphur,
-                p.name_th as province,
-                t.zip_code as postalCode
-            FROM user c
-            LEFT JOIN shipping_address sa ON c.sh_id = sa.sh_id
-            LEFT JOIN tambons t ON sa.sh_id = t.tambon_id
-            LEFT JOIN amphurs a ON t.amphur_id = a.amphur_id
-            LEFT JOIN provinces p ON a.province_id = p.province_id
-            WHERE c.c_id = ?`,
+                t.name_th AS tambon_name,
+                am.name_th AS amphur_name,
+                p.name_th AS province_name,
+                t.zip_code AS zip_code
+            FROM user u
+
+            JOIN shipping_address sa ON u.sh_id = sa.sh_id
+            JOIN tambons t ON sa.tambon_id = t.tambon_id
+            JOIN amphurs am ON t.amphur_id = am.amphur_id
+            JOIN provinces p ON am.province_id = p.province_id
+            WHERE u.c_id = ?`,
             [userId]
         );
 
@@ -58,10 +60,10 @@ export default async function handler(req, res) {
             phone_number: user.phone_number,
             company: user.company,
             address: user.address || '',
-            tambon: user.tambon || '',
-            amphur: user.amphur || '',
-            province: user.province || '',
-            postalCode: user.postalCode || ''
+            tambon: user.tambon_name || '',
+            amphur: user.amphur_name || '',
+            province: user.province_name || '',
+            postalCode: user.zip_code || ''
         };
 
         return res.status(200).json({ user: formattedUser });

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import EditAddress from './EditAddress';
 import EditPersonalInfo from './EditPersonalInfo';
-import EditUsernamePassword from './EditUsernamePassword';
+import EditPassword from './EditPassword';
 import useLoginContext from '../Hooks/useLoginContext';
 import { Button } from "@material-tailwind/react";
 import { FaCircleUser } from "react-icons/fa6";
@@ -18,7 +18,7 @@ const UserSetting = () => {
     const [activeTab, setActiveTab] = useState('profile');
     const [isEditPersonalOpen, setEditPersonalOpen] = useState(false);
     const [isEditAddressOpen, setEditAddressOpen] = useState(false);
-    const [isEditUsernamePasswordOpen, setEditUsernamePasswordOpen] = useState(false);
+    const [isEditPasswordOpen, setEditPasswordOpen] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -59,7 +59,7 @@ const UserSetting = () => {
     // Handlers for edit popups
     const toggleEditPersonal = () => setEditPersonalOpen(!isEditPersonalOpen);
     const toggleEditAddress = () => setEditAddressOpen(!isEditAddressOpen);
-    const toggleEditUsernamePassword = () => setEditUsernamePasswordOpen(!isEditUsernamePasswordOpen);
+    const toggleEditPassword = () => setEditPasswordOpen(!isEditPasswordOpen);
 
     const handleLogout = async () => {
         try {
@@ -92,7 +92,13 @@ const UserSetting = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                setUser(data.user); // Update local state with new user data
+                setUser(prevUser => ({
+                    ...prevUser,
+                    firstname: data.user.firstname,
+                    lastname: data.user.lastname,
+                    email: data.user.email,
+                    phone_number: data.user.phone_number
+                }));
                 toggleEditPersonal();
             }
         } catch (error) {
@@ -112,7 +118,13 @@ const UserSetting = () => {
 
             if (response.ok) {
                 const data = await response.json();
-                setUser(data.user); // Update local state with new user data
+                setUser(prevUser => ({
+                    ...prevUser,
+                    province: data.user.province_name,
+                    amphur: data.user.amphur_name,
+                    tambon: data.user.tambon_name,
+                    postalCode: data.user.zip_code
+                }));
                 toggleEditAddress();
             }
         } catch (error) {
@@ -133,7 +145,7 @@ const UserSetting = () => {
             if (response.ok) {
                 const data = await response.json();
                 setUser(data.user); // Update local state with new user data
-                toggleEditUsernamePassword();
+                toggleEditPassword();
             }
         } catch (error) {
             console.error('Update error:', error);
@@ -262,22 +274,31 @@ const UserSetting = () => {
                         </div>
                     </>
                 ) : (
-                    <div className="w-full bg-white p-4 rounded-lg text-[#603F26] font-inter relative">
-                        <h4 className="text-lg font-bold mb-4">Username & Password</h4>
-                        <div className="grid grid-cols-2 gap-4 text-gray-700">
-                            <div>
-                                <p className="text-sm text-[#603F26] font-inter opacity-50">Username</p>
-                                <p className="text-[#603F26] font-inter">{user.email}</p>
-                            </div>
-                            <div>
-                                <p className="text-sm text-[#603F26] font-inter opacity-50">Password</p>
-                                <p className="text-[#603F26] font-inter">********</p>
+                    <div className="w-full p-7 rounded-lg bg-neutral-white font-inter">
+                        <div className="h-fit flex place-content-between items-center">
+                            <h4 className="text-primary-700 text-lg font-bold">My Account</h4>
+                            <Button variant="text" size="sm" className="relative flex text-primary-500" onClick={toggleEditPassword}>
+                                <FiEdit2 className="text-xs mr-1" />
+                                Edit
+                            </Button>
+                        </div>
+
+                        <div className="text-primary-700">
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p className="text-sm text-primary-500 font-inter opacity-50">Username</p>
+                                    <p>{user.email}</p>
+                                </div>
+                                <div>
+                                    <p className="text-sm text-primary-500 font-inter opacity-50">Password</p>
+                                    <p>**********</p>
+                                </div>
                             </div>
                         </div>
-                        <button className="absolute top-4 right-4 flex items-center" onClick={toggleEditUsernamePassword}>
-                            <img src="/icon/Edit_duotone_line.png" alt="Edit Icon" className="w-4 h-4 mr-1" />
+                        <Button variant="text" size="sm" className="absolute top-4 right-4 flex items-center" onClick={toggleEditAddress}>
+                            <FiEdit2 className="text-xs mr-1" />
                             Edit
-                        </button>
+                        </Button>
                     </div>
                 )}
 
@@ -311,10 +332,10 @@ const UserSetting = () => {
                     onSave={handleSaveAddress}
                 />
             )}
-            {isEditUsernamePasswordOpen && (
-                <EditUsernamePassword
+            {isEditPasswordOpen && (
+                <EditPassword
                     userData={user}
-                    onClose={toggleEditUsernamePassword}
+                    onClose={toggleEditPassword}
                     onSave={handleSaveUsernamePassword}
                 />
             )}

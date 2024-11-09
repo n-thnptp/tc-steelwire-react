@@ -24,11 +24,11 @@ export default async function handler(req, res) {
         }
 
         const userId = sessions[0].c_id;
-        const { address, tambonId } = req.body;
+        const { address, tambon } = req.body;
 
         // Check if user already has a shipping address
         const userResult = await query(
-            'SELECT sh_id FROM customer WHERE c_id = ?',
+            'SELECT sh_id FROM user WHERE c_id = ?',
             [userId]
         );
 
@@ -38,23 +38,23 @@ export default async function handler(req, res) {
             // Create new shipping address
             const result = await query(
                 'INSERT INTO shipping_address (tambon_id, address) VALUES (?, ?)',
-                [tambonId, address]
+                [tambon, address]
             );
             shippingAddressId = result.insertId;
 
             // Update customer with new shipping address ID
             await query(
-                'UPDATE customer SET sh_id = ? WHERE c_id = ?',
+                'UPDATE user SET sh_id = ? WHERE c_id = ?',
                 [shippingAddressId, userId]
             );
         } else {
-            console.log('Update params before check:', [tambonId, address, shippingAddressId]);
-            
+            console.log('Update params before check:', [tambon, address, shippingAddressId]);
+
             // Validate parameters before query
-            if (!tambonId) {
+            if (!tambon) {
                 return res.status(400).json({ error: 'Invalid tambon ID' });
             }
-        
+
             // Update existing shipping address
             await query(
                 `
@@ -63,25 +63,32 @@ export default async function handler(req, res) {
                     address = ?
                 WHERE sh_id = ?
                 `,
-                [tambonId, address || '', shippingAddressId]
+                [tambon, address || '', shippingAddressId]
             );
         }
 
         // Get updated user data
         const users = await query(
-            `SELECT 
-                c.c_id,
+            `SELECT
+                u.c_id,
+                u.firstname,
+                u.lastname,
+                u.email,
+                u.phone_number,
+                u.company,
+                sa.tambon_id,
                 sa.address,
-                t.name_th as tambon,
-                a.name_th as amphur,
-                p.name_th as province,
-                t.zip_code as postalCode
-            FROM customer c
-            LEFT JOIN shipping_address sa ON c.sh_id = sa.sh_id
-            LEFT JOIN tambons t ON sa.tambon_id = t.tambon_id
-            LEFT JOIN amphurs a ON t.amphur_id = a.amphur_id
-            LEFT JOIN provinces p ON a.province_id = p.province_id
-            WHERE c.c_id = ?`,
+                t.name_th AS tambon_name,
+                am.name_th AS amphur_name,
+                p.name_th AS province_name,
+                t.zip_code AS zip_code
+            FROM user u
+
+            JOIN shipping_address sa ON u.sh_id = sa.sh_id
+            JOIN tambons t ON sa.tambon_id = t.tambon_id
+            JOIN amphurs am ON t.amphur_id = am.amphur_id
+            JOIN provinces p ON am.province_id = p.province_id
+            WHERE u.c_id = ?`,
             [userId]
         );
 

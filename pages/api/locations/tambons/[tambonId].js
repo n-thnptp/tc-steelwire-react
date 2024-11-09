@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
     try {
         const rows = await query(
-            'SELECT zip_code FROM tambons WHERE id = ?',
+            'SELECT zip_code FROM tambons WHERE tambon_id = ?',
             [tambonId]
         );
 

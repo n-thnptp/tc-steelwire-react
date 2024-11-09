@@ -26,7 +26,7 @@ export default async function handler(req, res) {
 
         // Update customer information
         await query(
-            `UPDATE customer 
+            `UPDATE user 
              SET firstname = ?, 
                  lastname = ?, 
                  email = ?, 
@@ -38,13 +38,13 @@ export default async function handler(req, res) {
         // Get updated user data
         const users = await query(
             `SELECT 
-                c.c_id,
-                c.firstname,
-                c.lastname,
-                c.email,
-                c.phone_number
-             FROM customer c
-             WHERE c.c_id = ?`,
+                u.c_id,
+                u.firstname,
+                u.lastname,
+                u.email,
+                u.phone_number
+             FROM user u
+             WHERE u.c_id = ?`,
             [userId]
         );
 

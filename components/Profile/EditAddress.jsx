@@ -33,12 +33,12 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                     const data = await response.json();
                     const user = data.user;
 
-                    // Set initial form data
+                    // Set initial form data with IDs
                     setFormData({
                         address: user.address || '',
-                        province: user.province_id || '',
-                        amphur: user.amphur_id || '',
-                        tambon: user.tambon_id || '',
+                        province: user.province_id || '',  // Use province_id
+                        amphur: user.amphur_id || '',     // Use amphur_id
+                        tambon: user.tambon_id || '',     // Use tambon_id
                         postalCode: user.postalCode || ''
                     });
 
@@ -101,7 +101,7 @@ const EditAddress = ({ userData, onClose, onSave }) => {
 
         } catch (error) {
             console.error('Error fetching provinces:', error);
-            setError('Failed to load provinces. Please try again.');
+            setErrors(prev => ({ ...prev, submit: 'Failed to load provinces. Please try again.' }));
             setLocationOptions(prev => ({
                 ...prev,
                 provinces: []
@@ -160,35 +160,39 @@ const EditAddress = ({ userData, onClose, onSave }) => {
         }
     };
 
-    const handleChange = async (e) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-        setErrors(prev => ({ ...prev, [name]: '' }));
-
-        if (name === 'province') {
-            setFormData(prev => ({ ...prev, amphur: '', tambon: '', postalCode: '' }));
-            if (value) {
-                await fetchAmphurs(value);
-            } else {
-                setLocationOptions(prev => ({ ...prev, amphurs: [], tambons: [] }));
-            }
-        }
-
-        if (name === 'amphur') {
-            setFormData(prev => ({ ...prev, tambon: '', postalCode: '' }));
-            if (value) {
-                await fetchTambons(value);
-            } else {
-                setLocationOptions(prev => ({ ...prev, tambons: [] }));
-            }
-        }
 
         if (name === 'tambon' && value) {
-            const selectedTambon = locationOptions.tambons.find(t => t.id === parseInt(value));
-            if (selectedTambon) {
-                setFormData(prev => ({ ...prev, postalCode: selectedTambon.zip_code.toString() }));
+            const tambonId = parseInt(value);
+            // const selectedTambon = locationOptions.tambons.find(
+            //     tambon => tambon.tambon_id === tambonId
+            // );
+            const selectedTambon = locationOptions.tambons.find(
+                tambon => tambon.id === parseInt(value)
+            )
+            console.log(selectedTambon);
+
+            setFormData(prevData => ({
+                ...prevData,
+                tambon: value,
+                postalCode: selectedTambon ? selectedTambon.zip_code : ''
+            }));
+        } else {
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value,
+            }));
+
+            // Handle cascading dropdowns after the state update
+            if (name === 'province') {
+                fetchAmphurs(value);
+            } else if (name === 'amphur') {
+                fetchTambons(value);
             }
         }
+
+        setErrors({}); // Clear errors when user makes changes
     };
 
     const validateForm = () => {
@@ -210,39 +214,7 @@ const EditAddress = ({ userData, onClose, onSave }) => {
         console.log('Submitting form with data:', formData);
 
         if (validateForm()) {
-            try {
-                const tambonIdNum = parseInt(formData.tambon);
-                if (isNaN(tambonIdNum)) {
-                    setErrors(prev => ({ ...prev, tambon: 'Invalid tambon ID' }));
-                    return;
-                }
-
-                const response = await fetch('/api/user/update-address', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        address: formData.address,
-                        tambonId: tambonIdNum
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Failed to update address');
-                }
-
-                const data = await response.json();
-                if (data.success) {
-                    onSave(data.user);  // This is passing the entire user object
-                    onClose();
-                }
-
-            } catch (error) {
-                console.error('Update error:', error);
-                setErrors(prev => ({ ...prev, submit: error.message }));
-            }
+            onSave(formData);
         }
     };
 
@@ -349,11 +321,13 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             disabled={!formData.amphur || loadingStates.tambons}
                         >
                             <option value="">Select Tambon</option>
-                            {locationOptions.tambons.map(tambon => (
-                                <option key={tambon.id} value={tambon.id}>
-                                    {tambon.name}
-                                </option>
-                            ))}
+                            {locationOptions.tambons.map(tambon => {
+                                return (
+                                    <option key={tambon.id} value={tambon.id}>
+                                        {tambon.name}
+                                    </option>
+                                );
+                            })}
                         </select>
                         {errors.tambon && (
                             <p className="mt-1 text-sm text-red-500">{errors.tambon}</p>
@@ -371,6 +345,9 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26] bg-gray-100"
                             readOnly
                         />
+                        {errors.postalCode && (
+                            <p className="mt-1 text-sm text-red-500">{errors.postalCode}</p>
+                        )}
                     </div>
 
                     {errors.submit && (
