@@ -10,6 +10,7 @@ const EditPassword = ({ userData, onClose, onSave }) => {
     });
 
     const [errorMessage, setErrorMessage] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const router = useRouter();
 
@@ -19,47 +20,39 @@ const EditPassword = ({ userData, onClose, onSave }) => {
             ...prevData,
             [name]: value
         }));
+        // Clear error when user starts typing
+        setErrorMessage('');
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!formData.oldPassword || !formData.newPassword || !formData.confirmNewPassword) {
-            setErrorMessage('Please fill out all fields.');
-            return;
-        }
-
-        if (formData.newPassword !== formData.confirmNewPassword) {
-            setErrorMessage('Passwords do not match.');
-            return;
-        }
+        setIsSubmitting(true);
+        setErrorMessage('');
 
         try {
-            const response = await fetch('/api/user/update-credentials', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                credentials: 'include',
-                body: JSON.stringify({
-                    oldPassword: formData.oldPassword,
-                    newPassword: formData.newPassword
-                })
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setErrorMessage(data.error || 'Failed to update password');
+            if (!formData.oldPassword || !formData.newPassword || !formData.confirmNewPassword) {
+                setErrorMessage('Please fill out all fields.');
                 return;
             }
 
-            if (data.requireRelogin) {
-                router.push('/login?message=Please login again with your new password');
+            if (formData.newPassword !== formData.confirmNewPassword) {
+                setErrorMessage('Passwords do not match.');
+                return;
             }
+
+            await onSave({
+                oldPassword: formData.oldPassword,
+                newPassword: formData.newPassword
+            });
+
+            // If we get here, it was successful
+            setErrorMessage('');
+
         } catch (error) {
-            setErrorMessage('Failed to change password');
-            console.error('Update error:', error);
+            // Handle the error message from the API
+            setErrorMessage(error.message || 'Failed to update password');
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -73,10 +66,10 @@ const EditPassword = ({ userData, onClose, onSave }) => {
         <div
             id="modal-overlay"
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-            onClick={handleClickOutside}
+            onClick={(e) => e.target.id === 'modal-overlay' && onClose()}
         >
             <div
-                className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg relative"
+                className="bg-neutral-white rounded-lg p-8 w-full max-w-md shadow-lg relative"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}
@@ -87,55 +80,64 @@ const EditPassword = ({ userData, onClose, onSave }) => {
                     &times;
                 </button>
 
-                <h2 className="text-xl font-bold text-[#603F26] font-inter mb-6 text-center">EDIT ACCOUNT</h2>
+                <h2 className="text-xl font-bold text-primary-700 font-inter mb-6 text-center">EDIT ACCOUNT</h2>
 
-                <form onSubmit={handleSubmit}>
+                <form
+                    className="text-primary-700"
+                    onSubmit={handleSubmit}
+                >
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">OLD PASSWORD</label>
+                        <label className="block text-sm font-bold font-inter mb-2">OLD PASSWORD</label>
                         <input
                             type="password"
                             name="oldPassword"
                             placeholder="Enter old password..."
                             value={formData.oldPassword}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
+                            className="w-full p-3 input-field"
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">NEW PASSWORD</label>
+                        <label className="block text-sm font-bold font-inter mb-2">NEW PASSWORD</label>
                         <input
                             type="password"
                             name="newPassword"
                             placeholder="Enter new password..."
                             value={formData.newPassword}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
+                            className="w-full p-3 input-field"
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">CONFIRM NEW PASSWORD</label>
+                        <label className="block text-sm font-bold font-inter mb-2">CONFIRM NEW PASSWORD</label>
                         <input
                             type="password"
                             name="confirmNewPassword"
                             placeholder="Confirm new password..."
                             value={formData.confirmNewPassword}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
+                            className="w-full p-3 input-field"
                         />
                     </div>
 
                     {/* Error Message */}
-                    {errorMessage && <p className="text-red-500 text-sm mb-4 text-center">{errorMessage}</p>}
+                    {errorMessage && (
+                        <div className="mb-4 p-3 bg-red-100 border-l-4 border-red-500 text-red-700">
+                            {errorMessage}
+                        </div>
+                    )}
 
                     {/* Save Button */}
                     <div className="flex justify-center mt-4">
                         <button
                             type="submit"
-                            className="bg-[#6A462F] text-[#FFDBB5] py-3 rounded-full font-bold w-[60%] text-center shadow-lg hover:bg-[#5A3C2F]"
+                            disabled={isSubmitting}
+                            className={`py-3 w-[60%] primary-buttons ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                                }`}
                         >
-                            SAVE
+                            {isSubmitting ? 'SAVING...' : 'SAVE'}
                         </button>
                     </div>
                 </form>

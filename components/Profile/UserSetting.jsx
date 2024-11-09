@@ -132,23 +132,35 @@ const UserSetting = () => {
         }
     };
 
-    const handleSaveUsernamePassword = async (updatedData) => {
+    const handlePasswordChange = async (updatedData) => {
         try {
             const response = await fetch('/api/user/update-credentials', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(updatedData)
+                credentials: 'include',
+                body: JSON.stringify({
+                    oldPassword: updatedData.oldPassword,
+                    newPassword: updatedData.newPassword
+                })
             });
 
-            if (response.ok) {
-                const data = await response.json();
-                setUser(data.user); // Update local state with new user data
-                toggleEditPassword();
+            const data = await response.json();
+
+            if (!response.ok) {
+                // Instead of setting error state in UserSetting
+                // throw the error to be caught by EditPassword
+                throw new Error(data.error || 'Failed to update password');
+            }
+
+            if (data.requireRelogin) {
+                await handleLogout();
+                router.push('/login?message=Please login again with your new password');
             }
         } catch (error) {
-            console.error('Update error:', error);
+            // Throw the error to be handled by EditPassword
+            throw error;
         }
     };
 
@@ -336,7 +348,7 @@ const UserSetting = () => {
                 <EditPassword
                     userData={user}
                     onClose={toggleEditPassword}
-                    onSave={handleSaveUsernamePassword}
+                    onSave={handlePasswordChange}
                 />
             )}
         </div>

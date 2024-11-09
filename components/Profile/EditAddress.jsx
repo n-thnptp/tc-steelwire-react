@@ -234,7 +234,7 @@ const EditAddress = ({ userData, onClose, onSave }) => {
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
             onClick={(e) => e.target === e.currentTarget && onClose()}
         >
-            <div className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg relative">
+            <div className="bg-neutral-white rounded-lg p-8 w-full max-w-md shadow-lg relative">
                 <button
                     onClick={onClose}
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-4xl"
@@ -242,13 +242,16 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                     &times;
                 </button>
 
-                <h2 className="text-xl font-bold text-[#603F26] font-inter mb-6 text-center">
+                <h2 className="text-xl font-bold text-primary-700 font-inter mb-6 text-center">
                     ADDRESS INFORMATION
                 </h2>
 
-                <form onSubmit={handleSubmit}>
+                <form
+                    className="text-primary-700"
+                    onSubmit={handleSubmit}
+                >
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">
+                        <label className="block text-sm font-bold font-inter mb-2">
                             ADDRESS
                         </label>
                         <input
@@ -256,22 +259,22 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             name="address"
                             value={formData.address}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
+                            className="w-full p-3 input-field"
                         />
                         {errors.address && (
-                            <p className="mt-1 text-sm text-red-500">{errors.address}</p>
+                            <p className="mt-1 text-sm text-status-error">{errors.address}</p>
                         )}
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">
+                        <label className="block text-sm font-bold font-inter mb-2">
                             PROVINCE
                         </label>
                         <select
                             name="province"
                             value={formData.province}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
+                            className="w-full p-3 input-field"
                             disabled={loadingStates.provinces}
                         >
                             <option value="">Select Province</option>
@@ -282,19 +285,19 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             ))}
                         </select>
                         {errors.province && (
-                            <p className="mt-1 text-sm text-red-500">{errors.province}</p>
+                            <p className="mt-1 text-sm text-status-error">{errors.province}</p>
                         )}
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
                             AMPHUR
                         </label>
                         <select
                             name="amphur"
                             value={formData.amphur}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
+                            className="w-full p-3 input-field"
                             disabled={!formData.province || loadingStates.amphurs}
                         >
                             <option value="">Select Amphur</option>
@@ -305,19 +308,19 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             ))}
                         </select>
                         {errors.amphur && (
-                            <p className="mt-1 text-sm text-red-500">{errors.amphur}</p>
+                            <p className="mt-1 text-sm text-status-error">{errors.amphur}</p>
                         )}
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">
+                        <label className="block text-sm font-bold font-inter mb-2">
                             TAMBON
                         </label>
                         <select
                             name="tambon"
                             value={formData.tambon}
                             onChange={handleChange}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
+                            className="w-full p-3 input-field"
                             disabled={!formData.amphur || loadingStates.tambons}
                         >
                             <option value="">Select Tambon</option>
@@ -330,28 +333,28 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             })}
                         </select>
                         {errors.tambon && (
-                            <p className="mt-1 text-sm text-red-500">{errors.tambon}</p>
+                            <p className="mt-1 text-sm text-status-error">{errors.tambon}</p>
                         )}
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter text-[#603F26] mb-2">
+                        <label className="block text-sm font-bold font-inter  mb-2">
                             POSTAL CODE
                         </label>
                         <input
                             type="text"
                             name="postalCode"
                             value={formData.postalCode}
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26] bg-gray-100"
+                            className="w-full p-3 input-field"
                             readOnly
                         />
                         {errors.postalCode && (
-                            <p className="mt-1 text-sm text-red-500">{errors.postalCode}</p>
+                            <p className="mt-1 text-sm text-status-error">{errors.postalCode}</p>
                         )}
                     </div>
 
                     {errors.submit && (
-                        <div className="mb-4 text-red-500 text-sm text-center">
+                        <div className="mb-4 text-status-error text-sm text-center">
                             {errors.submit}
                         </div>
                     )}
@@ -359,7 +362,7 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                     <div className="flex justify-center mt-4">
                         <button
                             type="submit"
-                            className="bg-[#6A462F] text-[#FFDBB5] py-3 rounded-full font-bold w-[60%] text-center shadow-lg hover:bg-[#5A3C2F]"
+                            className="py-3 w-[60%] primary-buttons"
                         >
                             SAVE
                         </button>

@@ -43,7 +43,9 @@ export default async function handler(req, res) {
         // Validate old password using the validatePassword function from auth.js
         const isPasswordValid = await validatePassword(oldPassword, sessions[0].password_hashed);
         if (!isPasswordValid) {
-            return res.status(400).json({ error: 'Current password is incorrect' });
+            return res.status(400).json({
+                error: 'Current password is incorrect. Please try again.'
+            });
         }
 
         // Hash the new password using the hashPassword function from auth.js
