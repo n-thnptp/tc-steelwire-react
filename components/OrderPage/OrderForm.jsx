@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import useOrderContext from '../../components/Hooks/useOrderContext';
 import useLoginContext from '../../components/Hooks/useLoginContext';
 import ProductSelection from './ProductSelection';
@@ -7,9 +7,18 @@ import SummaryView from './SummaryView';
 const OrderForm = () => {
     const { error } = useOrderContext();
     const { user, loading } = useLoginContext();
+    const [isInitialized, setIsInitialized] = useState(false);
+
+    useEffect(() => {
+        // Check localStorage on mount
+        const storedUser = localStorage.getItem('user');
+        if (storedUser || user) {
+            setIsInitialized(true);
+        }
+    }, [user]);
 
     // Show loading state while checking authentication
-    if (loading) {
+    if (loading || !isInitialized) {
         return (
             <div className="h-[calc(100dvh-4rem)] bg-gray-50 flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
@@ -17,18 +26,13 @@ const OrderForm = () => {
         );
     }
 
+    // Check both context and localStorage
+    const effectiveUser = user || JSON.parse(localStorage.getItem('user') || 'null');
+
     // If no user, don't render anything
-    if (!user) {
+    if (!effectiveUser) {
         return null;
     }
-
-    // Add this function to your component
-    const handleNumberOnly = (e) => {
-        // Prevent non-numeric input
-        if (!/^\d*$/.test(e.target.value)) {
-            e.target.value = e.target.value.replace(/[^\d]/g, '');
-        }
-    };
 
     return (
         <div className="h-[calc(100dvh-4rem)] bg-gray-50 overflow-hidden">
