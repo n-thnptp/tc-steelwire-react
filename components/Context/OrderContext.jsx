@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import useLoginContext from '../Hooks/useLoginContext';
 
 const initialOrderState = {
     items: [{
@@ -8,11 +9,11 @@ const initialOrderState = {
         steelFeature: "",
         length: "",
         weight: "",
-        sm_id: "" // Added for backend integration
+        sm_id: ""
     }],
     currentWeight: 0,
-    materials: [], // Available materials
-    sizes: [], // Available sizes
+    materials: [],
+    sizes: [],
 };
 
 const OrderContext = createContext({
@@ -27,6 +28,7 @@ const OrderContext = createContext({
 
 export const OrderProvider = ({ children }) => {
     const router = useRouter();
+    const { user } = useLoginContext();
     const [orderState, setOrderState] = useState(initialOrderState);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -159,6 +161,12 @@ export const OrderProvider = ({ children }) => {
     const handleConfirm = async (e) => {
         e?.preventDefault();
 
+        if (!user) {
+            setError("Please login to place an order");
+            router.push('/login');
+            return;
+        }
+
         const incompleteItem = orderState.items.some(item => !validateItem(item));
         if (incompleteItem) {
             setError("กรุณากรอกข้อมูลให้ครบทุกฟิลด์ก่อนยืนยันการสั่งซื้อ");
@@ -171,6 +179,7 @@ export const OrderProvider = ({ children }) => {
         }
 
         setLoading(true);
+        console.log(orderState.items);
         try {
             // Validate order first
             const isValid = await validateOrder(orderState.items);
@@ -186,14 +195,13 @@ export const OrderProvider = ({ children }) => {
             }, 0);
 
             // Create order
-            const response = await fetch('/api/order/create', {
+            const response = await fetch('/api/order/add_to_cart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    customer_id: user.c_id, // Get from auth context or session
-                    total_price,
+                    customer_id: user.id,
                     products: orderState.items.map(item => ({
                         feature: item.steelFeature,
                         weight: parseFloat(item.weight),
@@ -203,6 +211,7 @@ export const OrderProvider = ({ children }) => {
                 })
             });
 
+            console.log(response);
             const data = await response.json();
 
             console.log(data)
