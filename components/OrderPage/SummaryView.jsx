@@ -10,11 +10,27 @@ const SummaryView = () => {
     }
 
     const isFormValid = () => {
-        return orderState.items?.every(item => {
+        // First check if we have items to validate
+        if (!orderState.items || orderState.items.length === 0) {
+            return false;
+        }
+
+        return orderState.items.every(item => {
+            // Parse values once
             const length = parseFloat(item.length);
             const weight = parseFloat(item.weight);
             const minWeight = calculateMinimumWeight(item.length, item.steelSize);
             const size = orderState.sizes.find(s => s.size.toString() === item.steelSize);
+
+            // Debug log to see what's failing
+            console.log('Validation check:', {
+                hasSize: !!item.steelSize,
+                hasFeature: !!item.steelFeature,
+                validLength: typeof length === 'number' && !isNaN(length) && length > 0,
+                validWeight: typeof weight === 'number' && !isNaN(weight) && weight >= minWeight,
+                withinMaxWeight: (orderState.currentWeight ?? 0) <= 3800,
+                hasValidSize: !!size
+            });
 
             return (
                 item.steelSize &&
@@ -26,9 +42,9 @@ const SummaryView = () => {
                 !isNaN(weight) &&
                 weight >= minWeight &&
                 (orderState.currentWeight ?? 0) <= 3800 &&
-                size // Ensure the selected size exists
+                size
             );
-        }) ?? false;
+        });
     };
 
     // Calculate total price

@@ -216,7 +216,11 @@ export const OrderProvider = ({ children }) => {
 
             console.log(data)
             if (data.success) {
-                setOrderState(initialOrderState);
+                setOrderState({
+                    ...initialOrderState,
+                    materials: orderState.materials,
+                    sizes: orderState.sizes
+                });
                 setError("");
                 alert("สั่งซื้อสำเร็จ!");
                 router.push('/purchase');
