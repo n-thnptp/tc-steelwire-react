@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
+import useLoginContext from '../Hooks/useLoginContext';
 
 const CartContext = createContext({});
 
@@ -6,17 +7,37 @@ export const CartProvider = ({ children }) => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
+    const { user } = useLoginContext();
 
-    // Load orders from localStorage on mount
+    // Load orders inside cart
     useEffect(() => {
-        const savedOrders = JSON.parse(localStorage.getItem('orders')) || [];
-        setOrders(savedOrders);
-    }, []);
+        const fetchItems = async () => {
+            if (!user) return; // Don't fetch if user isn't logged in
 
-    // Save orders to localStorage whenever they change
-    useEffect(() => {
-        localStorage.setItem('orders', JSON.stringify(orders));
-    }, [orders]);
+            try {
+                setLoading(true);
+                const response = await fetch('/api/order/retrieve_cart', {
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+
+                console.log("here: " + JSON.stringify(data));
+
+                if (data.success) {
+                    setOrders(data.items);
+                } else {
+                    setError(data.message || "Failed to fetch items");
+                }
+            } catch (error) {
+                setError("Failed to fetch items. Please refresh the page.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchItems();
+    }, [user]);
 
     const removeItem = (orderIndex, itemIndex) => {
         setOrders(prevOrders => {

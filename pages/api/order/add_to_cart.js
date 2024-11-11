@@ -1,23 +1,5 @@
 import query from '../../../lib/db'
 
-// Utility function to generate numeric IDs
-function generateNumericId(length) {
-    let result = '';
-    result += Math.floor(Math.random() * 9) + 1; // First digit non-zero
-    for (let i = 1; i < length; i++) {
-        result += Math.floor(Math.random() * 10);
-    }
-    return result;
-}
-
-async function generateUniqueCartId() {
-    while (true) {
-        const cart_id = generateNumericId(6);
-        const existing = await query('SELECT cart_id FROM cart WHERE cart_id = ?', [cart_id]);
-        if (existing.length === 0) return cart_id;
-    }
-}
-
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         return res.status(405).json({ message: 'Method not allowed' });
