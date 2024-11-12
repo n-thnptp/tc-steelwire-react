@@ -10,11 +10,23 @@ export default async function handler(req, res) {
 
     try {
         // Check if all required shop_materials exist and have sufficient stock
+        // CONTINUE FROM THIS, MAKE CHECKS IF THE TOTAL_AMOUNT IS ENOUGH &&
+        // IF IT HITS MIN_AMOUNT
         for (const product of products) {
             const material = await query(
-                'SELECT total_amount FROM shop_material WHERE sm_id = ?',
-                [product.sm_id]
+                `SELECT
+                    sm_id,
+                    mt_id,
+                    ms_id,
+                    total_amount,
+                    min_amount
+                FROM shop_material
+                WHERE mt_id = ?
+                AND ms_id = ?`,
+                [product.mt_id, product.ms_id]
             );
+
+            console.log(JSON.stringify(material));
 
             if (!material) {
                 return res.status(400).json({

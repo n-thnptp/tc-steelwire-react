@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import useOrderContext from '../Hooks/useOrderContext';
 import { IconButton } from "@material-tailwind/react";
-import { calculateMinimumWeight } from '../Utils/weightCalculations';
+import { calculateMinimumWeight, getMinWeightPerMeters } from '../Utils/weightCalculations';
 import { IoCloseCircleOutline } from "react-icons/io5";
 
 const ProductSelection = () => {
     const { orderState, addItem, updateItem, removeItem } = useOrderContext();
-    const [materials, setMaterials] = useState({
-        materialTypes: [],
-        sizes: []
-    });
+    const [materials, setMaterials] = useState(null);
     const [loading, setLoading] = useState(true);
+
+
 
     useEffect(() => {
         const fetchMaterials = async () => {
@@ -31,7 +30,8 @@ const ProductSelection = () => {
         fetchMaterials();
     }, []);
 
-    const handleNumberOnly = (e, index, field) => {
+
+    const handleNumberOnly = (e, index, field, materials) => {
         const value = e.target.value.replace(/[^\d]/g, '');
 
         if (value === '0') {
@@ -39,10 +39,10 @@ const ProductSelection = () => {
             return;
         }
 
-        updateItem(index, field, value);
+        updateItem(index, field, value === '' ? '' : parseFloat(value), materials);
 
         if (field === 'weight' && value) {
-            const newWeight = parseFloat(value) || 0;
+            const newWeight = parseFloat(value);
             const otherItemsWeight = orderState.items.reduce((acc, item, idx) =>
                 idx !== index ? acc + (parseFloat(item.weight) || 0) : acc, 0);
             const totalWeight = newWeight + otherItemsWeight;
@@ -53,17 +53,17 @@ const ProductSelection = () => {
             }
 
             const currentItem = orderState.items[index];
-            if (currentItem.length && currentItem.steelSize) {
-                const minWeight = calculateMinimumWeight(currentItem.length, currentItem.steelSize);
-                if (newWeight < minWeight) {
-                    alert(`น้ำหนักต้องไม่น้อยกว่า ${minWeight} KG สำหรับขนาด ${currentItem.steelSize}mm และความยาว ${(parseFloat(currentItem.length) / 100).toFixed(2)}m`);
+            if (currentItem.length && currentItem.ms_id) {
+                const minWeight = calculateMinimumWeight(currentItem.length, currentItem.ms_id);
+                if (newWeight < parseFloat(minWeight)) {
+                    alert(`น้ำหนักต้องไม่น้อยกว่า ${minWeight} KG สำหรับขนาด ${currentItem.ms_id}mm และความยาว ${(parseFloat(currentItem.length) / 100).toFixed(2)}m`);
                 }
             }
         }
     };
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="w-full text-center">Loading...</div>;
     }
 
     return (
@@ -84,12 +84,12 @@ const ProductSelection = () => {
                         <div className="mb-2">
                             <select
                                 className="w-1/5 p-2 border rounded text-primary-700 shadow"
-                                value={item.product || "PC WIRE"}
-                                onChange={(e) => updateItem(index, 'product', e.target.value)}
+                                value={item.mt_id || ""}
+                                onChange={(e) => updateItem(index, 'mt_id', parseInt(e.target.value), materials)}
                             >
                                 {materials.materialTypes.map(type => (
-                                    <option key={type.id} value={type.name}>
-                                        {type.name}
+                                    <option key={type.id} value={type.id}>
+                                        PC {type.name}
                                     </option>
                                 ))}
                             </select>
@@ -97,20 +97,20 @@ const ProductSelection = () => {
                         <div className="grid grid-cols-4 gap-6">
                             <select
                                 className="p-2 border rounded text-primary-700 shadow"
-                                value={item.steelSize || ""}
-                                onChange={(e) => updateItem(index, 'steelSize', e.target.value)}
+                                value={item.ms_id}
+                                onChange={(e) => updateItem(index, 'ms_id', e.target.value, materials)}
                             >
                                 <option value="" disabled>SIZE</option>
                                 {materials.sizes.map(size => (
-                                    <option key={size.id} value={size.size}>
+                                    <option key={size.id} value={size.id}>
                                         {size.size} MM
                                     </option>
                                 ))}
                             </select>
                             <select
                                 className="p-2 border rounded text-primary-700 shadow"
-                                value={item.steelFeature || ""}
-                                onChange={(e) => updateItem(index, 'steelFeature', e.target.value)}
+                                value={item.feature || ""}
+                                onChange={(e) => updateItem(index, 'feature', e.target.value, materials)}
                             >
                                 <option value="" disabled>FEATURE</option>
                                 <option value="Indented">Indented</option>
@@ -120,8 +120,8 @@ const ProductSelection = () => {
                                 type="text"
                                 className="p-2 border rounded text-primary-700 shadow"
                                 placeholder="LENGTH (CM)"
-                                value={item.length || ""}
-                                onChange={(e) => handleNumberOnly(e, index, 'length')}
+                                value={item.length}
+                                onChange={(e) => handleNumberOnly(e, index, 'length', materials)}
                                 onKeyPress={(e) => {
                                     if (!/[0-9]/.test(e.key)) {
                                         e.preventDefault();
@@ -133,7 +133,7 @@ const ProductSelection = () => {
                                 className="p-2 border rounded text-primary-700 shadow"
                                 placeholder="WEIGHT (KG)"
                                 value={item.weight || ""}
-                                onChange={(e) => handleNumberOnly(e, index, 'weight')}
+                                onChange={(e) => handleNumberOnly(e, index, 'weight', materials)}
                                 onKeyPress={(e) => {
                                     if (!/[0-9]/.test(e.key)) {
                                         e.preventDefault();
@@ -141,14 +141,15 @@ const ProductSelection = () => {
                                 }}
                             />
                         </div>
-                        {item.steelSize && (
+                        {item.ms_id !== 0 && (
                             <div className="mt-2 text-sm text-primary-500">
-                                Minimum weight per meter: {materials.sizes.find(s => s.size.toString() === item.steelSize)?.weightPerMeter || 0} kg/m
+                                Minimum weight per meter: {getMinWeightPerMeters(item.ms_id)} kg/m
+
                             </div>
                         )}
-                        {item.steelSize && item.length && (
+                        {item.ms_id !== 0 && (
                             <div className="mt-1 text-sm text-primary-500">
-                                Minimum total weight for this length: {calculateMinimumWeight(item.length, item.steelSize)} kg
+                                Minimum total weight for this length: {calculateMinimumWeight(parseFloat(item.length), item.ms_id)} kg
                             </div>
                         )}
                     </div>

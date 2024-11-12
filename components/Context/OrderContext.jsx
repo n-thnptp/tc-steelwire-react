@@ -4,12 +4,12 @@ import useLoginContext from '../Hooks/useLoginContext';
 
 const initialOrderState = {
     items: [{
-        product: "PC WIRE",
-        steelSize: "",
-        steelFeature: "",
-        length: "",
-        weight: "",
-        sm_id: ""
+        mt_id: 1,     // int, initialized as 0
+        ms_id: 1,     // int, initialized as 0
+        feature: "",   // string, initialized as empty string
+        length: "",    // float, initialized as empty string for input
+        weight: "",    // float, initialized as empty string for input
+        price: 0
     }],
     currentWeight: 0,
     materials: [],
@@ -56,7 +56,7 @@ export const OrderProvider = ({ children }) => {
     }, []);
 
     const validateItem = (item) => {
-        return item.steelSize && item.steelFeature && item.length && item.weight;
+        return item.ms_id && item.feature && item.length && item.weight;
     };
 
     const addItem = () => {
@@ -74,12 +74,12 @@ export const OrderProvider = ({ children }) => {
         setOrderState(prev => ({
             ...prev,
             items: [...prev.items, {
-                product: "PC WIRE",
-                steelSize: "",
-                steelFeature: "",
-                length: "",
-                weight: "",
-                sm_id: ""
+                mt_id: 1,     // int, initialized as 0
+                ms_id: 1,     // int, initialized as 0
+                feature: "",   // string, initialized as empty string
+                length: "",    // float, initialized as empty string for input
+                weight: "",    // float, initialized as empty string for input
+                price: 0
             }]
         }));
         setError("");
@@ -102,34 +102,60 @@ export const OrderProvider = ({ children }) => {
         });
     };
 
-    const updateItem = (index, field, value) => {
+    const updateItem = (index, field, value, materials) => {
         setOrderState(prev => {
             const newItems = [...prev.items];
+
+            // Update the item with proper type conversion
             newItems[index] = {
                 ...newItems[index],
-                [field]: value
+                [field]: field === 'mt_id' || field === 'ms_id'
+                    ? parseInt(value) || 0
+                    : field === 'feature'
+                        ? value
+                        : value // keep length and weight as is for empty string handling
             };
 
-            // If updating steel size, find and set the corresponding sm_id
-            if (field === 'steelSize') {
-                const size = prev.sizes.find(s => s.size.toString() === value.toString());
-                if (size) {
-                    newItems[index].sm_id = size.id;
-                }
+
+            // Reset dependent fields when material type changes
+            if (field === 'mt_id') {
+                newItems[index] = {
+                    ...newItems[index],
+                    ms_id: 1,      // int, reset to 0
+                    feature: "",    // string, reset to empty
+                    length: "",     // float, reset to empty for input
+                    weight: "",      // float, reset to empty for input
+                    price: 0
+                };
             }
 
-            if (field === 'weight') {
-                const newWeight = newItems.reduce((acc, item) => acc + (parseFloat(item.weight) || 0), 0);
-                return {
-                    ...prev,
-                    items: newItems,
-                    currentWeight: newWeight
+            // Reset dependent fields when size changes
+            if (field === 'ms_id') {
+                newItems[index] = {
+                    ...newItems[index],
+                    length: "",     // float, reset to empty for input
+                    weight: "",     // float, reset to empty for input
+                    price: 0,
+                    [field]: parseInt(value) || 0  // Keep the new size value as int
                 };
+            }
+
+            // Calculate new total weight
+            const newWeight = newItems.reduce((acc, item) =>
+                acc + (parseFloat(item.weight) || 0), 0
+            );
+
+            if (materials) {
+                if (field === "ms_id" || field === "weight")
+                    newItems[index].price = materials.sizes.find(p => p.id === newItems[index].ms_id)?.price * newItems[index].weight;
+                if (field === "mt_id")
+                    newItems[index].materialType = materials.materialTypes.find(t => t.id === newItems[index].mt_id)?.name
             }
 
             return {
                 ...prev,
-                items: newItems
+                items: newItems,
+                currentWeight: newWeight
             };
         });
         setError("");
@@ -144,7 +170,8 @@ export const OrderProvider = ({ children }) => {
                 },
                 body: JSON.stringify({
                     products: items.map(item => ({
-                        sm_id: item.sm_id,
+                        mt_id: item.mt_id,
+                        ms_id: item.ms_id,
                         weight: parseFloat(item.weight)
                     }))
                 })
@@ -179,7 +206,7 @@ export const OrderProvider = ({ children }) => {
         }
 
         setLoading(true);
-        console.log(orderState.items);
+        console.log("sent in orders: " + JSON.stringify(orderState.items));
         try {
             // Validate order first
             const isValid = await validateOrder(orderState.items);
@@ -203,10 +230,11 @@ export const OrderProvider = ({ children }) => {
                 body: JSON.stringify({
                     customer_id: user.id,
                     products: orderState.items.map(item => ({
-                        feature: item.steelFeature,
-                        weight: parseFloat(item.weight),
+                        mt_id: item.mt_id,
+                        ms_id: item.ms_id,
+                        feature: item.feature,
                         length: parseFloat(item.length),
-                        sm_id: item.sm_id
+                        weight: parseFloat(item.weight)
                     }))
                 })
             });

@@ -8,17 +8,31 @@ export default async function handler(req, res) {
     try {
         // Fetch material types and sizes from the database
         const materialTypes = await query(
-            'SELECT mt_id as id, name FROM material_type'
+            `
+            SELECT
+                mt_id as id,
+                name
+            FROM material_type
+            `
         );
 
         const materialSizes = await query(
-            'SELECT ms_id as id, size, price FROM material_size ORDER BY size ASC'
+            `
+            SELECT
+                ms_id as id,
+                size,
+                price
+            FROM material_size ORDER BY size ASC
+            `
         );
+
+        console.log("material types: " + JSON.stringify(materialTypes));
+        console.log("material sizes: " + JSON.stringify(materialSizes));
 
         res.status(200).json({
             materialTypes: materialTypes.map(type => ({
                 id: type.id,
-                name: type.name === 'WIRE' ? 'PC WIRE' : 'PC STRAND'
+                name: type.name
             })),
             sizes: materialSizes.map(size => ({
                 id: size.id,

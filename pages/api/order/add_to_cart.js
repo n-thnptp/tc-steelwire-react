@@ -23,17 +23,30 @@ export default async function handler(req, res) {
 
         for (const product of products) {
 
+            const getShopMaterialId = await query(
+                `SELECT
+                    sm_id,
+                    mt_id,
+                    ms_id
+                FROM shop_material
+                WHERE mt_id = ?
+                AND ms_id = ?`,
+                [product.mt_id, product.ms_id]
+            )
+
             const productResult = await query(
                 `INSERT INTO product (feature, weight, length, sm_id)
                  VALUES (?, ?, ?, ?)`,
-                [product.feature, product.weight, product.length, product.sm_id]
+                [product.feature, product.weight, product.length, getShopMaterialId[0].sm_id]
             );
 
             const product_id = productResult.insertId;
 
             await query(
-                `INSERT INTO cart_product (cart_id, p_id)
-                 VALUES (?, ?)`,
+                `
+                INSERT INTO cart_product (cart_id, p_id)
+                VALUES (?, ?)
+                `,
                 [cart_id, product_id]
             )
         }
