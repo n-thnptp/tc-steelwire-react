@@ -234,7 +234,7 @@ export const OrderProvider = ({ children }) => {
                         ms_id: item.ms_id,
                         feature: item.feature,
                         length: parseFloat(item.length),
-                        weight: parseFloat(item.weight)
+                        weight: parseFloat(item.weight).toFixed(2)
                     }))
                 })
             });

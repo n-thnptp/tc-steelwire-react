@@ -39,28 +39,49 @@ export const CartProvider = ({ children }) => {
         fetchItems();
     }, [user]);
 
-    const removeItem = (orderIndex, itemIndex) => {
+    const removeItem = async (orderIndex, itemIndex) => {
+        try {
+            console.log(orders);
+            console.log("Order index: " + orderIndex);
+            console.log("Item index: " + itemIndex);
+            console.log("product_id = " + JSON.stringify(orders[orderIndex].p_id));
+            console.log("USER ID: " + user.id);
+            await fetch('/api/order/remove_cart_item', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    user_id: user.id,
+                    product_id: orders[orderIndex].p_id
+                })
+            })
+        } catch (error) {
+            console.error("Error removing item:", error);
+        }
+
         setOrders(prevOrders => {
             const newOrders = [...prevOrders];
             const order = { ...newOrders[orderIndex] };
 
-            // Remove the specific item
-            order.items = order.items.filter((_, index) => index !== itemIndex);
+            console.log(order);
+            // // Remove the specific item
+            // order.items = order.items.filter((_, index) => index !== itemIndex);
 
-            // Recalculate total weight
-            order.currentWeight = order.items.reduce(
-                (total, item) => total + (parseFloat(item.weight) || 0),
-                0
-            );
+            // // Recalculate total weight
+            // order.currentWeight = order.items.reduce(
+            //     (total, item) => total + (parseFloat(item.weight) || 0),
+            //     0
+            // );
 
-            // If order is empty, remove it entirely
-            if (order.items.length === 0) {
-                newOrders.splice(orderIndex, 1);
-            } else {
-                newOrders[orderIndex] = order;
-            }
+            // // If order is empty, remove it entirely
+            // if (order.items.length === 0) {
+            //     newOrders.splice(orderIndex, 1);
+            // } else {
+            //     newOrders[orderIndex] = order;
+            // }
 
-            return newOrders;
+            // return newOrders;
         });
     };
 

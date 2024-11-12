@@ -18,9 +18,8 @@ const SummaryView = () => {
             if (!specs) return total;
 
             // Calculate price: weight * price per kg
-            const itemPrice = parseFloat(item.weight) * item.price;
             console.log("price: " + item.price);
-            return total + itemPrice;
+            return total + item.price;
         }, 0);
     };
 
