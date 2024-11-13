@@ -1,55 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 
 const Status = () => {
 	const [sortColumn, setSortColumn] = useState(null);
 	const [sortOrder, setSortOrder] = useState('asc');
 	const [searchTerm, setSearchTerm] = useState('');
+	const [orders, setOrders] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [showOrderByOptions, setShowOrderByOptions] = useState(false);
 	const router = useRouter();
 
-	const orders = [
-		{
-			name: 'PC WIRE',
-			size: '04.00 MM',
-			feature: 'SMOOTH',
-			length: '06.00 M',
-			weight: '2,000.00 KG',
-			price: 'XXXXX.XX BAHT',
-			progress: 50,
-			status: 'IN PROGRESS',
-		},
-		{
-			name: 'PC WIRE',
-			size: '04.00 MM',
-			feature: 'SMOOTH',
-			length: '06.00 M',
-			weight: '2,000.00 KG',
-			price: 'XXXXX.XX BAHT',
-			progress: 0,
-			status: 'CANCEL',
-		},
-		{
-			name: 'PC WIRE',
-			size: '04.00 MM',
-			feature: 'SMOOTH',
-			length: '06.00 M',
-			weight: '2,000.00 KG',
-			price: 'XXXXX.XX BAHT',
-			progress: 0,
-			status: 'PENDING ON PURCHASE',
-		},
-		{
-			name: 'PC WIRE',
-			size: '04.00 MM',
-			feature: 'SMOOTH',
-			length: '06.00 M',
-			weight: '2,000.00 KG',
-			price: 'XXXXX.XX BAHT',
-			progress: 0,
-			status: 'CANCEL',
-		},
-		// เพิ่มรายการอื่น ๆ ได้ตามต้องการ
-	];
+	useEffect(() => {
+		const fetchOrders = async () => {
+			try {
+				const response = await fetch('/api/order/get_orders');
+				const data = await response.json();
+				
+				if (data.success) {
+					const formattedOrders = data.orders.map(order => ({
+						orderId: order.o_id,
+						price: `${Number(order.o_total_price).toLocaleString()} BAHT`,
+						progress: order.progress || 0,
+						status: order.status,
+					}));
+					setOrders(formattedOrders);
+				}
+			} catch (error) {
+				console.error('Error fetching orders:', error);
+			} finally {
+				setLoading(false);
+			}
+		};
+
+		fetchOrders();
+	}, []);
 
 	const handleSort = (column) => {
 		if (sortColumn === column) {
@@ -58,6 +42,7 @@ const Status = () => {
 			setSortColumn(column);
 			setSortOrder('asc');
 		}
+		setShowOrderByOptions(false);
 	};
 
 	const getSortIcon = (column) => {
@@ -68,16 +53,20 @@ const Status = () => {
 	};
 
 	const getStatusColor = (status) => {
-		if (status === 'IN PROGRESS') {
-			return 'text-green-500';
+		switch (status) {
+			case 'ยืนยันยอดเรียบร้อย':
+				return 'text-[#FFA500]';  // Orange for preparing
+			case 'จ่ายเงินแล้ว':
+				return 'text-[#32CD32]';  // Green for success
+			case 'กำลังดำเนินการ':
+				return 'text-[#FFA500]';  // Orange for in progress
+			case 'เสร็จสิ้น':
+				return 'text-[#32CD32]';  // Green for completed
+			case 'ยกเลิกออร์เดอร์':
+				return 'text-[#FF0000]';  // Red for cancelled
+			default:
+				return 'text-gray-500';
 		}
-		if (status === 'CANCEL') {
-			return 'text-red-500';
-		}
-		if (status === 'PENDING ON PURCHASE') {
-			return 'text-yellow-500';
-		}
-		return 'text-gray-500';
 	};
 
 	const filteredOrders = orders.filter((order) => {
@@ -85,16 +74,32 @@ const Status = () => {
 		return productString.includes(searchTerm.toLowerCase());
 	});
 
-	const sortedOrders = filteredOrders.sort((a, b) => {
+	const sortedOrders = [...filteredOrders].sort((a, b) => {
 		if (!sortColumn) return 0;
 
-		const aValue = a[sortColumn];
-		const bValue = b[sortColumn];
+		let aValue, bValue;
 
-		if (typeof aValue === 'string' && typeof bValue === 'string') {
-			return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+		switch (sortColumn) {
+			case 'orderId':
+				aValue = a.orderId;
+				bValue = b.orderId;
+				break;
+			case 'price':
+				aValue = parseFloat(a.price.replace(/[^0-9.-]+/g, ""));
+				bValue = parseFloat(b.price.replace(/[^0-9.-]+/g, ""));
+				break;
+			case 'progress':
+				aValue = a.progress;
+				bValue = b.progress;
+				break;
+			default:
+				return 0;
+		}
+
+		if (sortOrder === 'asc') {
+			return aValue > bValue ? 1 : -1;
 		} else {
-			return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
+			return aValue < bValue ? 1 : -1;
 		}
 	});
 
@@ -103,8 +108,8 @@ const Status = () => {
 		router.push({
 			pathname: '/order-status-details',
 			query: {
-				order: JSON.stringify(order),
-				active: "STATUS"
+					order: JSON.stringify(order),
+					active: "STATUS"
 			}
 		});
 	};
@@ -112,73 +117,109 @@ const Status = () => {
 	return (
 		<div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
 			<div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
-				<h2 className="text-3xl font-bold mb-4 text-[#603F26] font-inter">MY ORDER</h2>
+				<div className="flex justify-between items-center mb-6">
+					<h2 className="text-2xl font-bold text-[#603F26] font-inter">MY ORDER</h2>
+					<div className="flex items-center gap-4">
+						<div className="relative">
+							<button 
+								className="bg-[#6B7280] text-white px-4 py-2 rounded-lg flex items-center gap-2"
+								onClick={() => setShowOrderByOptions(!showOrderByOptions)}
+							>
+								<span className="text-xs">▲▼</span>
+								Order By
+							</button>
+							
+							{showOrderByOptions && (
+								<div className="absolute z-10 mt-1 w-full bg-white rounded-lg shadow-lg border">
+									<button
+										className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+										onClick={() => handleSort('orderId')}
+									>
+										Order ID
+										{sortColumn === 'orderId' && (
+											<span>{sortOrder === 'asc' ? '▲' : '▼'}</span>
+										)}
+									</button>
+									<button
+										className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+										onClick={() => handleSort('price')}
+									>
+										Price
+										{sortColumn === 'price' && (
+											<span>{sortOrder === 'asc' ? '▲' : '▼'}</span>
+										)}
+									</button>
+									<button
+										className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+										onClick={() => handleSort('progress')}
+									>
+										Progress
+										{sortColumn === 'progress' && (
+											<span>{sortOrder === 'asc' ? '▲' : '▼'}</span>
+										)}
+									</button>
+								</div>
+							)}
+						</div>
 
-				{/* Search Box */}
-				<div className="mb-4 flex justify-end text-[#603F26] font-inter opacity-[50%]">
-					<div className="relative w-1/4">
-						<img
-							src="/icon/search.png"
-							alt="Search Icon"
-							className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
-						/>
-						<input
-							type="text"
-							placeholder="Search Product"
-							value={searchTerm}
-							onChange={(e) => setSearchTerm(e.target.value)}
-							className="p-2 pl-10 border border-[#603F26] rounded-full w-full text-[#603F26] font-inter"
-						/>
+						<div className="relative">
+							<input
+								type="text"
+								placeholder="Search Product"
+								value={searchTerm}
+								onChange={(e) => setSearchTerm(e.target.value)}
+								className="p-2 pl-10 border border-gray-300 rounded-lg w-64"
+							/>
+							<img
+								src="/icon/search.png"
+								alt="Search"
+								className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
+							/>
+						</div>
 					</div>
 				</div>
 
-				{/* Order Table */}
-				<div className="max-h-[400px] overflow-y-auto">
-					<table className="min-w-full bg-white rounded-lg h-[70%]">
-						<thead>
-							<tr className="bg-[#FFEAC5] text-[#603F26]">
-								<th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tl-2xl" onClick={() => handleSort('name')}>
-									PRODUCT {getSortIcon('name')}
-								</th>
-								<th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('price')}>
-									PRICE {getSortIcon('price')}
-								</th>
-								<th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('progress')}>
-									PROGRESS {getSortIcon('progress')}
-								</th>
-								<th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tr-2xl" onClick={() => handleSort('status')}>
-									PAYMENT STATUS {getSortIcon('status')}
-								</th>
-							</tr>
-						</thead>
-						<tbody className="space-y-2">
-							{sortedOrders.map((order, index) => (
-								<tr key={index} className="border-b cursor-pointer" onClick={() => handleRowClick(order)}>
-									<td className="py-3 px-4 text-[#603F26] font-inter">
-										{`${order.name} / ${order.size} / ${order.feature}`}
-										<br />
-										{`${order.length} / ${order.weight}`}
-									</td>
-									<td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.price}</td>
-									<td className="py-3 px-4 text-center">
-										<div className="flex items-center justify-center">
-											<div className="w-3/4 h-2 bg-gray-300 rounded-full">
-												<div
-													className="h-full bg-[#6A462F] rounded-full"
-													style={{ width: `${order.progress}%` }}
-												></div>
-											</div>
-											<span className="ml-2 text-[#603F26] font-inter">{order.progress}%</span>
+				<table className="min-w-full">
+					<thead>
+						<tr className="bg-gray-50">
+							<th className="px-6 py-3 text-left text-gray-500">ORDER ID</th>
+							<th className="px-6 py-3 text-left text-gray-500">PRICE</th>
+							<th className="px-6 py-3 text-left text-gray-500">PROGRESS</th>
+							<th className="px-6 py-3 text-left text-gray-500">ORDER STATUS</th>
+							<th className="px-6 py-3 text-left text-gray-500">DETAIL</th>
+						</tr>
+					</thead>
+					<tbody>
+						{sortedOrders.map((order, index) => (
+							<tr key={index} className="border-b">
+								<td className="px-6 py-4">{order.orderId}</td>
+								<td className="px-6 py-4">{order.price}</td>
+								<td className="px-6 py-4">
+									<div className="flex items-center gap-2">
+										<div className="w-48 bg-gray-200 rounded-full h-2">
+											<div
+												className="bg-[#6B7280] h-2 rounded-full"
+												style={{ width: `${order.progress}%` }}
+											></div>
 										</div>
-									</td>
-									<td className={`py-3 px-4 text-center font-bold font-inter ${getStatusColor(order.status)}`}>
-										{order.status}
-									</td>
-								</tr>
-							))}
-						</tbody>
-					</table>
-				</div>
+										<span>{order.progress}%</span>
+									</div>
+								</td>
+								<td className={`px-6 py-4 ${getStatusColor(order.status)}`}>
+									{order.status}
+								</td>
+								<td className="px-6 py-4">
+									<button
+										onClick={() => router.push(`/order-details/${order.orderId}`)}
+										className="bg-[#6B7280] text-white px-4 py-1 rounded-lg hover:bg-[#4B5563]"
+									>
+										DETAIL
+									</button>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
 			</div>
 		</div>
 	);
