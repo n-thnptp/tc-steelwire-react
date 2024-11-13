@@ -1,14 +1,75 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import useCart from '../Hooks/useCartContext';
 
 const PurchaseSummary = () => {
     const router = useRouter();
-    const { orders, loading } = useCart();
-    const subtotal = 'XXX.XX BAHT';
-    const total = 'XX,XX7.XX BAHT';
+    const { orders, loading, clearCart } = useCart();
+    const [shippingFee, setShippingFee] = useState(3500);
+
+    useEffect(() => {
+        const fetchUserAddress = async () => {
+            try {
+                const response = await fetch('/api/user/shipping-address', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const isFreeShippingZone = [1, 2, 3, 4, 58, 59].includes(data.province_id);
+                    setShippingFee(isFreeShippingZone ? 0 : 3500);
+                }
+            } catch (error) {
+                console.error('Error fetching shipping address:', error);
+            }
+        };
+
+        fetchUserAddress();
+    }, []);
+
+    const calculateTotal = () => {
+        if (!orders || orders.length === 0) return 0;
+        return orders.reduce((sum, order) => sum + order.total_price, 0) + shippingFee;
+    };
 
     const isCartEmpty = !orders || orders.length === 0;
+
+    const handleConfirm = async () => {
+        try {
+            console.log('Starting order creation...');
+            // Calculate total price including shipping
+            const totalPrice = orders.reduce((sum, order) => sum + order.total_price, 0) + shippingFee;
+            console.log('Total price:', totalPrice);
+            console.log('Shipping fee:', shippingFee);
+            
+            // Create order record
+            const createOrderResponse = await fetch('/api/order/create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    total_price: totalPrice,
+                    shipping_fee: shippingFee
+                })
+            });
+
+            const orderData = await createOrderResponse.json();
+            console.log('Order response:', orderData);
+            
+            if (orderData.success) {
+                // Clear the cart after successful order creation
+                await clearCart();
+                // Redirect to payment page
+                router.push('/payment');
+            } else {
+                throw new Error(orderData.message || 'Failed to create order');
+            }
+        } catch (error) {
+            console.error('Error creating order:', error);
+            alert('Failed to create order: ' + error.message);
+        }
+    };
 
     return (
         <div className="bg-neutral-white p-6 rounded-lg">
@@ -17,52 +78,30 @@ const PurchaseSummary = () => {
 
                 <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                        <p className="text-primary-700 font-inter">SUBTOTAL</p>
-                        <p className="text-primary-700 font-bold font-inter">{subtotal}</p>
+                        <p className="text-primary-700 font-inter font-bold">SHIPPING FEE</p>
+                        <p className="text-primary-700 font-bold font-inter">
+                            {shippingFee === 0 ? 'FREE' : `${shippingFee.toFixed(2)} BAHT`}
+                        </p>
                     </div>
 
                     <div className="flex justify-between items-center mb-6">
-                        <p className="text-primary-700 font-inter">TOTAL</p>
-                        <p className="text-primary-700 font-bold font-inter">{total}</p>
+                        <p className="text-primary-700 font-inter font-bold">TOTAL</p>
+                        <p className="text-primary-700 font-bold font-inter">
+                            {calculateTotal().toFixed(2)} BAHT
+                        </p>
                     </div>
 
                     <div className="pt-4 border-t border-neutral-gray-200 space-y-3">
                         <button
                             className={`w-full primary-buttons ${isCartEmpty && 'disabled'}`}
-                            onClick={() => router.push('/payment')}
+                            onClick={handleConfirm}
                             disabled={isCartEmpty || loading}
                         >
-                            {loading ? (
-                                <span className="flex items-center justify-center">
-                                    <svg
-                                        className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <circle
-                                            className="opacity-25"
-                                            cx="12"
-                                            cy="12"
-                                            r="10"
-                                            stroke="currentColor"
-                                            strokeWidth="4"
-                                        ></circle>
-                                        <path
-                                            className="opacity-75"
-                                            fill="currentColor"
-                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                                        ></path>
-                                    </svg>
-                                    Processing...
-                                </span>
-                            ) : (
-                                'CONFIRM'
-                            )}
+                            CONFIRM
                         </button>
-                        <button
+                        <button 
                             className="w-full secondary-buttons"
-                            onClick={() => router.back()}
+                            onClick={() => router.push('/order')}
                         >
                             CANCEL
                         </button>

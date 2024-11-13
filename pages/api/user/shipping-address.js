@@ -1,12 +1,10 @@
 import query from '../../../lib/db';
-import { parse } from 'cookie';
 
 export default async function handler(req, res) {
     if (req.method !== 'GET') {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    // Get customer ID from session
     const sessionId = req.cookies.sessionId;
     if (!sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -25,32 +23,33 @@ export default async function handler(req, res) {
 
         const customerId = sessions[0].c_id;
 
-        // Fix the SQL query syntax
-        const retrieveItems = await query(
-            `SELECT 
-                p.*,
-                ms.size, 
-                ms.price,
-                mt.mt_id,
-                mt.name AS material_type_name,
-                (p.weight * ms.price) AS total_price
-            FROM cart_product cp
-            JOIN cart c ON cp.cart_id = c.cart_id
-            JOIN product p ON cp.p_id = p.p_id
-            JOIN shop_material sm ON p.sm_id = sm.sm_id
-            JOIN material_size ms ON sm.ms_id = ms.ms_id
-            JOIN material_type mt ON sm.mt_id = mt.mt_id
-            WHERE c.c_id = ?`,
-            [customerId]
-        );
+        // Get user's shipping address and province
+        const addressResult = await query(`
+            SELECT c.c_id, c.firstname, c.lastname, 
+                   sa.tambon_id, sa.address, 
+                   am.name_th, p.name_th, p.province_id,
+                   t.name_th AS tambon_name, 
+                   am.name_th AS amphur_name, 
+                   p.name_th AS province_name
+            FROM customer c
+            JOIN shipping_address sa ON c.sh_id = sa.sh_id
+            JOIN tambons t ON sa.tambon_id = t.tambon_id
+            JOIN amphurs am ON t.amphur_id = am.amphur_id
+            JOIN provinces p ON am.province_id = p.province_id
+            WHERE c.c_id = ?
+        `, [customerId]);
+
+        if (addressResult.length === 0) {
+            return res.status(404).json({ error: 'Shipping address not found' });
+        }
 
         return res.status(200).json({
             success: true,
-            items: retrieveItems
+            ...addressResult[0]
         });
 
     } catch (error) {
         console.error('Database error:', error);
         return res.status(500).json({ message: 'Internal server error' });
     }
-}
+} 

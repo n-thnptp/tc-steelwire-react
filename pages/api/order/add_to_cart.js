@@ -11,15 +11,23 @@ export default async function handler(req, res) {
     } = req.body
 
     try {
-
-        const createCart = await query(
-            `
-                INSERT INTO cart (c_id) VALUES (?)
-            `,
+        // First, get or create cart for user
+        let cartResult = await query(
+            'SELECT cart_id FROM cart WHERE c_id = ?',
             [customer_id]
         );
 
-        const cart_id = createCart.insertId;
+        let cart_id;
+        if (cartResult.length === 0) {
+            // Create new cart if doesn't exist
+            const result = await query(
+                'INSERT INTO cart (c_id) VALUES (?)',
+                [customer_id]
+            );
+            cart_id = result.insertId;
+        } else {
+            cart_id = cartResult[0].cart_id;
+        }
 
         for (const product of products) {
 

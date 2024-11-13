@@ -2,62 +2,69 @@ import query from '../../../lib/db';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
-        res.setHeader('Allow', ['POST']);
-        return res.status(405).end(`Method ${req.method} Not Allowed`);
+        return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { customer_id, total_price, products } = req.body;
+    const { total_price, shipping_fee } = req.body;
+    const sessionId = req.cookies.sessionId;
 
-    // Start transaction
-    let connection;
     try {
-        connection = await query('START TRANSACTION');
-
-        // Create order
-        const orderResult = await query(
-            `INSERT INTO \`order\` (c_id, o_date, o_status_id, o_total_price, o_estimated_shipping_day)
-             VALUES (?, CURRENT_DATE(), 1, ?, 3)`,
-            [customer_id, total_price]
+        // Get customer ID from session
+        const sessions = await query(
+            'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
+            [sessionId]
         );
 
-        const order_id = orderResult.insertId;
-
-        // Create products and link them to order
-        for (const product of products) {
-            // First create the product
-            const productResult = await query(
-                `INSERT INTO product (feature, weight, length, sm_id)
-                 VALUES (?, ?, ?, ?)`,
-                [product.feature, product.weight, product.length, product.sm_id]
-            );
-
-            const product_id = productResult.insertId;
-
-            // Then link it to the order
-            await query(
-                `INSERT INTO order_product (o_id, p_id)
-                 VALUES (?, ?)`,
-                [order_id, product_id]
-            );
+        if (sessions.length === 0) {
+            return res.status(401).json({ error: 'Invalid or expired session' });
         }
 
-        // Commit transaction
-        await query('COMMIT');
+        const customerId = sessions[0].c_id;
 
-        res.status(201).json({
-            success: true,
-            data: { order_id }
-        });
+        try {
+            // Create order record with proper backticks
+            const orderResult = await query(
+                'INSERT INTO `order` (c_id, o_date, o_status_id, o_total_price, o_estimated_shipping_day, shipping_fee) VALUES (?, NOW(), ?, ?, ?, ?)',
+                [customerId, 3, total_price, 3, shipping_fee]
+            );
+
+            const orderId = orderResult.insertId;
+
+            // Get cart items
+            const cartItems = await query(
+                'SELECT cp.p_id FROM cart c JOIN cart_product cp ON c.cart_id = cp.cart_id WHERE c.c_id = ?',
+                [customerId]
+            );
+
+            // Move items to order_product
+            for (const item of cartItems) {
+                await query(
+                    'INSERT INTO order_product (o_id, p_id) VALUES (?, ?)',
+                    [orderId, item.p_id]
+                );
+            }
+
+            // Clear cart_product
+            const cart = await query('SELECT cart_id FROM cart WHERE c_id = ?', [customerId]);
+            if (cart.length > 0) {
+                await query('DELETE FROM cart_product WHERE cart_id = ?', [cart[0].cart_id]);
+            }
+
+            return res.status(200).json({ 
+                success: true, 
+                orderId: orderId 
+            });
+
+        } catch (error) {
+            console.error('Transaction error:', error);
+            throw error;
+        }
 
     } catch (error) {
-        // Rollback transaction on error
-        if (connection) {
-            await query('ROLLBACK');
-        }
-        console.error('Error creating order:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error creating order'
+        console.error('Database error:', error);
+        return res.status(500).json({ 
+            message: 'Internal server error',
+            error: error.message 
         });
     }
 }

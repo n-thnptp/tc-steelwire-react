@@ -5,71 +5,30 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const {
-        user_id,
-        product_id
-    } = req.body;
-
-    if (!user_id || !product_id) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    }
+    const { user_id, product_id } = req.body;
 
     try {
-        // Grab all customer cart ID using user_id
-        const getCartId = await query(
-            `
-            SELECT
-                cart_product.cart_id,
-                cart_product.p_id,
-                cart.c_id
-            FROM cart_product
-            JOIN cart ON cart_product.cart_id = cart.cart_id
-            WHERE c_id = ?
-            AND p_id = ?
-            `,
-            [user_id, product_id]
+        // First, get the cart_id for this user
+        const cartResult = await query(
+            'SELECT cart_id FROM cart WHERE c_id = ?',
+            [user_id]
         );
-        const cart_id = getCartId[0].cart_id;
-        console.log(getCartId);
-        console.log(getCartId[0].cart_id);
 
-        // First remove the product from cart
+        if (cartResult.length === 0) {
+            return res.status(404).json({ message: 'Cart not found' });
+        }
+
+        const cart_id = cartResult[0].cart_id;
+
+        // Delete only from cart_product
         await query(
-            `
-            DELETE FROM cart_product
-            WHERE cart_id = ?
-            AND p_id = ?
-            `,
+            'DELETE FROM cart_product WHERE cart_id = ? AND p_id = ?',
             [cart_id, product_id]
         );
 
-        // Then remove the product
-        await query(
-            `DELETE FROM product
-             WHERE p_id = ?`,
-            [product_id]
-        );
-
-        // Finally, remove the cart
-        await query(
-            `
-            DELETE FROM cart
-            WHERE cart_id = ?
-            AND c_id = ?
-            `,
-            [cart_id, user_id]
-        );
-
-        res.status(200).json({
-            success: true,
-            message: 'Item removed successfully'
-        });
-
+        return res.status(200).json({ success: true });
     } catch (error) {
         console.error('Database error:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        });
+        return res.status(500).json({ message: 'Internal server error' });
     }
 }
