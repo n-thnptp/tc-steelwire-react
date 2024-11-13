@@ -58,44 +58,50 @@ export default function OrderDetails() {
 
                     {/* Progress Bar */}
                     <div className="relative mb-16">
-                        {/* Progress Bar Line */}
-                        <div className="h-0.5 bg-gray-200 w-full relative max-w-2xl mx-auto">
-                            <div 
-                                className="h-0.5 bg-[#6B7280]" 
-                                style={{ 
-                                    width: orderDetails.o_status_id >= 4 ? '100%' : 
-                                           orderDetails.o_status_id >= 2 ? '50%' : '25%' 
-                                }}
-                            />
+                        {/* Progress Bar Line Container */}
+                        <div className="relative max-w-4xl mx-auto">
+                            {/* Progress Bar Line */}
+                            <div className="h-0.5 bg-gray-200 w-full absolute">
+                                <div 
+                                    className="h-0.5 bg-[#6B7280] absolute" 
+                                    style={{ 
+                                        width: orderDetails.o_status_id >= 4 ? '100%' : 
+                                               orderDetails.o_status_id >= 2 ? '50%' : '25%' 
+                                    }}
+                                />
+                            </div>
                             
-                            {/* Checkpoints with Text Below */}
-                            <div className="flex justify-between absolute w-full top-1/2 -translate-y-1/2">
-                                <div className="text-center -ml-3">
+                            {/* Checkpoints */}
+                            <div className="relative" style={{ height: '24px' }}>
+                                {/* Order Confirmed - Start */}
+                                <div className="absolute left-0" style={{ top: '-12px' }}>
                                     <div className={`w-6 h-6 rounded-full ${orderDetails.o_status_id >= 1 ? 'bg-[#6B7280]' : 'bg-gray-200'} flex items-center justify-center`}>
                                         {orderDetails.o_status_id >= 1 && (
                                             <span className="text-white text-sm">✓</span>
                                         )}
                                     </div>
-                                    <div className="mt-4 w-32">
+                                    <div className="mt-4 text-center">
                                         <p className="text-sm font-bold text-[#6B7280]">ORDER CONFIRMED</p>
                                         <p className="text-xs text-gray-500 mt-1">{new Date(orderDetails.o_date).toLocaleDateString()}</p>
                                     </div>
                                 </div>
-                                
-                                <div className="text-center -translate-x-3">
+
+                                {/* Shipping - Middle */}
+                                <div className="absolute" style={{ left: '50%', top: '-12px', transform: 'translateX(-3px)' }}>
                                     <div className={`w-6 h-6 rounded-full ${orderDetails.o_status_id >= 2 ? 'bg-[#6B7280]' : 'bg-gray-200'} flex items-center justify-center`}>
                                         {orderDetails.o_status_id >= 2 && (
                                             <span className="text-white text-sm">📦</span>
                                         )}
                                     </div>
-                                    <div className="mt-4 w-24">
+                                    <div className="mt-4 text-center">
                                         <p className="text-sm font-bold text-[#6B7280]">SHIPPING</p>
                                     </div>
                                 </div>
-                                
-                                <div className="text-center -mr-3">
+
+                                {/* Deliver Success - End */}
+                                <div className="absolute" style={{ left: 'calc(100% - 12px)', top: '-12px' }}>
                                     <div className={`w-6 h-6 rounded-full ${orderDetails.o_status_id >= 4 ? 'bg-[#6B7280]' : 'bg-gray-200'} flex items-center justify-center`} />
-                                    <div className="mt-4 w-32">
+                                    <div className="mt-4 text-center whitespace-nowrap" style={{ transform: 'translateX(-75%)' }}>
                                         <p className="text-sm font-bold text-[#6B7280]">DELIVER SUCCESS</p>
                                     </div>
                                 </div>

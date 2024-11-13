@@ -12,29 +12,19 @@ const Navbar = () => {
     const router = useRouter();
 
     useEffect(() => {
-        if (router.query?.active) {
-            setActive(router.query.active);
-        } else {
-            const currentPath = router.pathname;
-            if (currentPath === '/') {
-                setActive('HOME');
-            } else if (currentPath.includes('order')) {
-                setActive('ORDER');
-            } else if (currentPath.includes('purchase')) {
-                setActive('SHOPPING CART');
-            } else if (currentPath.includes('status')) {
-                setActive('STATUS');
-            } else if (currentPath.includes('history')) {
-                setActive('HISTORY');
-            } else if (currentPath.includes('bookmark')) {
-                setActive('Bookmark');
-            } else if (currentPath.includes('location')) {
-                setActive('Location');
-            } else if (currentPath.includes('profile')) {
-                setActive('Profile');
-            }
+        const currentPath = router.pathname;
+        if (currentPath.includes('order-details')) {
+            setActive('STATUS');
+        } else if (currentPath.includes('status')) {
+            setActive('STATUS');
+        } else if (currentPath.includes('cart')) {
+            setActive('CART');
+        } else if (currentPath.includes('profile')) {
+            setActive('PROFILE');
+        } else if (currentPath === '/') {
+            setActive('HOME');
         }
-    }, [router.pathname, router.query]);
+    }, [router.pathname]);
 
     const handleMenuClick = (menu) => {
         setActive(menu);
