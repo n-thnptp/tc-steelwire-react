@@ -39,11 +39,8 @@ const PurchaseSummary = () => {
             console.log('Starting order creation...');
             // Calculate total price including shipping
             const totalPrice = orders.reduce((sum, order) => sum + order.total_price, 0) + shippingFee;
-            console.log('Total price:', totalPrice);
-            console.log('Shipping fee:', shippingFee);
             
-            // Create order record
-            const createOrderResponse = await fetch('/api/order/create', {
+            const response = await fetch('/api/order/create', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -54,16 +51,14 @@ const PurchaseSummary = () => {
                 })
             });
 
-            const orderData = await createOrderResponse.json();
-            console.log('Order response:', orderData);
-            
-            if (orderData.success) {
-                // Clear the cart after successful order creation
-                await clearCart();
-                // Redirect to payment page
-                router.push('/payment');
+            const data = await response.json();
+            console.log('Order creation response:', data);
+
+            if (data.success) {
+                // Redirect to payment page WITH orderId
+                router.push(`/payment/${data.orderId}`);
             } else {
-                throw new Error(orderData.message || 'Failed to create order');
+                throw new Error(data.message || 'Failed to create order');
             }
         } catch (error) {
             console.error('Error creating order:', error);

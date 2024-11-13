@@ -1,16 +1,71 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
+import generatePayload from 'promptpay-qr';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const Banking = () => {
+const Banking = ({ orderId, totalAmount }) => {
+  const [qrCode, setQrCode] = useState('');
+  const [isPromptPayOpen, setIsPromptPayOpen] = useState(false);
+  const promptPayNumber = "0626100038";
+
+  useEffect(() => {
+    if (totalAmount) {
+      generateQR();
+    }
+  }, [totalAmount]);
+
+  const generateQR = async () => {
+    try {
+      const payload = generatePayload(promptPayNumber, { amount: totalAmount });
+      const qr = await QRCode.toDataURL(payload);
+      setQrCode(qr);
+    } catch (err) {
+      console.error('Error generating QR code:', err);
+    }
+  };
+
   return (
     <div>
       <h2 className="text-lg font-bold mb-6 text-[#603F26] font-inter">PAYMENT</h2>
       
       {/* PromptPay Section */}
-      <div className="border p-4 rounded-lg shadow mb-4 flex justify-between items-center">
-        <img src="/pic/PROMPTPAY.png" alt="PromptPay" className="w-24" />
-        <button className="text-gray-600">
-          <span>&#9660;</span> {/* Dropdown Arrow */}
-        </button>
+      <div className="border p-4 rounded-lg shadow mb-4">
+        <div 
+          className="flex justify-between items-center cursor-pointer"
+          onClick={() => setIsPromptPayOpen(!isPromptPayOpen)}
+        >
+          <img src="/pic/PROMPTPAY.png" alt="PromptPay" className="w-24" />
+          <button className="text-gray-600 transition-transform duration-200" 
+                  style={{ transform: isPromptPayOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            <span>&#9660;</span>
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {isPromptPayOpen && qrCode && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="overflow-hidden"
+            >
+              <div className="flex flex-col items-center mt-4">
+                <img 
+                  src={qrCode} 
+                  alt="PromptPay QR Code" 
+                  className="w-64 h-64 mb-4"
+                />
+                <p className="text-sm text-gray-600 mb-2">
+                  PromptPay Number: {promptPayNumber}
+                </p>
+                <p className="text-lg font-bold text-[#603F26]">
+                  Amount: {totalAmount?.toLocaleString()} BAHT
+                </p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
 
       {/* Bank Options Section */}
@@ -23,19 +78,9 @@ const Banking = () => {
           <img src="/pic/BBL_LOGO.png" alt="BBL" className="w-8" />
         </div>
         <button className="text-gray-600">
-          <span>&#9660;</span> {/* Dropdown Arrow */}
+          <span>&#9660;</span>
         </button>
       </div>
-
-      {/* ปุ่ม Checkout และ Cancel */}
-      <div className="flex flex-col items-center">
-        <button className="w-[15%] fixed bottom-11 left-12 bg-white text-accent-900 font-bold font-inter p-3 rounded-full shadow-lg">
-          CANCEL
-        </button>
-      </div>
-
-
-
     </div>
   );
 };

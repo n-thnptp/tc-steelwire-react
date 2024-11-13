@@ -10,6 +10,10 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
 
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 8;
+    const offset = (page - 1) * limit;
+
     try {
         // Get user ID from session
         const sessions = await query(
@@ -23,7 +27,15 @@ export default async function handler(req, res) {
 
         const customerId = sessions[0].c_id;
 
-        // Fetch orders with product details, grouped by order ID
+        // Get total count first
+        const [totalResult] = await query(`
+            SELECT COUNT(DISTINCT o.o_id) as total
+            FROM \`order\` o
+            WHERE o.c_id = ? AND o.o_status_id < 4`,
+            [customerId]
+        );
+
+        // Fetch orders with product details, grouped by order ID with pagination
         const orders = await query(`
             SELECT 
                 o.o_id,
@@ -49,13 +61,17 @@ export default async function handler(req, res) {
             WHERE o.c_id = ?
             AND o.o_status_id < 4
             GROUP BY o.o_id
-            ORDER BY o.o_date DESC`,
-            [customerId]
+            ORDER BY o.o_date DESC
+            LIMIT ? OFFSET ?`,
+            [customerId, limit, offset]
         );
 
         return res.status(200).json({
             success: true,
-            orders: orders
+            orders: orders,
+            total: totalResult.total,
+            currentPage: page,
+            totalPages: Math.ceil(totalResult.total / limit)
         });
 
     } catch (error) {

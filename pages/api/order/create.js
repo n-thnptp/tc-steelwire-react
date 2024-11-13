@@ -25,7 +25,7 @@ export default async function handler(req, res) {
             // Create order record with proper backticks
             const orderResult = await query(
                 'INSERT INTO `order` (c_id, o_date, o_status_id, o_total_price, o_estimated_shipping_day, shipping_fee) VALUES (?, NOW(), ?, ?, ?, ?)',
-                [customerId, 3, total_price, 3, shipping_fee]
+                [customerId, 1, total_price, 3, shipping_fee]
             );
 
             const orderId = orderResult.insertId;

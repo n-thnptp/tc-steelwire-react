@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const Status = () => {
 	const [sortColumn, setSortColumn] = useState(null);
@@ -8,22 +9,27 @@ const Status = () => {
 	const [orders, setOrders] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [showOrderByOptions, setShowOrderByOptions] = useState(false);
+	const [currentPage, setCurrentPage] = useState(1);
+	const [totalPages, setTotalPages] = useState(0);
+	const ordersPerPage = 8; // Show 8 orders per page
 	const router = useRouter();
 
 	useEffect(() => {
 		const fetchOrders = async () => {
 			try {
-				const response = await fetch('/api/order/get_orders');
+				setLoading(true);
+				const response = await fetch(`/api/order/get_orders?page=${currentPage}&limit=${ordersPerPage}`);
 				const data = await response.json();
 				
 				if (data.success) {
 					const formattedOrders = data.orders.map(order => ({
 						orderId: order.o_id,
-						price: `${Number(order.o_total_price).toLocaleString()} BAHT`,
-						progress: order.progress || 0,
-						status: order.status,
+							price: `${Number(order.o_total_price).toLocaleString()} BAHT`,
+							progress: order.progress || 0,
+							status: order.status,
 					}));
 					setOrders(formattedOrders);
+					setTotalPages(Math.ceil(data.total / ordersPerPage));
 				}
 			} catch (error) {
 				console.error('Error fetching orders:', error);
@@ -33,7 +39,7 @@ const Status = () => {
 		};
 
 		fetchOrders();
-	}, []);
+	}, [currentPage]); // Add currentPage as dependency
 
 	const handleSort = (column) => {
 		if (sortColumn === column) {
@@ -114,6 +120,12 @@ const Status = () => {
 		});
 	};
 
+	// Add pagination controls
+	const handlePageChange = (newPage) => {
+		setCurrentPage(newPage);
+		setLoading(true);
+	};
+
 	return (
 		<div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
 			<div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
@@ -179,47 +191,102 @@ const Status = () => {
 					</div>
 				</div>
 
-				<table className="min-w-full">
-					<thead>
-						<tr className="bg-gray-50">
-							<th className="px-6 py-3 text-left text-gray-500">ORDER ID</th>
-							<th className="px-6 py-3 text-left text-gray-500">PRICE</th>
-							<th className="px-6 py-3 text-left text-gray-500">PROGRESS</th>
-							<th className="px-6 py-3 text-left text-gray-500">ORDER STATUS</th>
-							<th className="px-6 py-3 text-left text-gray-500">DETAIL</th>
-						</tr>
-					</thead>
-					<tbody>
-						{sortedOrders.map((order, index) => (
-							<tr key={index} className="border-b">
-								<td className="px-6 py-4">{order.orderId}</td>
-								<td className="px-6 py-4">{order.price}</td>
-								<td className="px-6 py-4">
-									<div className="flex items-center gap-2">
-										<div className="w-48 bg-gray-200 rounded-full h-2">
-											<div
-												className="bg-[#6B7280] h-2 rounded-full"
-												style={{ width: `${order.progress}%` }}
-											></div>
-										</div>
-										<span>{order.progress}%</span>
-									</div>
-								</td>
-								<td className={`px-6 py-4 ${getStatusColor(order.status)}`}>
-									{order.status}
-								</td>
-								<td className="px-6 py-4">
-									<button
-										onClick={() => router.push(`/order-details/${order.orderId}`)}
-										className="bg-[#6B7280] text-white px-4 py-1 rounded-lg hover:bg-[#4B5563]"
+				<AnimatePresence mode="wait">
+					<motion.div
+						key={currentPage}
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						exit={{ opacity: 0, y: -20 }}
+						transition={{ duration: 0.3 }}
+					>
+						<table className="min-w-full">
+							<thead>
+								<tr className="bg-gray-50">
+									<th className="px-6 py-3 text-left text-gray-500">ORDER ID</th>
+									<th className="px-6 py-3 text-left text-gray-500">PRICE</th>
+									<th className="px-6 py-3 text-left text-gray-500">PROGRESS</th>
+									<th className="px-6 py-3 text-left text-gray-500">ORDER STATUS</th>
+									<th className="px-6 py-3 text-left text-gray-500">DETAIL</th>
+								</tr>
+							</thead>
+							<tbody>
+								{sortedOrders.map((order, index) => (
+									<motion.tr
+										key={order.orderId}
+										initial={{ opacity: 0, x: -20 }}
+										animate={{ opacity: 1, x: 0 }}
+										transition={{ delay: index * 0.05 }}
+										className="border-b"
 									>
-										DETAIL
-									</button>
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+										<td className="px-6 py-4">{order.orderId}</td>
+										<td className="px-6 py-4">{order.price}</td>
+										<td className="px-6 py-4">
+											<div className="flex items-center gap-2">
+												<div className="w-48 bg-gray-200 rounded-full h-2">
+													<div
+														className="bg-[#6B7280] h-2 rounded-full"
+														style={{ width: `${order.progress}%` }}
+													></div>
+												</div>
+												<span>{order.progress}%</span>
+											</div>
+										</td>
+										<td className={`px-6 py-4 ${getStatusColor(order.status)}`}>
+											{order.status}
+										</td>
+										<td className="px-6 py-4">
+											<button
+												onClick={() => router.push(`/order-details/${order.orderId}`)}
+												className="bg-[#6B7280] text-white px-4 py-1 rounded-lg hover:bg-[#4B5563]"
+											>
+												DETAIL
+											</button>
+										</td>
+									</motion.tr>
+								))}
+							</tbody>
+						</table>
+					</motion.div>
+				</AnimatePresence>
+
+				{/* Pagination with animations */}
+				<div className="flex justify-center items-center mt-6 gap-2">
+					<motion.button
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						onClick={() => handlePageChange(currentPage - 1)}
+						disabled={currentPage === 1}
+						className="px-4 py-2 rounded-lg bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors"
+					>
+						Previous
+					</motion.button>
+					
+					{[...Array(totalPages)].map((_, index) => (
+						<motion.button
+							key={index + 1}
+							whileHover={{ scale: 1.05 }}
+							whileTap={{ scale: 0.95 }}
+							onClick={() => handlePageChange(index + 1)}
+							className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+								currentPage === index + 1 
+									? 'bg-[#6B7280] text-white scale-110' 
+									: 'bg-gray-200 hover:bg-gray-300'
+							}`}
+						>
+							{index + 1}
+						</motion.button>
+					))}
+
+					<motion.button
+						whileHover={{ scale: 1.05 }}
+						whileTap={{ scale: 0.95 }}
+						onClick={() => handlePageChange(currentPage + 1)}
+						disabled={currentPage === totalPages}
+						className="px-4 py-2 rounded-lg bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors"
+					>
+						Next
+					</motion.button>
+				</div>
 			</div>
 		</div>
 	);
