@@ -1,33 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 const HistoryPage = () => {
-    const [sortColumn, setSortColumn] = useState(null);
-    const [sortOrder, setSortOrder] = useState('asc');
-    const [searchTerm, setSearchTerm] = useState('');
+    const [orders, setOrders] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [showOrderByOptions, setShowOrderByOptions] = useState(false);
+    const [sortColumn, setSortColumn] = useState('date');
+    const [sortOrder, setSortOrder] = useState('desc');
+    const router = useRouter();
 
-    const orders = [
-        {
-            name: 'PC WIRE',
-            size: '04.00 MM',
-            feature: 'SMOOTH',
-            length: '06.00 M',
-            weight: '2,000.00 KG',
-            price: 'XXXXX.XX BAHT',
-            progress: 100,
-            date: 'XX MONTH 20XX',
-        },
-        {
-            name: 'PC WIRE',
-            size: '04.00 MM',
-            feature: 'SMOOTH',
-            length: '06.00 M',
-            weight: '2,000.00 KG',
-            price: 'XXXXX.XX BAHT',
-            progress: 100,
-            date: 'XX MONTH 20XX',
-        },
-        // เพิ่มรายการอื่น ๆ ตามต้องการ
-    ];
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await fetch('/api/orders/history');
+                const data = await response.json();
+                if (data.success) {
+                    setOrders(data.result);
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchOrders();
+    }, []);
 
     const handleSort = (column) => {
         if (sortColumn === column) {
@@ -36,110 +33,142 @@ const HistoryPage = () => {
             setSortColumn(column);
             setSortOrder('asc');
         }
+        setShowOrderByOptions(false);
     };
 
-    const getSortIcon = (column) => {
-        if (sortColumn === column) {
-            return sortOrder === 'asc' ? '▲' : '▼';
+    // Sort orders based on current sort settings
+    const sortedOrders = [...orders].sort((a, b) => {
+        const multiplier = sortOrder === 'asc' ? 1 : -1;
+        
+        switch (sortColumn) {
+            case 'orderId':
+                return (a.o_id - b.o_id) * multiplier;
+            case 'price':
+                return (a.o_total_price - b.o_total_price) * multiplier;
+            case 'date':
+                return (new Date(a.o_date) - new Date(b.o_date)) * multiplier;
+            default:
+                return 0;
         }
-        return '▲▼';
+    });
+
+    const handleReOrder = async (orderId) => {
+        try {
+            const response = await fetch('/api/orders/reorder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ orderId }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Redirect to purchase page instead of cart
+                window.location.href = '/purchase';
+            } else {
+                alert(data.message || 'Failed to re-order. Please try again.');
+            }
+        } catch (error) {
+            console.error('Error re-ordering:', error);
+            alert('Error occurred while re-ordering. Please try again.');
+        }
     };
 
-    const filteredOrders = orders.filter((order) => {
-        const productString = `${order.name} ${order.size} ${order.feature} ${order.length} ${order.weight}`.toLowerCase();
-        return productString.includes(searchTerm.toLowerCase());
-    });
-
-    const sortedOrders = filteredOrders.sort((a, b) => {
-        if (!sortColumn) return 0;
-
-        const aValue = a[sortColumn];
-        const bValue = b[sortColumn];
-
-        if (typeof aValue === 'string' && typeof bValue === 'string') {
-            return sortOrder === 'asc' ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-        } else {
-            return sortOrder === 'asc' ? aValue - bValue : bValue - aValue;
-        }
-    });
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
             <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
-                <h2 className="text-3xl font-bold mb-4 text-[#603F26] font-inter">ORDER HISTORY</h2>
-
-                {/* Search Box */}
-                <div className="mb-4 flex justify-end text-[#603F26] font-inter opacity-[50%]">
-                    <div className="relative w-1/4">
-                        <img
-                            src="/icon/search.png"
-                            alt="Search Icon"
-                            className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4"
-                        />
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-bold text-[#603F26] font-inter">ORDER HISTORY</h2>
+                    <div className="flex items-center gap-4">
+                        <div className="relative">
+                            <button 
+                                className="bg-[#6B7280] text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                                onClick={() => setShowOrderByOptions(!showOrderByOptions)}
+                            >
+                                <span className="text-xs">▲▼</span>
+                                Order By
+                            </button>
+                            
+                            {showOrderByOptions && (
+                                <div className="absolute z-10 mt-1 w-full bg-white rounded-lg shadow-lg border">
+                                    <button
+                                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                                        onClick={() => handleSort('orderId')}
+                                    >
+                                        Order ID
+                                        {sortColumn === 'orderId' && (
+                                            <span>{sortOrder === 'asc' ? '▲' : '▼'}</span>
+                                        )}
+                                    </button>
+                                    <button
+                                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                                        onClick={() => handleSort('price')}
+                                    >
+                                        Price
+                                        {sortColumn === 'price' && (
+                                            <span>{sortOrder === 'asc' ? '▲' : '▼'}</span>
+                                        )}
+                                    </button>
+                                    <button
+                                        className="w-full text-left px-4 py-2 hover:bg-gray-100 flex items-center justify-between"
+                                        onClick={() => handleSort('date')}
+                                    >
+                                        Date
+                                        {sortColumn === 'date' && (
+                                            <span>{sortOrder === 'asc' ? '▲' : '▼'}</span>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                         <input
                             type="text"
                             placeholder="Search Product"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="p-2 pl-10 border border-[#603F26] rounded-full w-full text-[#603F26] font-inter"
+                            className="px-4 py-2 border rounded-lg"
                         />
                     </div>
                 </div>
 
-                {/* Order Table */}
-                <div className="max-h-[400px] overflow-y-auto">
-                    <table className="min-w-full bg-white rounded-lg h-[70%]">
-                        <thead>
-                            <tr className="bg-[#FFEAC5] text-[#603F26]">
-                                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tl-2xl" onClick={() => handleSort('product')}>
-                                    PRODUCT {getSortIcon('product')}
-                                </th>
-                                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('price')}>
-                                    PRICE {getSortIcon('price')}
-                                </th>
-                                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('date')}>
-                                    DATE {getSortIcon('date')}
-                                </th>
-                                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter" onClick={() => handleSort('progress')}>
-                                    PROGRESS {getSortIcon('progress')}
-                                </th>
-                                <th className="py-3 px-4 text-center font-bold cursor-pointer text-[#603F26] font-inter rounded-tr-2xl" onClick={() => handleSort('reorder')}>
-                                    RE-ORDER {getSortIcon('reorder')}
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="space-y-2">
-                            {sortedOrders.map((order, index) => (
-                                <tr key={index} className="border-b">
-                                    <td className="py-3 px-4 text-[#603F26] font-inter">
-                                        {`${order.name} / ${order.size} / ${order.feature}`}
-                                        <br />
-                                        {`${order.length} / ${order.weight}`}
-                                    </td>
-                                    <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.price}</td>
-                                    <td className="py-3 px-4 text-[#603F26] font-inter text-center">{order.date}</td>
-                                    <td className="py-3 px-4 text-center">
-                                        <div className="flex items-center justify-center">
-                                            <div className="w-3/4 h-2 bg-gray-300 rounded-full">
-                                                <div
-                                                    className="h-full bg-[#6A462F] rounded-full"
-                                                    style={{ width: `${order.progress}%` }}
-                                                ></div>
-                                            </div>
-                                            <span className="ml-2 text-[#603F26] font-inter">{order.progress}%</span>
-                                        </div>
-                                    </td>
-                                    <td className="py-3 px-4 text-[#28a745] font-bold font-inter text-center">
-                                        {/* ปุ่ม Re-order */}
-                                        <button className="text-green-500 font-bold flex items-center space-x-2">
-                                            <span>RE-ORDER</span>
-                                            <img src="/icon/Refresh.png" alt="Re-order Icon" className="w-4 h-4" />
-                                        </button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="bg-gray-100 grid grid-cols-5 py-2 px-4 rounded-t-lg font-semibold">
+                    <div className="text-[#4C4C60]">ORDER ID</div>
+                    <div className="text-[#4C4C60]">DATE</div>
+                    <div className="text-[#4C4C60]">PRICE</div>
+                    <div className="text-[#4C4C60]">PROGRESS</div>
+                    <div className="text-[#4C4C60] text-center">ACTION</div>
+                </div>
+
+                <div className="overflow-y-auto h-[calc(100%-8rem)]">
+                    {orders.map((order) => (
+                        <div key={order.o_id} className="grid grid-cols-5 py-4 px-4 border-b items-center">
+                            <div>{order.o_id}</div>
+                            <div>{new Date(order.o_date).toLocaleDateString()}</div>
+                            <div>{order.o_total_price.toLocaleString()} BAHT</div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                    <div 
+                                        className="bg-green-500 h-2.5 rounded-full" 
+                                        style={{ width: `${order.o_status_id === 4 ? '100' : '0'}%` }}
+                                    ></div>
+                                </div>
+                                <span>{order.o_status_id === 4 ? '100%' : '0%'}</span>
+                            </div>
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={() => handleReOrder(order.o_id)}
+                                    className="text-green-500 hover:text-green-600 flex items-center gap-1 font-medium"
+                                >
+                                    <span>🔄</span>
+                                    RE-ORDER
+                                </button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
