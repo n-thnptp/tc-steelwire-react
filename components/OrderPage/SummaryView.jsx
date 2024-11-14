@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import useOrderContext from '../Hooks/useOrderContext';
 import { calculateMinimumWeight, getMinWeightPerMeters } from '../Utils/weightCalculations';
 
 const SummaryView = () => {
     const { orderState, handleConfirm, loading } = useOrderContext();
+    const [error, setError] = useState('');
+    const [showError, setShowError] = useState(false);
 
     // Add calculateTotalPrice function
     const calculateTotalPrice = () => {
@@ -41,7 +43,62 @@ const SummaryView = () => {
         );
     };
 
-    const handleAddToCart = () => {
+    // Function to show error with timeout
+    const showTemporaryError = (message) => {
+        setError(message);
+        setShowError(true);
+        
+        // Clear error after 3 seconds
+        setTimeout(() => {
+            setShowError(false);
+            // Optional: clear the error message after fade out
+            setTimeout(() => setError(''), 300); // 300ms matches the fade duration
+        }, 3000);
+    };
+
+    const checkStock = async (items) => {
+        try {
+            // Format the items properly
+            const formattedItems = items.map(item => ({
+                mt_id: parseInt(item.mt_id),
+                ms_id: parseInt(item.ms_id),
+                weight: parseFloat(item.weight)
+            }));
+
+            console.log('Checking stock for:', formattedItems);
+
+            const response = await fetch('/api/stock/check', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    products: formattedItems
+                })
+            });
+
+            const data = await response.json();
+            
+            // Handle both 200 and 400 responses here
+            if (!data.success) {
+                showTemporaryError(data.message);
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Stock check error:', error);
+            showTemporaryError('Failed to check stock availability');
+            return false;
+        }
+    };
+
+    const handleAddToCart = async () => {
+        // Clear any existing error
+        setShowError(false);
+        setError('');
+
+        // First check length and weight requirements
         for (let i = 0; i < orderState.items.length; i++) {
             const item = orderState.items[i];
             const length = parseFloat(item.length);
@@ -49,16 +106,23 @@ const SummaryView = () => {
             const minWeight = calculateMinimumWeight(item.length, item.ms_id);
 
             if (length < 100) {
-                alert(`Item ${i + 1}: ความยาวต้องไม่น้อยกว่า 100 cm`);
+                showTemporaryError(`Item ${i + 1}: ความยาวต้องไม่น้อยกว่า 100 cm`);
                 return;
             }
 
             if (weight < parseFloat(minWeight)) {
-                alert(`Item ${i + 1}: น้ำหนักต้องไม่น้อยกว่า ${minWeight} KG สำหรับขนาด ${item.ms_id}mm และความยาว ${(length / 100).toFixed(2)}m`);
+                showTemporaryError(`Item ${i + 1}: น้ำหนักต้องไม่น้อยกว่า ${minWeight} KG สำหรับขนาด ${item.ms_id}mm และความยาว ${(length / 100).toFixed(2)}m`);
                 return;
             }
         }
 
+        // Then check stock availability
+        const hasStock = await checkStock(orderState.items);
+        if (!hasStock) {
+            return; // Error message is already set by checkStock
+        }
+
+        // If all checks pass, proceed with order
         handleConfirm();
     };
 
@@ -103,6 +167,21 @@ const SummaryView = () => {
                         TOTAL PRICE: ฿{calculateTotalPrice().toFixed(2)}
                     </p>
                 </div>
+            </div>
+
+            {/* Error message with fade animation */}
+            <div
+                className={`transition-all duration-300 ease-in-out ${
+                    showError 
+                        ? 'opacity-100 max-h-20' 
+                        : 'opacity-0 max-h-0'
+                }`}
+            >
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                        {error}
+                    </div>
+                )}
             </div>
 
             <div className="pt-4 border-t mt-auto">

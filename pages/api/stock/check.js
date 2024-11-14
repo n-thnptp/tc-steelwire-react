@@ -5,60 +5,66 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { mt_id, ms_id, weight } = req.body;
-
     try {
-        // Get shop material details with correct column names
-        const [material] = await query(
-            `SELECT 
-                sm.total_amount,
-                sm.min_amount,
-                mt.name as mt_name,
-                ms.size as size
-            FROM shop_material sm
-            INNER JOIN material_type mt ON sm.mt_id = mt.mt_id
-            INNER JOIN material_size ms ON sm.ms_id = ms.ms_id
-            WHERE sm.mt_id = ? AND sm.ms_id = ?
-            LIMIT 1`,
-            [mt_id, ms_id]
-        );
+        const { products } = req.body;
 
-        if (!material) {
-            return res.status(404).json({ 
+        if (!products || !Array.isArray(products)) {
+            return res.status(400).json({
                 success: false,
-                message: 'Material not found' 
+                message: 'Invalid request: products array is required'
             });
         }
 
-        const currentStock = parseFloat(material.total_amount);
-        const minAmount = parseFloat(material.min_amount);
-        const requestedWeight = parseFloat(weight);
+        console.log('Received products:', products);
 
-        // Check if stock is below or equal to minimum amount
-        if (currentStock <= minAmount) {
-            return res.status(400).json({ 
-                success: false,
-                message: `${material.mt_name} ขนาด ${material.size}mm หมดสต็อก (คงเหลือ ${currentStock} kg)` 
-            });
+        for (const product of products) {
+            if (!product.mt_id || !product.ms_id || !product.weight) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Invalid product data: mt_id, ms_id, and weight are required'
+                });
+            }
+
+            const [material] = await query(`
+                SELECT 
+                    sm.total_amount,
+                    sm.min_amount,
+                    mt.name as mt_name,
+                    ms.size
+                FROM shop_material sm
+                JOIN material_type mt ON sm.mt_id = mt.mt_id
+                JOIN material_size ms ON sm.ms_id = ms.ms_id
+                WHERE sm.mt_id = ? AND sm.ms_id = ?
+            `, [product.mt_id, product.ms_id]);
+
+            if (!material) {
+                return res.status(400).json({
+                    success: false,
+                    message: `Material not found for type ${product.mt_id} and size ${product.ms_id}`
+                });
+            }
+
+            const currentStock = parseFloat(material.total_amount);
+            const requestedWeight = parseFloat(product.weight);
+            const minAmount = parseFloat(material.min_amount);
+
+            if ((currentStock - requestedWeight) < minAmount) {
+                const availableWeight = Math.max(0, currentStock - minAmount);
+                return res.status(400).json({
+                    success: false,
+                    message: `${material.mt_name} ขนาด ${material.size}mm มีสต็อกไม่เพียงพอ สามารถสั่งได้สูงสุด ${availableWeight.toFixed(2)} kg`
+                });
+            }
         }
 
-        // Check if remaining stock after purchase would be below minimum
-        if ((currentStock - requestedWeight) <= minAmount) {
-            const availableWeight = Math.max(0, currentStock - minAmount);
-            return res.status(400).json({ 
-                success: false,
-                message: `${material.mt_name} ขนาด ${material.size}mm มีสต็อกไม่เพียงพอ สามารถสั่งได้สูงสุด ${availableWeight.toFixed(2)} kg` 
-            });
-        }
-
-        return res.status(200).json({ 
+        return res.status(200).json({
             success: true,
             message: 'Stock available'
         });
 
     } catch (error) {
         console.error('Stock check error:', error);
-        return res.status(500).json({ 
+        return res.status(500).json({
             success: false,
             message: 'Internal server error',
             error: error.message
