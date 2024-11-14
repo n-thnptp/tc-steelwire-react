@@ -27,6 +27,7 @@ const Status = () => {
 							price: `${Number(order.o_total_price).toLocaleString()} BAHT`,
 							progress: order.progress || 0,
 							status: order.status,
+							status_id: order.status_id,
 					}));
 					setOrders(formattedOrders);
 					setTotalPages(Math.ceil(data.total / ordersPerPage));
@@ -124,6 +125,15 @@ const Status = () => {
 	const handlePageChange = (newPage) => {
 		setCurrentPage(newPage);
 		setLoading(true);
+	};
+
+	const handleStatusClick = (order) => {
+		if (order.status_id === 1) {
+			router.push({
+				pathname: '/payment',
+				query: { orderId: order.orderId }
+			});
+		}
 	};
 
 	return (
@@ -231,7 +241,13 @@ const Status = () => {
 												<span>{order.progress}%</span>
 											</div>
 										</td>
-										<td className={`px-6 py-4 ${getStatusColor(order.status)}`}>
+										<td 
+											className={`px-6 py-4 ${getStatusColor(order.status)} ${
+												order.status_id === 1 ? 'cursor-pointer hover:underline' : ''
+											}`}
+											onClick={() => handleStatusClick(order)}
+											title={order.status_id === 1 ? "Click to proceed to payment" : ""}
+										>
 											{order.status}
 										</td>
 										<td className="px-6 py-4">

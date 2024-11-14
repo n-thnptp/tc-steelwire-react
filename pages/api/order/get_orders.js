@@ -40,7 +40,7 @@ export default async function handler(req, res) {
             SELECT 
                 o.o_id,
                 o.o_total_price,
-                o.o_status_id,
+                o.o_status_id as status_id,
                 o.shipping_fee,
                 GROUP_CONCAT(mt.name) AS material_names,
                 CASE 

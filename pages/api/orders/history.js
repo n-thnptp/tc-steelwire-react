@@ -5,6 +5,9 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
+    const { page = 1, limit = 8 } = req.query;
+    const offset = (page - 1) * limit;
+
     const sessionId = req.cookies.sessionId;
     if (!sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
@@ -23,7 +26,16 @@ export default async function handler(req, res) {
 
         const customerId = sessions[0].c_id;
 
-        // Fetch completed or canceled orders with product details
+        // Get total count
+        const [countResult] = await query(`
+            SELECT COUNT(DISTINCT o.o_id) as total
+            FROM \`order\` o
+            WHERE o.c_id = ? 
+            AND o.o_status_id IN (4, 5)`,
+            [customerId]
+        );
+
+        // Get paginated orders
         const orders = await query(`
             SELECT 
                 o.o_id,
@@ -41,15 +53,17 @@ export default async function handler(req, res) {
             JOIN shop_material sm ON p.sm_id = sm.sm_id
             JOIN material_type mt ON sm.mt_id = mt.mt_id
             WHERE o.c_id = ? 
-            AND o.o_status_id IN (4, 5)  -- Only completed or canceled orders
+            AND o.o_status_id IN (4, 5)
             GROUP BY o.o_id
-            ORDER BY o.o_date DESC`,
-            [customerId]
+            ORDER BY o.o_date DESC
+            LIMIT ? OFFSET ?`,
+            [customerId, parseInt(limit), parseInt(offset)]
         );
 
         return res.status(200).json({
             success: true,
-            result: orders
+            result: orders,
+            total: countResult.total
         });
 
     } catch (error) {

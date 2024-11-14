@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const HistoryPage = () => {
     const [orders, setOrders] = useState([]);
@@ -8,14 +9,20 @@ const HistoryPage = () => {
     const [sortColumn, setSortColumn] = useState('date');
     const [sortOrder, setSortOrder] = useState('desc');
     const router = useRouter();
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(0);
+    const ordersPerPage = 8;
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await fetch('/api/orders/history');
+                setIsLoading(true);
+                const response = await fetch(`/api/orders/history?page=${currentPage}&limit=${ordersPerPage}`);
                 const data = await response.json();
+                
                 if (data.success) {
                     setOrders(data.result);
+                    setTotalPages(Math.ceil(data.total / ordersPerPage));
                 }
             } catch (error) {
                 console.error('Error fetching orders:', error);
@@ -24,7 +31,7 @@ const HistoryPage = () => {
             }
         };
         fetchOrders();
-    }, []);
+    }, [currentPage]);
 
     const handleSort = (column) => {
         if (sortColumn === column) {
@@ -76,13 +83,19 @@ const HistoryPage = () => {
         }
     };
 
+    // Add pagination handler
+    const handlePageChange = (newPage) => {
+        setCurrentPage(newPage);
+        setIsLoading(true);
+    };
+
     if (isLoading) {
         return <div>Loading...</div>;
     }
 
     return (
         <div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
-            <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%]">
+            <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%] flex flex-col">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-[#603F26] font-inter">ORDER HISTORY</h2>
                     <div className="flex items-center gap-4">
@@ -143,32 +156,86 @@ const HistoryPage = () => {
                     <div className="text-[#4C4C60] text-center">ACTION</div>
                 </div>
 
-                <div className="overflow-y-auto h-[calc(100%-8rem)]">
-                    {orders.map((order) => (
-                        <div key={order.o_id} className="grid grid-cols-5 py-4 px-4 border-b items-center">
-                            <div>{order.o_id}</div>
-                            <div>{new Date(order.o_date).toLocaleDateString()}</div>
-                            <div>{order.o_total_price.toLocaleString()} BAHT</div>
-                            <div className="flex items-center gap-2">
-                                <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                    <div 
-                                        className="bg-green-500 h-2.5 rounded-full" 
-                                        style={{ width: `${order.o_status_id === 4 ? '100' : '0'}%` }}
-                                    ></div>
-                                </div>
-                                <span>{order.o_status_id === 4 ? '100%' : '0%'}</span>
-                            </div>
-                            <div className="flex justify-center">
-                                <button
-                                    onClick={() => handleReOrder(order.o_id)}
-                                    className="text-green-500 hover:text-green-600 flex items-center gap-1 font-medium"
+                <div className="overflow-y-auto flex-grow mb-4">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentPage}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {sortedOrders.map((order, index) => (
+                                <motion.div
+                                    key={order.o_id}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.05 }}
+                                    className="grid grid-cols-5 py-4 px-4 border-b items-center"
                                 >
-                                    <span>🔄</span>
-                                    RE-ORDER
-                                </button>
-                            </div>
-                        </div>
+                                    <div>{order.o_id}</div>
+                                    <div>{new Date(order.o_date).toLocaleDateString()}</div>
+                                    <div>{order.o_total_price.toLocaleString()} BAHT</div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                            <div 
+                                                className="bg-green-500 h-2.5 rounded-full" 
+                                                style={{ width: `${order.o_status_id === 4 ? '100' : '0'}%` }}
+                                            ></div>
+                                        </div>
+                                        <span>{order.o_status_id === 4 ? '100%' : '0%'}</span>
+                                    </div>
+                                    <div className="flex justify-center">
+                                        <button
+                                            onClick={() => handleReOrder(order.o_id)}
+                                            className="text-green-500 hover:text-green-600 flex items-center gap-1 font-medium"
+                                        >
+                                            <span>🔄</span>
+                                            RE-ORDER
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                <div className="flex justify-center items-center gap-2 py-2">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handlePageChange(currentPage - 1)}
+                        disabled={currentPage === 1}
+                        className="px-4 py-2 rounded-lg bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors"
+                    >
+                        Previous
+                    </motion.button>
+                    
+                    {[...Array(totalPages)].map((_, index) => (
+                        <motion.button
+                            key={index + 1}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handlePageChange(index + 1)}
+                            className={`px-4 py-2 rounded-lg transition-all duration-200 ${
+                                currentPage === index + 1 
+                                    ? 'bg-[#6B7280] text-white scale-110' 
+                                    : 'bg-gray-200 hover:bg-gray-300'
+                            }`}
+                        >
+                            {index + 1}
+                        </motion.button>
                     ))}
+
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handlePageChange(currentPage + 1)}
+                        disabled={currentPage === totalPages}
+                        className="px-4 py-2 rounded-lg bg-gray-200 disabled:opacity-50 hover:bg-gray-300 transition-colors"
+                    >
+                        Next
+                    </motion.button>
                 </div>
             </div>
         </div>
