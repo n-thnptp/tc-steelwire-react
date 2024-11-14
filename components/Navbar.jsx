@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { IconButton } from "@material-tailwind/react";
-import { GrMapLocation } from "react-icons/gr";
-import { FaMapLocationDot } from "react-icons/fa6";
 import { FaRegUser } from "react-icons/fa6";
 import { FaUser } from "react-icons/fa6";
 
@@ -56,9 +54,6 @@ const Navbar = () => {
             case 'SIGNUP':
                 router.push('/signup');
                 break;
-            case 'Location':
-                router.push('/location');
-                break;
             case 'Profile':
                 router.push('/profile');
                 break;
@@ -94,17 +89,6 @@ const Navbar = () => {
                 </div>
 
                 <div className="hidden lg:flex space-x-4 ml-8">
-                    <IconButton
-                        variant="text"
-                        className={`rounded-full hover:bg-primary-50`}
-                        onClick={() => handleMenuClick('Location')}
-                    >
-                        {active === 'Location' ? (
-                            <FaMapLocationDot className="text-2xl text-primary-700" />
-                        ) : (
-                            <GrMapLocation className="text-2xl text-gray-600 hover:text-primary-700 scale-x-[-1] transition-colors" />
-                        )}
-                    </IconButton>
                     <IconButton
                         variant="text"
                         className={`rounded-full hover:bg-primary-50`}
@@ -149,14 +133,6 @@ const Navbar = () => {
                                 alt="Bookmark"
                                 className={`w-6 h-6 cursor-pointer ${active === 'Bookmark' ? 'border-b-2 border-accent-900' : ''}`}
                                 onClick={() => handleMenuClick('Bookmark')}
-                            />
-                        </div>
-                        <div className="flex justify-center w-8">
-                            <img
-                                src="/icon/Pin_alt_fill.png"
-                                alt="Location"
-                                className={`w-6 h-6 cursor-pointer ${active === 'Location' ? 'border-b-2 border-accent-900' : ''}`}
-                                onClick={() => handleMenuClick('Location')}
                             />
                         </div>
                         <div className="flex justify-center w-8">
