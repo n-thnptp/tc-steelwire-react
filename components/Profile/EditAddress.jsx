@@ -209,13 +209,11 @@ const EditAddress = ({ userData, onClose, onSave }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Validate form first
         if (!validateForm()) {
             return;
         }
         
         try {
-            // Call the parent's onSave with the form data
             if (onSave) {
                 await onSave({
                     tambon: formData.tambon,
