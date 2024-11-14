@@ -5,6 +5,9 @@ import SummaryCheckout from './SummaryCheckout';
 
 const PaymentPage = ({ orderId }) => {
     const [orderDetails, setOrderDetails] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isPromptPayOpen, setIsPromptPayOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (orderId) {
@@ -24,6 +27,46 @@ const PaymentPage = ({ orderId }) => {
         }
     };
 
+    const handleCheckout = async () => {
+        if (isPromptPayOpen && !selectedFile) {
+            alert('Please upload your payment slip first');
+            return;
+        }
+
+        setLoading(true);
+        try {
+            if (isPromptPayOpen && selectedFile) {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('orderId', orderId);
+                formData.append('amount', totalAmount);
+
+                const response = await fetch('/api/payment/upload-slip', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to process payment');
+                }
+
+                const data = await response.json();
+                console.log('Payment processed:', data);
+                
+                if (data.success) {
+                    router.push('/status');
+                }
+            } else {
+                router.push('/status');
+            }
+        } catch (error) {
+            console.error('Error processing payment:', error);
+            alert('Failed to process payment. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-white">
             <div className="container mx-auto px-4">
@@ -32,10 +75,18 @@ const PaymentPage = ({ orderId }) => {
                         <Banking 
                             orderId={orderId} 
                             totalAmount={orderDetails?.o_total_price} 
+                            selectedFile={selectedFile}
+                            setSelectedFile={setSelectedFile}
+                            isPromptPayOpen={isPromptPayOpen}
+                            setIsPromptPayOpen={setIsPromptPayOpen}
                         />
                     </div>
                     <div className="w-full lg:w-2/5 rounded-lg p-4">
-                        <SummaryCheckout orderId={orderId} />
+                        <SummaryCheckout 
+                            orderId={orderId} 
+                            selectedFile={selectedFile}
+                            isPromptPayOpen={isPromptPayOpen}
+                        />
                     </div>
                 </div>
             </div>

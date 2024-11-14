@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import EditAddress from '../EditAddress';
 
-const SummaryCheckout = () => {
+const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState(null);
   const [address, setAddress] = useState(null);
@@ -71,30 +71,56 @@ const SummaryCheckout = () => {
   };
 
   const handleCheckout = async () => {
+    if (isPromptPayOpen && !selectedFile) {
+      alert('Please upload your payment slip first');
+      return;
+    }
+
+    setLoading(true);
     try {
-      // Update order status to 2 (paid/checked out)
-      const response = await fetch(`/api/order/update-status`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          orderId: router.query.orderId,
-          status: 2
-        }),
-      });
+      if (isPromptPayOpen && selectedFile) {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('orderId', orderId);
+        formData.append('amount', orderDetails?.o_total_price);
 
-      const data = await response.json();
+        const response = await fetch('/api/payment/upload-slip', {
+          method: 'POST',
+          body: formData,
+        });
 
-      if (data.success) {
-        // Redirect to status page
-        router.push('/status');
+        if (!response.ok) {
+          throw new Error('Failed to process payment');
+        }
+
+        const data = await response.json();
+        console.log('Payment processed:', data);
+        
+        if (data.success) {
+          router.push('/status');
+        }
       } else {
-        throw new Error(data.message || 'Failed to complete checkout');
+        // Update order status without slip
+        const response = await fetch(`/api/order/update-status`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            orderId: orderId,
+            statusId: 2
+          }),
+        });
+
+        if (response.ok) {
+          router.push('/status');
+        }
       }
     } catch (error) {
-      console.error('Error during checkout:', error);
-      alert('Failed to complete checkout: ' + error.message);
+      console.error('Error processing payment:', error);
+      alert('Failed to process payment. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -157,9 +183,14 @@ const SummaryCheckout = () => {
         {/* Checkout button */}
         <button 
           onClick={handleCheckout}
-          className="w-[15%] fixed bottom-11 right-12 bg-[#4C4C60] text-white p-3 rounded-full shadow-lg font-bold hover:bg-[#3d3d4d] transition-colors"
+          disabled={loading}
+          className={`w-full py-3 px-4 rounded-lg font-bold ${
+            loading 
+              ? 'bg-gray-300 cursor-not-allowed'
+              : 'bg-[#603F26] text-white hover:bg-[#4A2F1C]'
+          }`}
         >
-          CHECKOUT
+          {loading ? 'Processing...' : 'CHECKOUT'}
         </button>
 
         {/* Cancel button */}
