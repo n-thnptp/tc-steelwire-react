@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import EditAddress from '../EditAddress';
+import EditAddress from '../../Profile/EditAddress';
 
 const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   const router = useRouter();
@@ -19,6 +19,7 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   }, [router.query.orderId]);
 
   const fetchAddress = async () => {
+    console.log("fetchAddress called");
     try {
       const response = await fetch('/api/user/shipping-address');
       const data = await response.json();
@@ -26,9 +27,10 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
 
       if (data.success) {
         setAddress(data.address);
+        
         // Calculate shipping fee based on province
-        const isFreeShippingZone = [1, 2, 3, 4, 58, 59].includes(data.province_id);
-        console.log('Province ID:', data.province_id);
+        const isFreeShippingZone = [1, 2, 3, 4, 58, 59].includes(data.address.province_id);
+        console.log('Province ID:', data.address.province_id);
         console.log('Is free shipping zone:', isFreeShippingZone);
         
         const newShippingFee = isFreeShippingZone ? 0 : 3500;
@@ -135,34 +137,41 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
     }
   };
 
+  const handleAddressUpdate = async () => {
+    console.log("Address updated, fetching new data...");
+    // Fetch immediately after save
+    await fetchAddress();
+    setIsEditAddressOpen(false);
+  };
+
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="flex flex-col justify-between h-full p-6">
-      <h2 className="text-3xl font-bold mb-4 text-left font-inter text-[#603F26]">SUMMARY</h2>
+      <h2 className="text-3xl font-bold mb-4 text-left font-inter text-[#4C4C60]">SUMMARY</h2>
 
       {/* Delivery Address */}
       <div className="mb-4">
         <div className="flex justify-between items-center">
-          <p className="text-lg font-bold text-[#603F26] font-inter">DELIVERY ADDRESS</p>
+          <p className="text-lg font-bold text-[#4C4C60] font-inter">DELIVERY ADDRESS</p>
           <button 
             onClick={() => setIsEditAddressOpen(true)} 
-            className="bg-[#6A462F] text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg font-inter"
+            className="bg-[#4C4C60] text-white px-4 py-1 rounded-full text-sm font-bold shadow-lg font-inter"
           >
             EDIT
           </button>
         </div>
         {address && (
           <>
-            <p className="text-sm text-[#9A7B4F] font-semibold font-inter">
+            <p className="text-sm text-[#4C4C60] font-semibold font-inter">
               {address.customer_name}
             </p>
-            <p className="text-sm text-[#9A7B4F] font-inter">
+            <p className="text-sm text-[#4C4C60] font-inter">
               {address.address}
             </p>
-            <p className="text-sm text-[#9A7B4F] font-inter">
+            <p className="text-sm text-[#4C4C60] font-inter">
               {address.phone}
             </p>
           </>
@@ -173,16 +182,16 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
       {/* Order Summary */}
       {orderDetails && (
         <div className="mb-4 border-b pb-4">
-          <p className="flex justify-between mb-3 text-[#603F26] font-bold font-inter">
+          <p className="flex justify-between mb-3 text-[#4C4C60] font-bold font-inter">
             <span>SUBTOTAL</span> 
             <span>{(orderDetails.o_total_price - shippingFee).toLocaleString()} BAHT</span>
           </p>
-          <p className="flex justify-between text-[#603F26] font-bold font-inter mb-6">
+          <p className="flex justify-between text-[#4C4C60] font-bold font-inter mb-6">
             <span>SHIPPING FEE</span> 
             <span>{shippingFee === 0 ? 'FREE' : `${shippingFee.toLocaleString()} BAHT`}</span>
           </p>
           <hr className="my-2 border-t border-gray-300 mb-6" />
-          <p className="flex justify-between text-[#603F26] font-bold font-inter mb-3">
+          <p className="flex justify-between text-[#4C4C60] font-bold font-inter mb-3">
             <span>TOTAL</span> 
             <span>{orderDetails.o_total_price.toLocaleString()} BAHT</span>
           </p>
@@ -195,10 +204,10 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
         <button 
           onClick={handleCheckout}
           disabled={loading}
-          className={`w-full py-3 px-4 rounded-lg font-bold ${
+          className={`w-full py-3 px-4 rounded-full font-bold ${
             loading 
               ? 'bg-gray-300 cursor-not-allowed'
-              : 'bg-[#603F26] text-white hover:bg-[#4A2F1C]'
+              : 'bg-[#4C4C60] text-white hover:bg-[#3A3A4A]'
           }`}
         >
           {loading ? 'Processing...' : 'CHECKOUT'}
@@ -215,8 +224,9 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
 
       {isEditAddressOpen && (
         <EditAddress 
-          onClose={() => setIsEditAddressOpen(false)} 
-          onUpdate={fetchAddress}
+          userData={address}
+          onClose={() => setIsEditAddressOpen(false)}
+          onSave={handleAddressUpdate}
         />
       )}
     </div>

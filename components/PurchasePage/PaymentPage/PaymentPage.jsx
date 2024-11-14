@@ -6,7 +6,7 @@ import SummaryCheckout from './SummaryCheckout';
 const PaymentPage = ({ orderId }) => {
     const [orderDetails, setOrderDetails] = useState(null);
     const [selectedFile, setSelectedFile] = useState(null);
-    const [isPromptPayOpen, setIsPromptPayOpen] = useState(false);
+    const [isPromptPayOpen, setIsPromptPayOpen] = useState(true);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

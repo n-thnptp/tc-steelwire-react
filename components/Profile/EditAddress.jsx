@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 const EditAddress = ({ userData, onClose, onSave }) => {
     const [formData, setFormData] = useState({
-        address: '',
-        province: '',
-        amphur: '',
-        tambon: '',
-        postalCode: ''
+        province: userData?.province_id || '',
+        amphur: userData?.amphur_id || '',
+        tambon: userData?.tambon_id || '',
+        address: userData?.address || '',
+        postalCode: userData?.zip_code || ''
     });
 
     const [locationOptions, setLocationOptions] = useState({
@@ -16,10 +16,9 @@ const EditAddress = ({ userData, onClose, onSave }) => {
     });
 
     const [loadingStates, setLoadingStates] = useState({
-        provinces: false,
+        provinces: true,
         amphurs: false,
-        tambons: false,
-        initial: true
+        tambons: false
     });
 
     const [errors, setErrors] = useState({});
@@ -209,12 +208,23 @@ const EditAddress = ({ userData, onClose, onSave }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Add this log
-        console.log('Submitting form with data:', formData);
-
-        if (validateForm()) {
-            onSave(formData);
+        
+        // Validate form first
+        if (!validateForm()) {
+            return;
+        }
+        
+        try {
+            // Call the parent's onSave with the form data
+            if (onSave) {
+                await onSave({
+                    tambon: formData.tambon,
+                    address: formData.address
+                });
+            }
+        } catch (error) {
+            console.error('Error updating address:', error);
+            setErrors({ submit: 'Failed to update address' });
         }
     };
 
@@ -230,44 +240,14 @@ const EditAddress = ({ userData, onClose, onSave }) => {
     }
 
     return (
-        <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-            onClick={(e) => e.target === e.currentTarget && onClose()}
-        >
-            <div className="bg-neutral-white rounded-lg p-8 w-full max-w-md shadow-lg relative">
-                <button
-                    onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-4xl"
-                >
-                    &times;
-                </button>
-
-                <h2 className="text-xl font-bold text-primary-700 font-inter mb-6 text-center">
-                    ADDRESS INFORMATION
-                </h2>
-
-                <form
-                    className="text-primary-700"
-                    onSubmit={handleSubmit}
-                >
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white p-8 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto">
+                <h2 className="text-2xl font-bold text-primary-700 mb-6">Edit Address</h2>
+                
+                <form onSubmit={handleSubmit}>
+                    {/* Province Select */}
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter mb-2">
-                            ADDRESS
-                        </label>
-                        <input
-                            type="text"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            className="w-full p-3 input-field"
-                        />
-                        {errors.address && (
-                            <p className="mt-1 text-sm text-status-error">{errors.address}</p>
-                        )}
-                    </div>
-
-                    <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter mb-2">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
                             PROVINCE
                         </label>
                         <select
@@ -289,6 +269,7 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                         )}
                     </div>
 
+                    {/* Amphur Select */}
                     <div className="mb-6">
                         <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
                             AMPHUR
@@ -312,8 +293,9 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                         )}
                     </div>
 
+                    {/* Tambon Select */}
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter mb-2">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
                             TAMBON
                         </label>
                         <select
@@ -324,47 +306,68 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             disabled={!formData.amphur || loadingStates.tambons}
                         >
                             <option value="">Select Tambon</option>
-                            {locationOptions.tambons.map(tambon => {
-                                return (
-                                    <option key={tambon.id} value={tambon.id}>
-                                        {tambon.name}
-                                    </option>
-                                );
-                            })}
+                            {locationOptions.tambons.map(tambon => (
+                                <option key={tambon.id} value={tambon.id}>
+                                    {tambon.name}
+                                </option>
+                            ))}
                         </select>
                         {errors.tambon && (
                             <p className="mt-1 text-sm text-status-error">{errors.tambon}</p>
                         )}
                     </div>
 
+                    {/* Address Input */}
                     <div className="mb-6">
-                        <label className="block text-sm font-bold font-inter  mb-2">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
+                            ADDRESS
+                        </label>
+                        <input
+                            type="text"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            className="w-full p-3 input-field"
+                            placeholder="Enter your address"
+                        />
+                        {errors.address && (
+                            <p className="mt-1 text-sm text-status-error">{errors.address}</p>
+                        )}
+                    </div>
+
+                    {/* Postal Code Input */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
                             POSTAL CODE
                         </label>
                         <input
                             type="text"
                             name="postalCode"
                             value={formData.postalCode}
+                            onChange={handleChange}
                             className="w-full p-3 input-field"
-                            readOnly
+                            maxLength="5"
+                            placeholder="Enter postal code"
                         />
                         {errors.postalCode && (
                             <p className="mt-1 text-sm text-status-error">{errors.postalCode}</p>
                         )}
                     </div>
 
-                    {errors.submit && (
-                        <div className="mb-4 text-status-error text-sm text-center">
-                            {errors.submit}
-                        </div>
-                    )}
-
-                    <div className="flex justify-center mt-4">
+                    {/* Buttons */}
+                    <div className="flex justify-end space-x-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
                         <button
                             type="submit"
-                            className="py-3 w-[60%] primary-buttons"
+                            className="px-6 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800"
                         >
-                            SAVE
+                            Save Changes
                         </button>
                     </div>
                 </form>

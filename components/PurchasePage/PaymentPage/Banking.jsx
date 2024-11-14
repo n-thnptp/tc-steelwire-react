@@ -38,7 +38,7 @@ const Banking = ({
 
     return (
         <div>
-            <h2 className="text-lg font-bold mb-6 text-[#603F26] font-inter">PAYMENT</h2>
+            <h2 className="text-lg font-bold mb-6 text-[#4C4C60] font-inter">PAYMENT</h2>
             
             {/* PromptPay Section */}
             <div className="border p-4 rounded-lg shadow mb-4">
@@ -95,20 +95,6 @@ const Banking = ({
                         </motion.div>
                     )}
                 </AnimatePresence>
-            </div>
-
-            {/* Bank Options Section */}
-            <div className="border p-4 rounded-lg shadow flex justify-between items-center">
-                <div className="flex space-x-4">
-                    <img src="/pic/SCB_LOGO.png" alt="SCB" className="w-8" />
-                    <img src="/pic/KBANK_LOGO.png" alt="KBANK" className="w-8" />
-                    <img src="/pic/BAY_LOGO.png" alt="BAY" className="w-8" />
-                    <img src="/pic/KTB_LOGO.png" alt="KTB" className="w-8" />
-                    <img src="/pic/BBL_LOGO.png" alt="BBL" className="w-8" />
-                </div>
-                <button className="text-gray-600">
-                    <span>&#9660;</span>
-                </button>
             </div>
         </div>
     );
