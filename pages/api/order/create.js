@@ -5,66 +5,98 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    const { total_price, shipping_fee } = req.body;
-    const sessionId = req.cookies.sessionId;
-
     try {
+        const { total_price, shipping_fee } = req.body;
+        const sessionId = req.cookies.sessionId;
+
         // Get customer ID from session
-        const sessions = await query(
-            'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
+        const [sessionResult] = await query(
+            'SELECT c_id FROM sessions WHERE session_id = ?',
             [sessionId]
         );
 
-        if (sessions.length === 0) {
-            return res.status(401).json({ error: 'Invalid or expired session' });
+        if (!sessionResult) {
+            return res.status(401).json({ message: 'Unauthorized' });
         }
 
-        const customerId = sessions[0].c_id;
+        const customer_id = sessionResult.c_id;
 
-        try {
-            // Create order record with proper backticks
-            const orderResult = await query(
-                'INSERT INTO `order` (c_id, o_date, o_status_id, o_total_price, o_estimated_shipping_day, shipping_fee) VALUES (?, NOW(), ?, ?, ?, ?)',
-                [customerId, 1, total_price, 3, shipping_fee]
-            );
+        // Get cart items
+        const cartItems = await query(`
+            SELECT 
+                p.*,
+                sm.mt_id,
+                sm.ms_id,
+                sm.total_amount as current_stock,
+                sm.sm_id
+            FROM cart c
+            JOIN cart_product cp ON c.cart_id = cp.cart_id
+            JOIN product p ON cp.p_id = p.p_id
+            JOIN shop_material sm ON p.sm_id = sm.sm_id
+            WHERE c.c_id = ?`,
+            [customer_id]
+        );
 
-            const orderId = orderResult.insertId;
-
-            // Get cart items
-            const cartItems = await query(
-                'SELECT cp.p_id FROM cart c JOIN cart_product cp ON c.cart_id = cp.cart_id WHERE c.c_id = ?',
-                [customerId]
-            );
-
-            // Move items to order_product
-            for (const item of cartItems) {
-                await query(
-                    'INSERT INTO order_product (o_id, p_id) VALUES (?, ?)',
-                    [orderId, item.p_id]
-                );
+        // Check stock availability
+        for (const item of cartItems) {
+            if (parseFloat(item.current_stock) < parseFloat(item.weight)) {
+                return res.status(400).json({
+                    message: `Not enough stock for material ID ${item.sm_id}`
+                });
             }
-
-            // Clear cart_product
-            const cart = await query('SELECT cart_id FROM cart WHERE c_id = ?', [customerId]);
-            if (cart.length > 0) {
-                await query('DELETE FROM cart_product WHERE cart_id = ?', [cart[0].cart_id]);
-            }
-
-            return res.status(200).json({ 
-                success: true, 
-                orderId: orderId 
-            });
-
-        } catch (error) {
-            console.error('Transaction error:', error);
-            throw error;
         }
+
+        // Create order
+        const orderResult = await query(
+            `INSERT INTO \`order\` (c_id, o_total_price, o_status_id, o_date)
+            VALUES (?, ?, 1, NOW())`,
+            [customer_id, total_price]
+        );
+
+        const orderId = orderResult.insertId;
+
+        // Update stock and move products
+        for (const item of cartItems) {
+            // Update stock
+            await query(
+                `UPDATE shop_material 
+                SET total_amount = total_amount - ?
+                WHERE sm_id = ?`,
+                [item.weight, item.sm_id]
+            );
+
+            // Link product to order
+            await query(
+                `INSERT INTO order_product (o_id, p_id)
+                VALUES (?, ?)`,
+                [orderId, item.p_id]
+            );
+        }
+
+        // Clear cart
+        const [cartResult] = await query(
+            'SELECT cart_id FROM cart WHERE c_id = ?',
+            [customer_id]
+        );
+
+        if (cartResult) {
+            await query(
+                'DELETE FROM cart_product WHERE cart_id = ?',
+                [cartResult.cart_id]
+            );
+        }
+
+        return res.status(200).json({
+            success: true,
+            orderId: orderId,
+            message: 'Order created successfully'
+        });
 
     } catch (error) {
-        console.error('Database error:', error);
+        console.error('Error creating order:', error);
         return res.status(500).json({ 
-            message: 'Internal server error',
-            error: error.message 
+            success: false,
+            message: error.message || 'Internal server error' 
         });
     }
 }

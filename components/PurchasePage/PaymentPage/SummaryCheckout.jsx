@@ -58,22 +58,19 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
 
   const handleCancel = async () => {
     try {
-      // Update order status to 5 (canceled)
-      const response = await fetch(`/api/order/update-status`, {
+      const response = await fetch('/api/order/cancel', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          orderId: router.query.orderId,
-          status: 5
+          orderId: orderId
         }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        // Redirect to history page
         router.push('/history');
       } else {
         throw new Error(data.message || 'Failed to cancel order');
