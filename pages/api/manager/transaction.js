@@ -11,7 +11,7 @@ export default async function handler(req, res) {
         SELECT 
             transaction_id, 
             o_id, 
-            method, 
+            filename, 
             price
         FROM transaction_history 
         `

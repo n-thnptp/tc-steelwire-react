@@ -17,12 +17,16 @@ const Navbar = () => {
             setActive('STATUS');
         } else if (currentPath.includes('status')) {
             setActive('STATUS');
-        } else if (currentPath.includes('cart')) {
-            setActive('CART');
+        } else if (currentPath.includes('purchase')) {
+            setActive('SHOPPING CART');
         } else if (currentPath.includes('profile')) {
             setActive('PROFILE');
         } else if (currentPath === '/') {
             setActive('HOME');
+        } else if (currentPath === '/history') {
+            setActive('HISTORY');
+        } else if (currentPath === '/payment'){
+            setActive('SHOPPING CART');
         }
     }, [router.pathname]);
 
