@@ -131,7 +131,7 @@ export default function OrderDetails() {
                             BACK
                         </button>
                         
-                        {orderDetails.o_status_id !== 4 && orderDetails.o_status_id !== 5 && (
+                        {(orderDetails.o_status_id === 2 || orderDetails.o_status_id === 3) && (
                             <button 
                                 onClick={handleAcceptDelivery}
                                 className="px-12 py-3 bg-green-500 text-white rounded-full hover:bg-green-600"
