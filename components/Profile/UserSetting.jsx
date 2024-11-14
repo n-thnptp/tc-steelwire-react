@@ -123,8 +123,7 @@ const UserSetting = () => {
                     province: data.user.province_name,
                     amphur: data.user.amphur_name,
                     tambon: data.user.tambon_name,
-                    postalCode: data.user.zip_code,
-                    address: data.user.address
+                    postalCode: data.user.zip_code
                 }));
                 toggleEditAddress();
             }
