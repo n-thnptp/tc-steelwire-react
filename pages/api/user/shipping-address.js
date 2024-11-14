@@ -8,7 +8,6 @@ export default async function handler(req, res) {
     const sessionId = req.cookies.sessionId;
 
     try {
-        // Get customer ID from session
         const sessions = await query(
             'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
             [sessionId]
@@ -20,15 +19,17 @@ export default async function handler(req, res) {
 
         const customerId = sessions[0].c_id;
 
-        // Get customer's shipping address with full location details including zip_code
         const addressResult = await query(`
-            SELECT c.c_id, c.firstname, c.lastname, 
-                   sa.tambon_id, sa.address, 
-                   am.name_th, p.name_th, p.province_id,
-                   t.name_th AS tambon_name, 
-                   t.zip_code,
-                   am.name_th AS amphur_name, 
-                   p.name_th AS province_name
+            SELECT 
+                c.firstname, 
+                c.lastname,
+                c.phone_number,
+                sa.address,
+                p.province_id,
+                t.name_th AS tambon_name,
+                am.name_th AS amphur_name,
+                p.name_th AS province_name,
+                t.zip_code
             FROM user c
             JOIN shipping_address sa ON c.sh_id = sa.sh_id
             JOIN tambons t ON sa.tambon_id = t.tambon_id
@@ -44,24 +45,21 @@ export default async function handler(req, res) {
 
         const address = addressResult[0];
         
-        // Format the address data with zip_code
-        const formattedAddress = {
-            customer_name: `${address.firstname} ${address.lastname}`,
-            address: `${address.address} ${address.tambon_name} ${address.amphur_name} ${address.province_name} ${address.zip_code}`,
-            phone: address.phone || ''
-        };
-
         return res.status(200).json({
             success: true,
-            address: formattedAddress
+            address: {
+                customer_name: `${address.firstname} ${address.lastname}`,
+                address: `${address.address} ${address.tambon_name} ${address.amphur_name} ${address.province_name} ${address.zip_code}`,
+                phone: address.phone_number || '',
+            },
+            province_id: address.province_id
         });
 
     } catch (error) {
         console.error('Database error:', error);
         return res.status(500).json({ 
             success: false,
-            message: 'Error fetching shipping address',
-            error: error.message
+            message: 'Error fetching shipping address'
         });
     }
 } 

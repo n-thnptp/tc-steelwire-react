@@ -6,10 +6,12 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   const router = useRouter();
   const [orderDetails, setOrderDetails] = useState(null);
   const [address, setAddress] = useState(null);
+  const [shippingFee, setShippingFee] = useState(3500); // Default shipping fee
   const [isEditAddressOpen, setIsEditAddressOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log('Component mounted, fetching data...');
     fetchAddress();
     if (router.query.orderId) {
       fetchOrderDetails(router.query.orderId);
@@ -20,8 +22,18 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
     try {
       const response = await fetch('/api/user/shipping-address');
       const data = await response.json();
+      console.log('Shipping address response:', data);
+
       if (data.success) {
         setAddress(data.address);
+        // Calculate shipping fee based on province
+        const isFreeShippingZone = [1, 2, 3, 4, 58, 59].includes(data.province_id);
+        console.log('Province ID:', data.province_id);
+        console.log('Is free shipping zone:', isFreeShippingZone);
+        
+        const newShippingFee = isFreeShippingZone ? 0 : 3500;
+        console.log('New shipping fee:', newShippingFee);
+        setShippingFee(newShippingFee);
       }
     } catch (error) {
       console.error('Error fetching address:', error);
@@ -32,6 +44,8 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
     try {
       const response = await fetch(`/api/order/${orderId}`);
       const data = await response.json();
+      console.log('Order details response:', data);
+      
       if (data.success) {
         setOrderDetails(data.order);
       }
@@ -164,11 +178,11 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
         <div className="mb-4 border-b pb-4">
           <p className="flex justify-between mb-3 text-[#603F26] font-bold font-inter">
             <span>SUBTOTAL</span> 
-            <span>{(orderDetails.o_total_price - orderDetails.shipping_fee).toLocaleString()} BAHT</span>
+            <span>{(orderDetails.o_total_price - shippingFee).toLocaleString()} BAHT</span>
           </p>
           <p className="flex justify-between text-[#603F26] font-bold font-inter mb-6">
-            <span>ESTIMATED SHIPPING</span> 
-            <span>{orderDetails.shipping_fee.toLocaleString()} BAHT</span>
+            <span>SHIPPING FEE</span> 
+            <span>{shippingFee === 0 ? 'FREE' : `${shippingFee.toLocaleString()} BAHT`}</span>
           </p>
           <hr className="my-2 border-t border-gray-300 mb-6" />
           <p className="flex justify-between text-[#603F26] font-bold font-inter mb-3">
