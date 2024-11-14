@@ -32,14 +32,31 @@ const ProductSelection = () => {
 
 
     const handleNumberOnly = (e, index, field, materials) => {
-        // const value = e.target.value.replace(/[^\d]/g, '');
         let value = e.target.value;
+        
+        // Check if value starts with 0
+        if (value.startsWith('0')) {
+            return;
+        }
+        
+        // Convert to number and check if it's valid
+        const numValue = parseFloat(value);
+        
+        // Return if not a valid number or negative
+        if (isNaN(numValue) || numValue < 0) {
+            return;
+        }
+
+        // Validate minimums
+        if (field === 'length' && numValue < 100) {
+            return;
+        }
+        
+        if (field === 'weight' && numValue < 1) {
+            return;
+        }
 
         let number;
-        // if (value === '0') {
-        //     alert(`${field.charAt(0).toUpperCase() + field.slice(1)} ค่าไม่สามารถเป็น 0 ได้`);
-        //     return;
-        // }
         try {
             number = parseFloat(value).toFixed(2);
         } catch (e) {
@@ -47,28 +64,7 @@ const ProductSelection = () => {
         }
 
         updateItem(index, field, number, materials);
-
-        // updateItem(index, field, value === '' ? '' : parseFloat(value), materials);
-
-        // if (field === 'weight' && value) {
-        //     const newWeight = parseFloat(value);
-        //     const otherItemsWeight = orderState.items.reduce((acc, item, idx) =>
-        //         idx !== index ? acc + (parseFloat(item.weight) || 0) : acc, 0);
-        //     const totalWeight = newWeight + otherItemsWeight;
-
-        // if (totalWeight > 3800) {
-        //     alert("น้ำหนักรวมต้องไม่เกิน 3.8 ตัน (3800 KG)");
-        //     return;
-        // }
-
-        // const currentItem = orderState.items[index];
-        // if (currentItem.length && currentItem.ms_id) {
-        //     const minWeight = calculateMinimumWeight(currentItem.length, currentItem.ms_id);
-        //     if (newWeight < parseFloat(minWeight)) {
-        //         alert(`น้ำหนักต้องไม่น้อยกว่า ${minWeight} KG สำหรับขนาด ${currentItem.ms_id}mm และความยาว ${(parseFloat(currentItem.length) / 100).toFixed(2)}m`);
-        //     }
-        // }
-    }
+    };
 
 
     if (loading) {
@@ -129,14 +125,22 @@ const ProductSelection = () => {
                                 type="number"
                                 className="p-2 border rounded text-primary-700 shadow"
                                 placeholder="LENGTH (CM)"
-                                min={100}
+                                min="100"
+                                pattern="[1-9][0-9]*"
+                                onKeyDown={(e) => {
+                                    if (e.key === '-' || (e.key === '0' && e.target.value === '')) e.preventDefault();
+                                }}
                                 onChange={(e) => handleNumberOnly(e, index, 'length', materials)}
                             />
                             <input
                                 type="number"
                                 className="p-2 border rounded text-primary-700 shadow"
-                                min="0"
                                 placeholder="WEIGHT (KG)"
+                                min="1"
+                                pattern="[1-9][0-9]*"
+                                onKeyDown={(e) => {
+                                    if (e.key === '-' || (e.key === '0' && e.target.value === '')) e.preventDefault();
+                                }}
                                 onChange={(e) => handleNumberOnly(e, index, 'weight', materials)}
                             />
                         </div>

@@ -106,50 +106,29 @@ export const OrderProvider = ({ children }) => {
         setOrderState(prev => {
             const newItems = [...prev.items];
 
-            // Update the item with proper type conversion
+            // Update the specific field while preserving other values
             newItems[index] = {
                 ...newItems[index],
                 [field]: field === 'mt_id' || field === 'ms_id'
                     ? parseInt(value) || 0
                     : field === 'feature'
                         ? value
-                        : value // keep length and weight as is for empty string handling
+                        : value
             };
-
-
-            // Reset dependent fields when material type changes
-            if (field === 'mt_id') {
-                newItems[index] = {
-                    ...newItems[index],
-                    ms_id: 1,      // int, reset to 0
-                    feature: "",    // string, reset to empty
-                    length: "",     // float, reset to empty for input
-                    weight: "",      // float, reset to empty for input
-                    price: 0
-                };
-            }
-
-            // Reset dependent fields when size changes
-            if (field === 'ms_id') {
-                newItems[index] = {
-                    ...newItems[index],
-                    length: "",     // float, reset to empty for input
-                    weight: "",     // float, reset to empty for input
-                    price: 0,
-                    [field]: parseInt(value) || 0  // Keep the new size value as int
-                };
-            }
 
             // Calculate new total weight
             const newWeight = newItems.reduce((acc, item) =>
                 acc + (parseFloat(item.weight) || 0), 0
             );
 
+            // Update price if materials is provided and relevant fields change
             if (materials) {
-                if (field === "ms_id" || field === "weight")
-                    newItems[index].price = materials.sizes.find(p => p.id === newItems[index].ms_id)?.price * newItems[index].weight;
-                if (field === "mt_id")
-                    newItems[index].materialType = materials.materialTypes.find(t => t.id === newItems[index].mt_id)?.name
+                if (field === "ms_id" || field === "weight") {
+                    newItems[index].price = materials.sizes.find(p => p.id === newItems[index].ms_id)?.price * (newItems[index].weight || 0);
+                }
+                if (field === "mt_id") {
+                    newItems[index].materialType = materials.materialTypes.find(t => t.id === newItems[index].mt_id)?.name;
+                }
             }
 
             return {
