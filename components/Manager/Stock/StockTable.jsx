@@ -126,7 +126,7 @@ const StockTable = () => {
         },
         body: JSON.stringify({
           materialId: selectedMaterial.sm_id,
-          quantity: selectedMaterial.size === 4 ? "40000" : "20000"
+          quantity: selectedMaterial.size === 4 ? "60000" : "40000"
         }),
       });
 
@@ -299,7 +299,7 @@ const StockTable = () => {
                   <label className="block text-primary-500 mb-2">AMOUNT</label>
                   <input
                     type="text"
-                    value={selectedMaterial.size === 4 ? "40000" : "20000"}
+                    value={selectedMaterial.size === 4 ? "60000" : "40000"}
                     disabled
                     className="w-full py-3 px-5 opacity-50 border border-primary-400 rounded-xl bg-white"
                   />
