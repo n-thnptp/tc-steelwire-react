@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import EditAddress from '../../Profile/EditAddress';
+import EditAddress from '../EditAddress';
 
 const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   const router = useRouter();

@@ -1,120 +1,318 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const EditAddress = ({ onClose }) => {
-  const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [province, setProvince] = useState('');
-  const [address, setAddress] = useState('');
-  const [zipCode, setZipCode] = useState('');
+const EditAddress = ({ userData, onClose, onSave }) => {
+    const [formData, setFormData] = useState({
+        province: userData?.province_id || '',
+        amphur: userData?.amphur_id || '',
+        tambon: userData?.tambon_id || '',
+        address: userData?.address || '',
+        postalCode: userData?.zip_code || ''
+    });
 
-  const handleNumberChange = (e, setState, maxLength) => {
-    const value = e.target.value;
-    if (/^\d*$/.test(value) && value.length <= maxLength) {
-      setState(value);
-    }
-  };
+    const [locationOptions, setLocationOptions] = useState({
+        provinces: [],
+        amphurs: [],
+        tambons: []
+    });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Address saved", { fullName, phoneNumber, province, address, zipCode });
-    onClose();
-  };
+    const [loadingStates, setLoadingStates] = useState({
+        provinces: true,
+        amphurs: false,
+        tambons: false,
+        initial: true
+    });
 
-  const handleClickOutside = (e) => {
-    if (e.target.id === 'modal-overlay') {
-      onClose();
-    }
-  };
+    const [errors, setErrors] = useState({});
 
-  return (
-    <div
-      id="modal-overlay"
-      className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-      onClick={handleClickOutside}
-    >
-      <div
-        className="bg-white rounded-lg p-8 w-full max-w-md shadow-lg relative"
-        onClick={(e) => e.stopPropagation()} // หยุดการคลิกใน Popup ไม่ให้ไปกระทบ modal-overlay
-      >
-        {/* ปุ่มกากบาทสำหรับปิด */}
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-4xl"
-        >
-          &times;
-        </button>
+    // Fetch initial user data and address details
+    useEffect(() => {
+        const fetchUserAddressDetails = async () => {
+            try {
+                const response = await fetch('/api/user/profile');
+                if (response.ok) {
+                    const data = await response.json();
+                    const user = data.user;
 
-        <h2 className="text-2xl font-bold text-[#603F26] font-inter mb-4 text-center">EDIT ADDRESS</h2>
+                    setFormData({
+                        address: user.address || '',
+                        province: user.province_id || '',
+                        amphur: user.amphur_id || '',
+                        tambon: user.tambon_id || '',
+                        postalCode: user.postalCode || ''
+                    });
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-sm font-bold font-inter text-[#603F26] mb-1">FULL NAME</label>
-            <input
-              type="text"
-              placeholder="FULL NAME"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
-            />
-          </div>
+                    // Fetch provinces and then cascade to other dropdowns
+                    await fetchProvinces();
 
-          <div className="mb-4">
-            <label className="block text-sm font-bold font-inter text-[#603F26] mb-1">PHONE NUMBER</label>
-            <input
-              type="text"
-              placeholder="PHONE NUMBER"
-              value={phoneNumber}
-              onChange={(e) => handleNumberChange(e, setPhoneNumber, 10)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
-            />
-          </div>
+                    if (user.province_id) {
+                        await fetchAmphurs(user.province_id);
+                    }
 
-          <div className="mb-4">
-            <label className="block text-sm font-bold font-inter text-[#603F26] mb-1">PROVINCE</label>
-            <input
-              type="text"
-              placeholder="PROVINCE"
-              value={province}
-              onChange={(e) => setProvince(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
-            />
-          </div>
+                    if (user.amphur_id) {
+                        await fetchTambons(user.amphur_id);
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            } finally {
+                setLoadingStates(prev => ({ ...prev, initial: false }));
+            }
+        };
 
-          <div className="mb-4">
-            <label className="block text-sm font-bold font-inter text-[#603F26] mb-1">ADDRESS</label>
-            <input
-              type="text"
-              placeholder="ADDRESS"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
-            />
-          </div>
+        fetchUserAddressDetails();
+    }, []);
 
-          <div className="mb-4">
-            <label className="block text-sm font-bold font-inter text-[#603F26] mb-1">ZIP CODE</label>
-            <input
-              type="text"
-              placeholder="ZIP CODE"
-              value={zipCode}
-              onChange={(e) => handleNumberChange(e, setZipCode, 5)}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-[#6A462F] font-inter text-[#603F26]"
-            />
-          </div>
+    const fetchProvinces = async () => {
+        setLoadingStates(prev => ({ ...prev, provinces: true }));
+        try {
+            const response = await fetch('/api/locations/provinces/all');
+            const data = await response.json();
+            console.log('Province object example:', data[0]);
 
-          {/* ปุ่ม SAVE */}
-          <div className="flex justify-center mt-4">
-            <button
-              type="submit"
-              className="bg-[#6A462F] text-[#FFDBB5] p-2 rounded-full font-bold shadow-lg hover:bg-[#5A3C2F] w-[60%]"
-            >
-              Save as present address
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
+            setLocationOptions(prev => ({
+                ...prev,
+                provinces: data
+            }));
+        } catch (error) {
+            console.error('Error fetching provinces:', error);
+        } finally {
+            setLoadingStates(prev => ({ ...prev, provinces: false }));
+        }
+    };
+
+    const fetchAmphurs = async (provinceId) => {
+        if (!provinceId) return;
+        setLoadingStates(prev => ({ ...prev, amphurs: true }));
+        try {
+            const response = await fetch(`/api/locations/provinces/${provinceId}`);
+            const data = await response.json();
+            console.log('Amphur object example:', data[0]);
+
+            setLocationOptions(prev => ({
+                ...prev,
+                amphurs: data
+            }));
+        } catch (error) {
+            console.error('Error fetching amphurs:', error);
+        } finally {
+            setLoadingStates(prev => ({ ...prev, amphurs: false }));
+        }
+    };
+
+    const fetchTambons = async (amphurId) => {
+        if (!amphurId) return;
+        setLoadingStates(prev => ({ ...prev, tambons: true }));
+        try {
+            const response = await fetch(`/api/locations/amphurs/${amphurId}`);
+            const data = await response.json();
+            console.log('Tambon object example:', data[0]);
+
+            setLocationOptions(prev => ({
+                ...prev,
+                tambons: data
+            }));
+        } catch (error) {
+            console.error('Error fetching tambons:', error);
+        } finally {
+            setLoadingStates(prev => ({ ...prev, tambons: false }));
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        if (name === 'tambon' && value) {
+            const selectedTambon = locationOptions.tambons.find(
+                tambon => tambon.id === parseInt(value)
+            );
+            
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value,
+                postalCode: selectedTambon ? selectedTambon.zip_code : ''
+            }));
+        } else {
+            setFormData(prevData => ({
+                ...prevData,
+                [name]: value,
+            }));
+
+            if (name === 'province') {
+                fetchAmphurs(value);
+            } else if (name === 'amphur') {
+                fetchTambons(value);
+            }
+        }
+
+        setErrors({});
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setErrors({});
+
+        try {
+            const response = await fetch('/api/user/update-address', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    address: formData.address,
+                    tambon: formData.tambon
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update address');
+            }
+
+            const data = await response.json();
+            if (data.success) {
+                if (onSave) {
+                    await onSave();
+                }
+                onClose();
+            }
+        } catch (error) {
+            console.error('Error updating address:', error);
+            setErrors(prev => ({ ...prev, submit: 'Failed to update address. Please try again.' }));
+        }
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+            <div className="bg-white rounded-lg p-8 w-full max-w-md max-h-[90vh] overflow-y-auto">
+                <h2 className="text-2xl font-bold text-primary-700 mb-6">Edit Address</h2>
+                <form onSubmit={handleSubmit}>
+                    {/* Province Select */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
+                            PROVINCE
+                        </label>
+                        <select
+                            name="province"
+                            value={formData.province}
+                            onChange={handleChange}
+                            className="w-full p-3 input-field"
+                            disabled={loadingStates.provinces}
+                        >
+                            <option value="">Select Province</option>
+                            {locationOptions.provinces.map(province => (
+                                <option key={province.id} value={province.id}>
+                                    {province.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.province && (
+                            <p className="mt-1 text-sm text-status-error">{errors.province}</p>
+                        )}
+                    </div>
+
+                    {/* Amphur Select */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
+                            AMPHUR
+                        </label>
+                        <select
+                            name="amphur"
+                            value={formData.amphur}
+                            onChange={handleChange}
+                            className="w-full p-3 input-field"
+                            disabled={!formData.province || loadingStates.amphurs}
+                        >
+                            <option value="">Select Amphur</option>
+                            {locationOptions.amphurs.map(amphur => (
+                                <option key={amphur.id} value={amphur.id}>
+                                    {amphur.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.amphur && (
+                            <p className="mt-1 text-sm text-status-error">{errors.amphur}</p>
+                        )}
+                    </div>
+
+                    {/* Tambon Select */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
+                            TAMBON
+                        </label>
+                        <select
+                            name="tambon"
+                            value={formData.tambon}
+                            onChange={handleChange}
+                            className="w-full p-3 input-field"
+                            disabled={!formData.amphur || loadingStates.tambons}
+                        >
+                            <option value="">Select Tambon</option>
+                            {locationOptions.tambons.map(tambon => (
+                                <option key={tambon.id} value={tambon.id}>
+                                    {tambon.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.tambon && (
+                            <p className="mt-1 text-sm text-status-error">{errors.tambon}</p>
+                        )}
+                    </div>
+
+                    {/* Address Input */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
+                            ADDRESS
+                        </label>
+                        <input
+                            type="text"
+                            name="address"
+                            value={formData.address}
+                            onChange={handleChange}
+                            className="w-full p-3 input-field"
+                            placeholder="Enter your address"
+                        />
+                        {errors.address && (
+                            <p className="mt-1 text-sm text-status-error">{errors.address}</p>
+                        )}
+                    </div>
+
+                    {/* Postal Code Input */}
+                    <div className="mb-6">
+                        <label className="block text-sm font-bold font-inter text-primary-700 mb-2">
+                            POSTAL CODE
+                        </label>
+                        <input
+                            type="text"
+                            name="postalCode"
+                            value={formData.postalCode}
+                            className="w-full p-3 input-field bg-gray-100"
+                            readOnly
+                            placeholder={formData.postalCode || "Postal code will be set automatically"}
+                        />
+                        {errors.postalCode && (
+                            <p className="mt-1 text-sm text-status-error">{errors.postalCode}</p>
+                        )}
+                    </div>
+
+                    {/* Buttons */}
+                    <div className="flex justify-end space-x-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            className="px-6 py-2 bg-primary-700 text-white rounded-lg hover:bg-primary-800"
+                        >
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
 };
 
 export default EditAddress;
