@@ -85,13 +85,12 @@ const HistoryPage = () => {
 
     // Add pagination handler
     const handlePageChange = (newPage) => {
+        // Don't do anything if clicking the current page
+        if (newPage === currentPage) return;
+        
         setCurrentPage(newPage);
         setIsLoading(true);
     };
-
-    if (isLoading) {
-        return <div>Loading...</div>;
-    }
 
     return (
         <div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
@@ -157,47 +156,53 @@ const HistoryPage = () => {
                 </div>
 
                 <div className="overflow-y-auto flex-grow mb-4">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={currentPage}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {sortedOrders.map((order, index) => (
-                                <motion.div
-                                    key={order.o_id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.05 }}
-                                    className="grid grid-cols-5 py-4 px-4 border-b items-center"
-                                >
-                                    <div>{order.o_id}</div>
-                                    <div>{new Date(order.o_date).toLocaleDateString()}</div>
-                                    <div>{order.o_total_price.toLocaleString()} BAHT</div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                                            <div 
-                                                className="bg-green-500 h-2.5 rounded-full" 
-                                                style={{ width: `${order.o_status_id === 4 ? '100' : '0'}%` }}
-                                            ></div>
+                    {isLoading ? (
+                        <div className="flex justify-center items-center h-full">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+                        </div>
+                    ) : (
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={currentPage}
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -20 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                {sortedOrders.map((order, index) => (
+                                    <motion.div
+                                        key={order.o_id}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        className="grid grid-cols-5 py-4 px-4 border-b items-center"
+                                    >
+                                        <div>{order.o_id}</div>
+                                        <div>{new Date(order.o_date).toLocaleDateString()}</div>
+                                        <div>{order.o_total_price.toLocaleString()} BAHT</div>
+                                        <div className="flex items-center gap-2">
+                                            <div className="w-full bg-gray-200 rounded-full h-2.5">
+                                                <div 
+                                                    className="bg-green-500 h-2.5 rounded-full" 
+                                                    style={{ width: `${order.o_status_id === 4 ? '100' : '0'}%` }}
+                                                ></div>
+                                            </div>
+                                            <span>{order.o_status_id === 4 ? '100%' : '0%'}</span>
                                         </div>
-                                        <span>{order.o_status_id === 4 ? '100%' : '0%'}</span>
-                                    </div>
-                                    <div className="flex justify-center">
-                                        <button
-                                            onClick={() => handleReOrder(order.o_id)}
-                                            className="text-green-500 hover:text-green-600 flex items-center gap-1 font-medium"
-                                        >
-                                            <span>🔄</span>
-                                            RE-ORDER
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-                    </AnimatePresence>
+                                        <div className="flex justify-center">
+                                            <button
+                                                onClick={() => handleReOrder(order.o_id)}
+                                                className="text-green-500 hover:text-green-600 flex items-center gap-1 font-medium"
+                                            >
+                                                <span>🔄</span>
+                                                RE-ORDER
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </motion.div>
+                        </AnimatePresence>
+                    )}
                 </div>
 
                 <div className="flex justify-center items-center gap-2 py-2">
