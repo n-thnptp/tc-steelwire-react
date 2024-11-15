@@ -23,39 +23,6 @@ const UserSetting = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Fetch user profile data
-    const fetchUserProfile = async () => {
-        try {
-            setLoading(true);
-            const response = await fetch('/api/user/profile');
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    router.push('/login');
-                    return;
-                }
-                throw new Error('Failed to fetch profile');
-            }
-
-            const data = await response.json();
-            setUser(data.user);
-            setError(null);
-        } catch (err) {
-            setError(err.message);
-            console.error('Profile fetch error:', err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // Fetch profile on component mount
-    useEffect(() => {
-        fetchUserProfile();
-    }, []);
-
-    // Format the address string
-    const formattedAddress = user ? `${user.address || ''}, ${user.city || ''} ${user.postalCode || ''}`.trim() : '';
-
     // Handlers for edit popups
     const toggleEditPersonal = () => setEditPersonalOpen(!isEditPersonalOpen);
     const toggleEditAddress = () => setEditAddressOpen(!isEditAddressOpen);
@@ -123,7 +90,8 @@ const UserSetting = () => {
                     province: data.user.province_name,
                     amphur: data.user.amphur_name,
                     tambon: data.user.tambon_name,
-                    postalCode: data.user.zip_code
+                    postalCode: data.user.zip_code,
+                    address: data.user.address
                 }));
                 toggleEditAddress();
             }
@@ -163,6 +131,40 @@ const UserSetting = () => {
             throw error;
         }
     };
+
+    // Modify the useEffect and fetchUserProfile implementation
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('/api/user/profile', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch profile');
+                }
+
+                const data = await response.json();
+                console.log('Profile data:', data);
+                setUser(data.user);
+            } catch (error) {
+                console.error('Fetch error:', error);
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Format the address string
+    const formattedAddress = user ? `${user.address || ''}, ${user.city || ''} ${user.postalCode || ''}`.trim() : '';
 
     if (loading) {
         return <div className="flex justify-center items-center h-screen">Loading...</div>;

@@ -1,9 +1,13 @@
 import query from '../../../lib/db';
 
 export default async function handler(req, res) {
+    console.log('API route hit');
+    
     const sessionId = req.cookies.sessionId;
+    console.log('Session ID:', sessionId);
 
     if (!sessionId) {
+        console.log('No session ID found');
         return res.status(401).json({ error: 'Not authenticated' });
     }
 
@@ -13,8 +17,10 @@ export default async function handler(req, res) {
             'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
             [sessionId]
         );
+        console.log('Sessions query result:', sessions);
 
         if (sessions.length === 0) {
+            console.log('No valid session found');
             return res.status(401).json({ error: 'Invalid or expired session' });
         }
 
@@ -36,11 +42,10 @@ export default async function handler(req, res) {
                 p.name_th AS province_name,
                 t.zip_code AS zip_code
             FROM user u
-
-            JOIN shipping_address sa ON u.sh_id = sa.sh_id
-            JOIN tambons t ON sa.tambon_id = t.tambon_id
-            JOIN amphurs am ON t.amphur_id = am.amphur_id
-            JOIN provinces p ON am.province_id = p.province_id
+            LEFT JOIN shipping_address sa ON u.sh_id = sa.sh_id
+            LEFT JOIN tambons t ON sa.tambon_id = t.tambon_id
+            LEFT JOIN amphurs am ON t.amphur_id = am.amphur_id
+            LEFT JOIN provinces p ON am.province_id = p.province_id
             WHERE u.c_id = ?`,
             [userId]
         );
