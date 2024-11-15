@@ -31,7 +31,7 @@ const HistoryOrderDetail = ({ orderId }) => {
         <div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
             <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%] flex flex-col">
                 <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-[#603F26] font-inter">
+                    <h2 className="text-2xl font-bold text-[#595871] font-inter">
                         ORDER : {orderId}
                     </h2>
                 </div>

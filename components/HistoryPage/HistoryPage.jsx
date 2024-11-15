@@ -12,6 +12,8 @@ const HistoryPage = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(0);
     const ordersPerPage = 8;
+    const [reorderError, setReorderError] = useState('');
+    const [showReorderError, setShowReorderError] = useState(false);
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -59,8 +61,35 @@ const HistoryPage = () => {
         }
     });
 
-    const handleReOrder = async (orderId) => {
+    // Add this function to show temporary errors
+    const showTemporaryError = (message) => {
+        setReorderError(message);
+        setShowReorderError(true);
+        
+        setTimeout(() => {
+            setShowReorderError(false);
+            setTimeout(() => setReorderError(''), 300);
+        }, 3000);
+    };
+
+    const handleReOrder = async (e, orderId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
         try {
+            // First check stock
+            const stockCheckResponse = await fetch(`/api/stock/check-reorder/${orderId}`);
+            const stockData = await stockCheckResponse.json();
+            
+            console.log('Stock check response:', stockData);
+
+            // If stock check fails, show error and return early
+            if (!stockData.success) {
+                showTemporaryError(stockData.message || 'Stock not available for re-order');
+                return;
+            }
+
+            // Only if stock check passes, proceed with reorder
             const response = await fetch('/api/orders/reorder', {
                 method: 'POST',
                 headers: {
@@ -70,16 +99,15 @@ const HistoryPage = () => {
             });
 
             const data = await response.json();
-
+            
             if (data.success) {
-                // Redirect to purchase page instead of cart
-                window.location.href = '/purchase';
+                router.push('/purchase');  // Use router.push instead of window.location
             } else {
-                alert(data.message || 'Failed to re-order. Please try again.');
+                showTemporaryError(data.message || 'Failed to re-order. Please try again.');
             }
         } catch (error) {
-            console.error('Error re-ordering:', error);
-            alert('Error occurred while re-ordering. Please try again.');
+            console.error('Error in reorder process:', error);
+            showTemporaryError('Error occurred while re-ordering. Please try again.');
         }
     };
 
@@ -100,7 +128,7 @@ const HistoryPage = () => {
         <div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
             <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%] flex flex-col">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-[#603F26] font-inter">ORDER HISTORY</h2>
+                    <h2 className="text-2xl font-bold text-[#595871] font-inter">ORDER HISTORY</h2>
                     <div className="flex items-center gap-4">
                         <div className="relative">
                             <button 
@@ -196,10 +224,7 @@ const HistoryPage = () => {
                                         </div>
                                         <div className="flex justify-center">
                                             <button
-                                                onClick={(e) => {
-                                                    e.stopPropagation(); // Prevent row click when clicking reorder
-                                                    handleReOrder(order.o_id);
-                                                }}
+                                                onClick={(e) => handleReOrder(e, order.o_id)}
                                                 className="text-green-500 hover:text-green-600 flex items-center gap-1 font-medium"
                                             >
                                                 <span>🔄</span>
@@ -249,6 +274,21 @@ const HistoryPage = () => {
                     >
                         Next
                     </motion.button>
+                </div>
+
+                {/* Add error message display */}
+                <div
+                    className={`transition-all duration-300 ease-in-out ${
+                        showReorderError 
+                            ? 'opacity-100 max-h-20' 
+                            : 'opacity-0 max-h-0'
+                    }`}
+                >
+                    {reorderError && (
+                        <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                            {reorderError}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
