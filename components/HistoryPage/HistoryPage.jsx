@@ -92,6 +92,10 @@ const HistoryPage = () => {
         setIsLoading(true);
     };
 
+    const handleOrderClick = (orderId) => {
+        router.push(`/history/${orderId}`);
+    };
+
     return (
         <div className="flex flex-col lg:flex-row p-8 h-[calc(100dvh-4rem)] justify-center bg-white items-start">
             <div className="w-full max-w-5xl bg-white p-6 rounded-lg shadow-lg overflow-hidden h-[95%] flex flex-col">
@@ -175,7 +179,8 @@ const HistoryPage = () => {
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="grid grid-cols-5 py-4 px-4 border-b items-center"
+                                        onClick={() => handleOrderClick(order.o_id)}
+                                        className="grid grid-cols-5 py-4 px-4 border-b items-center hover:bg-gray-50 cursor-pointer"
                                     >
                                         <div>{order.o_id}</div>
                                         <div>{new Date(order.o_date).toLocaleDateString()}</div>
@@ -191,7 +196,10 @@ const HistoryPage = () => {
                                         </div>
                                         <div className="flex justify-center">
                                             <button
-                                                onClick={() => handleReOrder(order.o_id)}
+                                                onClick={(e) => {
+                                                    e.stopPropagation(); // Prevent row click when clicking reorder
+                                                    handleReOrder(order.o_id);
+                                                }}
                                                 className="text-green-500 hover:text-green-600 flex items-center gap-1 font-medium"
                                             >
                                                 <span>🔄</span>
