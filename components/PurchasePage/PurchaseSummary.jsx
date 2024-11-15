@@ -14,14 +14,11 @@ const PurchaseSummary = () => {
                     credentials: 'include'
                 });
                 const data = await response.json();
-                console.log('Shipping address data:', data);
                 
                 if (data.success) {
                     const isFreeShippingZone = [1, 2, 3, 4, 58, 59].includes(data.province_id);
-                    console.log('Province ID:', data.province_id);
-                    console.log('Is free shipping zone:', isFreeShippingZone);
+
                     setShippingFee(isFreeShippingZone ? 0 : 3500);
-                    console.log('Set shipping fee to:', isFreeShippingZone ? 0 : 3500);
                 }
             } catch (error) {
                 console.error('Error fetching shipping address:', error);

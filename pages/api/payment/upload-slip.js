@@ -36,8 +36,7 @@ export default async function handler(req, res) {
         });
         files = parsedFiles;
 
-        console.log('Received fields:', fields);
-        console.log('Received files:', files);
+   
 
         const file = files.file[0];
         if (!file) {
@@ -116,11 +115,11 @@ async function extractReferenceCode(imagePath) {
         const match = text.match(/รหัสอ้างอิง:?\s*([0-9A-Za-z]+)/);
         if (match && match[1]) {
             const refCode = match[1].trim();
-            console.log('Extracted reference code:', refCode);
+            
             return refCode;
         }
 
-        console.log('No reference code found in text:', text);
+        
         return null;
     } catch (error) {
         console.error('Error extracting reference code:', error);

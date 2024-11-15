@@ -112,7 +112,6 @@ const CompanyForm = () => {
     };
 
     const validateAmphur = (value) => {
-        console.log(`validating ${value}`)
         if (!value) return 'Amphur is required';
         return '';
     };
@@ -173,6 +172,19 @@ const CompanyForm = () => {
         handleContextChange(e);
         setIsSubmitting(false);
 
+        // Handle tambon selection and set postal code
+        if (name === 'tambon' && value) {
+            const selectedTambon = locationOptions.tambons.find(
+                tambon => tambon.id.toString() === value
+            );
+            if (selectedTambon && selectedTambon.zip_code) {
+                handleContextChange({
+                    target: { name: 'postcode', value: selectedTambon.zip_code }
+                });
+            }
+        }
+
+        // Regular validation for other fields
         let errorMessage = '';
         switch (name) {
             case 'companyName':

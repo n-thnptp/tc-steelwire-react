@@ -150,7 +150,6 @@ const UserSetting = () => {
                 }
 
                 const data = await response.json();
-                console.log('Profile data:', data);
                 setUser(data.user);
             } catch (error) {
                 console.error('Fetch error:', error);

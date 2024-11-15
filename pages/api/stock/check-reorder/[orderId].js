@@ -27,7 +27,7 @@ export default async function handler(req, res) {
 
         for (const product of products) {
             const remainingAfterOrder = product.total_amount - product.order_weight;
-            const maxOrderable = product.total_amount - 3800;
+            const maxOrderable = Math.max(0, product.total_amount - 3800);
             
             if (remainingAfterOrder < 3800) {
                 return res.status(400).json({

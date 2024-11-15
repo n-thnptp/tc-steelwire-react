@@ -18,11 +18,9 @@ export const LoginProvider = ({ children }) => {
         const loadUser = () => {
             try {
                 const savedUser = localStorage.getItem('user');
-                console.log('Saved user data:', savedUser);
 
                 if (savedUser) {
                     const userData = JSON.parse(savedUser);
-                    console.log('Parsed user data:', userData);
                     setUser(userData);
                 }
             } catch (error) {
@@ -36,12 +34,10 @@ export const LoginProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        console.log('LoginContext - Current user:', user);
     }, [user]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        console.log('Handling input change:', name, value);
         setLoginData(prev => ({
             ...prev,
             [name]: value
@@ -52,8 +48,6 @@ export const LoginProvider = ({ children }) => {
 
     const handleLogin = async (e) => {
         if (e) e.preventDefault();
-
-        console.log('Login attempt with data:', loginData);
 
         if (!loginData.email || !loginData.password) {
             setError('Email and password are required');
@@ -77,7 +71,6 @@ export const LoginProvider = ({ children }) => {
             });
 
             const data = await response.json();
-            console.log('Login response:', data);
 
             // Handle different response cases
             if (data.code === 'ACCOUNT_NOT_FOUND') {
@@ -104,13 +97,13 @@ export const LoginProvider = ({ children }) => {
                 await new Promise(resolve => setTimeout(resolve, 100));
 
                 if (data.user.role_id === 2) {
-                    console.log('Admin user detected, redirecting to dashboard');
+                    
                     await router.replace('/manager/dashboard');
                 } else if (data.user.role_id === 1) {
-                    console.log('Regular user detected, redirecting to home');
+                    
                     await router.replace('/');
                 } else {
-                    console.log('Unknown user role');
+                    
                     await router.replace('/');
                 }
             }

@@ -35,7 +35,6 @@ export default async function handler(req, res) {
     }
 
     try {
-        console.log('Request body:', req.body);
 
         const {
             email,
@@ -60,7 +59,7 @@ export default async function handler(req, res) {
         }
 
         // Check if user exists
-        console.log('Checking existing user:', email);
+   
         const existingUsers = await query(
             'SELECT email FROM user WHERE email = ?',
             [email]
@@ -74,14 +73,12 @@ export default async function handler(req, res) {
         }
 
         // Find tambon
-        console.log('Looking up tambon for tambon:', tambon);
         const tambonQuery = `
             SELECT * from tambons 
             WHERE amphur_id = ?
             AND amphur_id IN (SELECT amphur_id FROM amphurs WHERE province_id = ?)
         `;
         const tambons = await query(tambonQuery, [amphur, province]);
-        console.log('Found tambons:', tambons);
 
         if (!tambons || tambons.length === 0) {
             return res.status(400).json({
@@ -92,24 +89,24 @@ export default async function handler(req, res) {
 
         // Generate unique IDs
         const customerId = await generateUniqueCustomerId();
-        console.log("GENERATED CUSTOMER ID: ", customerId);
+
         const shippingId = await generateUniqueShippingId();
-        console.log("GENERATED SHIPPING ID: ", shippingId);
+
 
         // Hash password
-        console.log('Hashing password...');
+  
         const hashedPassword = await hashPassword(password);
 
         // Create shipping address with generated sh_id
-        console.log('Creating shipping address...');
+  
         await query(
             'INSERT INTO shipping_address (sh_id, tambon_id, address) VALUES (?, ?, ?)',
             [shippingId, tambons[0].tambon_id, address]
         );
-        console.log('Shipping address created with ID:', shippingId);
+
 
         // Create customer record with generated c_id
-        console.log('Creating customer record...');
+
         await query(
             `INSERT INTO user (
                 c_id,
@@ -134,7 +131,7 @@ export default async function handler(req, res) {
                 1
             ]
         );
-        console.log('Customer created with ID:', customerId);
+   
 
         // Create session
         const sessionId = generateSessionId();

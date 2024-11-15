@@ -81,7 +81,6 @@ const HistoryPage = () => {
             const stockCheckResponse = await fetch(`/api/stock/check-reorder/${orderId}`);
             const stockData = await stockCheckResponse.json();
             
-            console.log('Stock check response:', stockData);
 
             // If stock check fails, show error and return early
             if (!stockData.success) {

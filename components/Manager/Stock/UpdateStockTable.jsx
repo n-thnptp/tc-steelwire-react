@@ -39,7 +39,7 @@ const UpdateStockTable = () => {
     const fetchStock = async () => {
       const data = await (await fetch('/api/manager/stock')).json();
       setMaterials(data.materials);
-      console.log(data.materials);
+
     };
     fetchStock();
   }, []);

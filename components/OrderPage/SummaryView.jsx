@@ -20,7 +20,6 @@ const SummaryView = () => {
             if (!specs) return total;
 
             // Calculate price: weight * price per kg
-            console.log("price: " + item.price);
             return total + item.price;
         }, 0);
     };
@@ -65,7 +64,6 @@ const SummaryView = () => {
                 weight: parseFloat(item.weight)
             }));
 
-            console.log('Checking stock for:', formattedItems);
 
             const response = await fetch('/api/stock/check', {
                 method: 'POST',

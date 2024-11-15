@@ -38,7 +38,6 @@ export default async function handler(req, res) {
       [orderId]
     );
 
-    console.log(updatedOrder);
 
     const materialUpdate = await query(
       `

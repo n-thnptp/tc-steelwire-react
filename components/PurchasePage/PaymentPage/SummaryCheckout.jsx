@@ -11,7 +11,7 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log('Component mounted, fetching data...');
+
     fetchAddress();
     if (router.query.orderId) {
       fetchOrderDetails(router.query.orderId);
@@ -19,22 +19,20 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   }, [router.query.orderId]);
 
   const fetchAddress = async () => {
-    console.log("fetchAddress called");
+
     try {
       const response = await fetch('/api/user/shipping-address');
       const data = await response.json();
-      console.log('Shipping address response:', data);
+
 
       if (data.success) {
         setAddress(data.address);
         
         // Calculate shipping fee based on province
         const isFreeShippingZone = [1, 2, 3, 4, 58, 59].includes(data.address.province_id);
-        console.log('Province ID:', data.address.province_id);
-        console.log('Is free shipping zone:', isFreeShippingZone);
         
         const newShippingFee = isFreeShippingZone ? 0 : 3500;
-        console.log('New shipping fee:', newShippingFee);
+  
         setShippingFee(newShippingFee);
       }
     } catch (error) {
@@ -46,7 +44,6 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
     try {
       const response = await fetch(`/api/order/${orderId}`);
       const data = await response.json();
-      console.log('Order details response:', data);
       
       if (data.success) {
         setOrderDetails(data.order);
@@ -107,7 +104,7 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
         }
 
         const data = await response.json();
-        console.log('Payment processed:', data);
+
         
         if (data.success) {
           router.push('/status');
@@ -138,7 +135,7 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
   };
 
   const handleAddressUpdate = async () => {
-    console.log("Address updated, fetching new data...");
+
     // Fetch immediately after save
     await fetchAddress();
     setIsEditAddressOpen(false);

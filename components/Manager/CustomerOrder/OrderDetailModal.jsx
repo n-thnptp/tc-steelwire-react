@@ -9,7 +9,6 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
   useEffect(() => {
     const fetchOrders = async () => {
       const data = await (await fetch(`/api/manager/order-detail?id=${orderId}`)).json();
-      console.log(data);
       setOrder(data.order);
     };
     fetchOrders();

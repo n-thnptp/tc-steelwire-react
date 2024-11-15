@@ -170,7 +170,7 @@ const EditAddress = ({ userData, onClose, onSave }) => {
             const selectedTambon = locationOptions.tambons.find(
                 tambon => tambon.id === parseInt(value)
             )
-            console.log(selectedTambon);
+
 
             setFormData(prevData => ({
                 ...prevData,

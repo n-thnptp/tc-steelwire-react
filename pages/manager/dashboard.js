@@ -7,7 +7,6 @@ const ManagerDashboardPage = () => {
     const { user } = useLoginContext();
 
     useEffect(() => {
-        console.log('Dashboard mounted - Current user:', user);
     }, [user]);
 
     return (

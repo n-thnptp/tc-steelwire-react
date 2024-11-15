@@ -223,7 +223,6 @@ export const FormProvider = ({ children }) => {
                 postcode: data.postcode
             };
 
-            console.log('Sending registration data:', registrationData);
 
             const response = await fetch('/api/auth/register', {
                 method: 'POST',

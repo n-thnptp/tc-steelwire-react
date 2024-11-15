@@ -1,13 +1,10 @@
 import query from '../../../lib/db';
 
 export default async function handler(req, res) {
-    console.log('API route hit');
     
     const sessionId = req.cookies.sessionId;
-    console.log('Session ID:', sessionId);
 
     if (!sessionId) {
-        console.log('No session ID found');
         return res.status(401).json({ error: 'Not authenticated' });
     }
 
@@ -17,10 +14,8 @@ export default async function handler(req, res) {
             'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
             [sessionId]
         );
-        console.log('Sessions query result:', sessions);
 
         if (sessions.length === 0) {
-            console.log('No valid session found');
             return res.status(401).json({ error: 'Invalid or expired session' });
         }
 

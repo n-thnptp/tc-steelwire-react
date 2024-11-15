@@ -26,8 +26,6 @@ export default async function handler(req, res) {
             `
         );
 
-        console.log("material types: " + JSON.stringify(materialTypes));
-        console.log("material sizes: " + JSON.stringify(materialSizes));
 
         res.status(200).json({
             materialTypes: materialTypes.map(type => ({

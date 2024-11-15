@@ -15,7 +15,6 @@ export default function OrderPage() {
         
         if (!loading) {
             if (!user && !parsedUser) {
-                console.log('OrderPage - No user found, redirecting to login');
                 router.push('/login');
             } else if (parsedUser && parsedUser.role_id === 1) {
                 // Valid user found in localStorage

@@ -6,10 +6,8 @@ export default async function handler(req, res) {
     }
 
     const sessionId = req.cookies.sessionId;
-    console.log('Validating session:', sessionId);
 
     if (!sessionId) {
-        console.log('No session ID found');
         return res.status(401).json({ error: 'No session found' });
     }
 
@@ -25,10 +23,9 @@ export default async function handler(req, res) {
             [sessionId]
         );
 
-        console.log('Session query result:', session);
 
         if (!session) {
-            console.log('No valid session found');
+
             return res.status(401).json({ error: 'Invalid or expired session' });
         }
 

@@ -22,8 +22,6 @@ export const CartProvider = ({ children }) => {
 
                 const data = await response.json();
 
-                console.log("here: " + JSON.stringify(data));
-
                 if (data.success) {
                     setOrders(data.items);
                 } else {

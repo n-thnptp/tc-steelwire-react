@@ -26,7 +26,6 @@ export default async function handler(req, res) {
                 [product.mt_id, product.ms_id]
             );
 
-            console.log(JSON.stringify(material));
 
             if (!material) {
                 return res.status(400).json({

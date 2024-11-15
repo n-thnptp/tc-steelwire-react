@@ -15,7 +15,6 @@ export default async function handler(req, res) {
             });
         }
 
-        console.log('Received products:', products);
 
         for (const product of products) {
             if (!product.mt_id || !product.ms_id || !product.weight) {

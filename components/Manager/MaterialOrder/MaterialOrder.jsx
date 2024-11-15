@@ -36,7 +36,7 @@ const MaterialOrder = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       const data = await (await fetch('/api/manager/material-order')).json();
-      console.log(data);
+
       setOrders(data.order);
     };
     fetchOrders();

@@ -67,7 +67,6 @@ const EditAddress = ({ userData, onClose, onSave }) => {
         try {
             const response = await fetch('/api/locations/provinces/all');
             const data = await response.json();
-            console.log('Province object example:', data[0]);
 
             setLocationOptions(prev => ({
                 ...prev,
@@ -86,7 +85,6 @@ const EditAddress = ({ userData, onClose, onSave }) => {
         try {
             const response = await fetch(`/api/locations/provinces/${provinceId}`);
             const data = await response.json();
-            console.log('Amphur object example:', data[0]);
 
             setLocationOptions(prev => ({
                 ...prev,
@@ -105,7 +103,6 @@ const EditAddress = ({ userData, onClose, onSave }) => {
         try {
             const response = await fetch(`/api/locations/amphurs/${amphurId}`);
             const data = await response.json();
-            console.log('Tambon object example:', data[0]);
 
             setLocationOptions(prev => ({
                 ...prev,

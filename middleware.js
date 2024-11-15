@@ -75,7 +75,7 @@ export async function middleware(request) {
             // Session is valid, get user data
             const data = await response.json();
             const user = data.user;
-            console.log(user);
+           
             // Check if the user is an admin
             if (user.role === 'admin' && !pathname.startsWith('/manager')) {
                 // Redirect admin to manager order page

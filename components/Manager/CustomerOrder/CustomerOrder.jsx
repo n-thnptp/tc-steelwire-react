@@ -41,7 +41,6 @@ const CustomerOrder = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       const data = await (await fetch('/api/manager/customer-order')).json();
-      console.log(data);
       setOrders(data.order);
     };
     fetchOrders();

@@ -10,8 +10,7 @@ export default async function handler(req, res) {
     try {
         const { email, password } = req.body;
         
-        // Debug log
-        console.log('Login attempt with data:', req.body);
+   
 
         // Validate input
         if (!email || !password) {
@@ -28,7 +27,7 @@ export default async function handler(req, res) {
         );
 
         // Debug: Log the query results
-        console.log('Database query result:', user);
+
 
         if (!user) {
             return res.status(200).json({ 

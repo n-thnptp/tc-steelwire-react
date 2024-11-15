@@ -185,7 +185,7 @@ export const OrderProvider = ({ children }) => {
         }
 
         setLoading(true);
-        console.log("sent in orders: " + JSON.stringify(orderState.items));
+        
         try {
             // Validate order first
             const isValid = await validateOrder(orderState.items);
@@ -218,10 +218,10 @@ export const OrderProvider = ({ children }) => {
                 })
             });
 
-            console.log(response);
+            
             const data = await response.json();
 
-            console.log(data)
+            
             if (data.success) {
                 setOrderState({
                     ...initialOrderState,

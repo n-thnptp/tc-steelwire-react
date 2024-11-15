@@ -28,9 +28,6 @@ export default async function handler(req, res) {
       },
     });
 
-    // For debugging
-    console.log('Charge response:', charge);
-
     res.json({
       success: true,
       charge: charge, // Contains the QR code URL in charge.source.image.download_uri

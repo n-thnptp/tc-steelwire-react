@@ -24,7 +24,6 @@ export default async function handler(req, res) {
         `
     );
 
-    console.log(order);
     return res.status(200).json({ order });
 
   } catch (error) {

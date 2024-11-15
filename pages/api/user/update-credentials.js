@@ -11,7 +11,6 @@ export default async function handler(req, res) {
     if (req.headers.cookie) {
         const cookies = parse(req.headers.cookie);
         sessionId = cookies.sessionId;
-        console.log('Parsed sessionId:', sessionId);
     }
 
     if (!sessionId) {
@@ -30,7 +29,6 @@ export default async function handler(req, res) {
             [sessionId]
         );
 
-        console.log('Session query result:', sessions);
 
         if (sessions.length === 0) {
             return res.status(401).json({ error: 'Invalid or expired session' });

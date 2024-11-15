@@ -16,7 +16,6 @@ const TransactionTable = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       const data = await (await fetch('/api/manager/transaction')).json();
-      console.log(data);
       setTransactions(data.transactions);
     };
     fetchOrders();

@@ -51,7 +51,7 @@ const PaymentPage = ({ orderId }) => {
                 }
 
                 const data = await response.json();
-                console.log('Payment processed:', data);
+
                 
                 if (data.success) {
                     router.push('/status');
