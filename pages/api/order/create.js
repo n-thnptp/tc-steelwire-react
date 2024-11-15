@@ -48,9 +48,16 @@ export default async function handler(req, res) {
 
         // Create order
         const orderResult = await query(
-            `INSERT INTO \`order\` (c_id, o_total_price, o_status_id, o_date)
-            VALUES (?, ?, 1, NOW())`,
-            [customer_id, total_price]
+            `INSERT INTO \`order\` (
+                c_id, 
+                o_total_price, 
+                o_status_id, 
+                o_date, 
+                shipping_fee, 
+                o_estimated_shipping_day
+            )
+            VALUES (?, ?, 1, NOW(), ?, 3)`,
+            [customer_id, total_price, shipping_fee]
         );
 
         const orderId = orderResult.insertId;

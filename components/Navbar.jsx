@@ -67,12 +67,19 @@ const Navbar = () => {
     return (
         <nav className="sticky top-0 bg-neutral-white shadow-md p-2 w-full z-50 h-16">
             <div className="flex items-center justify-between">
-                <div className="flex items-center justify-center" style={{ width: '180px', height: '50px' }}>
+                <div className="flex items-center justify-center" style={{ width: 'auto', height: '50px' }}>
                     <a
-                        className="cursor-pointer text-lg font-inter font-bold text-accent-900 text-[20px]"
+                        className="cursor-pointer flex items-center gap-2 whitespace-nowrap"
                         onClick={() => handleMenuClick('HOME')}
                     >
-                        TC STEELWIRE
+                        <img 
+                            src="/pic/logo.png" 
+                            alt="TC STEELWIRE Logo" 
+                            className="h-8 w-auto"
+                        />
+                        <span className="font-inter font-bold text-accent-900 text-[20px] whitespace-nowrap">
+                            STEELWIRE
+                        </span>
                     </a>
                 </div>
 
