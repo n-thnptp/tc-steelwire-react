@@ -10,8 +10,6 @@ export default async function handler(req, res) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
 
-    const connection = await query('SELECT 1'); // Get connection from pool
-
     try {
         // Get user ID from session
         const sessions = await query(
@@ -26,43 +24,34 @@ export default async function handler(req, res) {
         const userId = sessions[0].c_id;
         const { address, tambon } = req.body;
 
-        // Check if user already has a shipping address
+        if (!tambon) {
+            return res.status(400).json({ error: 'Invalid tambon ID' });
+        }
+
+        // Get user's current shipping address ID
         const userResult = await query(
             'SELECT sh_id FROM user WHERE c_id = ?',
             [userId]
         );
 
-        let shippingAddressId = userResult[0]?.sh_id;
+        const shippingAddressId = userResult[0]?.sh_id;
 
         if (!shippingAddressId) {
-            // Create new shipping address
+            // If user doesn't have a shipping address, create one
             const result = await query(
                 'INSERT INTO shipping_address (tambon_id, address) VALUES (?, ?)',
                 [tambon, address]
             );
-            shippingAddressId = result.insertId;
 
-            // Update customer with new shipping address ID
+            // Update user with new shipping address ID
             await query(
                 'UPDATE user SET sh_id = ? WHERE c_id = ?',
-                [shippingAddressId, userId]
+                [result.insertId, userId]
             );
         } else {
-            console.log('Update params before check:', [tambon, address, shippingAddressId]);
-
-            // Validate parameters before query
-            if (!tambon) {
-                return res.status(400).json({ error: 'Invalid tambon ID' });
-            }
-
-            // Update existing shipping address
+            // Update the existing shipping address
             await query(
-                `
-                UPDATE shipping_address
-                SET tambon_id = ?,
-                    address = ?
-                WHERE sh_id = ?
-                `,
+                'UPDATE shipping_address SET tambon_id = ?, address = ? WHERE sh_id = ?',
                 [tambon, address || '', shippingAddressId]
             );
         }
@@ -83,7 +72,6 @@ export default async function handler(req, res) {
                 p.name_th AS province_name,
                 t.zip_code AS zip_code
             FROM user u
-
             JOIN shipping_address sa ON u.sh_id = sa.sh_id
             JOIN tambons t ON sa.tambon_id = t.tambon_id
             JOIN amphurs am ON t.amphur_id = am.amphur_id
