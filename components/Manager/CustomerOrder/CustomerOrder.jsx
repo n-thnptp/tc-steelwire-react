@@ -8,6 +8,8 @@ import { IoSearchOutline } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import { IoIosArrowUp } from "react-icons/io";
 import AlertModal from '../AlertModal';
+import { FaEdit } from "react-icons/fa";
+import CourierModal from './CourierModal';
 
 const CustomerOrder = () => {
   const [orders, setOrders] = useState([]);
@@ -25,6 +27,7 @@ const CustomerOrder = () => {
     message: '',
     type: 'success'
   });
+  const [showCourierModal, setShowCourierModal] = useState(false);
 
   const showAlert = (title, message, type = 'success') => {
     setAlertModal({
@@ -215,6 +218,43 @@ const CustomerOrder = () => {
     return 0;
   });
 
+  const assignCourier = async (courierId) => {
+    try {
+      const response = await fetch('/api/manager/assign-courier', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          orderId: orderId,
+          courierId: courierId
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to assign courier');
+      }
+
+      const data = await response.json();
+
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.o_id === orderId
+            ? { ...order, courier_id: courierId, courier_name: data.courierName }
+            : order
+        )
+      );
+
+      setShowCourierModal(false);
+      setOrderId("");
+      showAlert('Success', 'Courier assigned successfully');
+
+    } catch (error) {
+      console.error('Error assigning courier:', error);
+      showAlert('Error', 'Failed to assign courier', 'error');
+    }
+  };
+
   return (
     <div className="flex flex-col p-8 justify-center bg-white items-center h-full pb-60">
       <div className="w-full max-w-7xl bg-white p-6 rounded-lg shadow-lg overflow-hidden">
@@ -311,6 +351,7 @@ const CustomerOrder = () => {
                 <th className="py-3 px-4 text-center font-bold text-primary-800 font-inter">ORDER DATE</th>
                 <th className="py-3 px-4 text-center font-bold text-primary-800 font-inter">TOTAL PRICE</th>
                 <th className="py-3 px-4 text-center font-bold text-primary-800 font-inter">ORDER STATUS</th>
+                <th className="py-3 px-4 text-center font-bold text-primary-800 font-inter">COURIER</th>
                 <th className="py-3 px-4 text-center font-bold text-primary-800 font-inter">DETAIL</th>
                 <th className="py-3 px-4 text-center font-bold text-primary-800 font-inter rounded-tr-lg">Edit status</th>
               </tr>
@@ -324,6 +365,26 @@ const CustomerOrder = () => {
                   <td className="py-3 px-4 text-primary-800 font-inter text-center font-bold">{formatNumber(order.o_total_price)} BAHT</td>
                   <td className={`py-3 px-4 text-center font-bold ${getOrderStatus(order.status).color}`}>
                     {getOrderStatus(order.status).label}
+                  </td>
+                  <td className="py-3 px-4 text-center text-primary-800 font-inter font-bold">
+                    {order.courier_name ? (
+                        order.courier_name
+                    ) : (
+                        <div 
+                            onClick={() => {
+                                if (Number(order.status) === 3) {
+                                    setOrderId(order.o_id);
+                                    setShowCourierModal(true);
+                                }
+                            }}
+                            className={`flex items-center justify-center ${Number(order.status) === 3 ? 'cursor-pointer hover:text-primary-500' : ''}`}
+                        >
+                            <span>Not assigned</span>
+                            {Number(order.status) === 3 && (
+                                <FaEdit size={16} className="ml-2" />
+                            )}
+                        </div>
+                    )}
                   </td>
                   <td className="py-3 px-4 text-center text-primary-800 font-inter font-bold cursor-pointer underline" onClick={() => toggleModal(order.o_id)}>
                     Detail
@@ -352,6 +413,15 @@ const CustomerOrder = () => {
             setOrderId("");
           }}
           orderId={orderId} />
+        <CourierModal
+          isOpen={showCourierModal}
+          onClose={() => {
+            setShowCourierModal(false);
+            setOrderId("");
+          }}
+          onConfirm={assignCourier}
+          selectedOrders={[]}
+        />
       </div>
     </div>
   );

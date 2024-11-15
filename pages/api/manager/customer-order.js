@@ -9,14 +9,16 @@ export default async function handler(req, res) {
         const order = await query(
         `
         SELECT 
-            o_id, 
-            c_id, 
-            o_date, 
-            o_status_id as status, 
-            o_total_price, 
-            o_estimated_shipping_day, 
-            courier_id
-        FROM \`order\`
+            o.o_id, 
+            o.c_id, 
+            o.o_date, 
+            o.o_status_id as status, 
+            o.o_total_price, 
+            o.o_estimated_shipping_day, 
+            o.courier_id,
+            c.name as courier_name
+        FROM \`order\` o
+        LEFT JOIN courier c ON o.courier_id = c.courier_id
         `
         );
 

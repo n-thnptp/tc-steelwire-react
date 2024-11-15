@@ -119,7 +119,7 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
         <div className="text-primary-800 text-sm">
           <div className="flex justify-between">
             <p>Subtotal</p>
-            <p>{formatNumber(order?.o_total_price) ?? ''}</p>
+            <p>{formatNumber(order?.o_total_price - order?.shipping_fee) ?? ''}</p>
           </div>
           <div className="flex justify-between">
             <p>Shipping & Handling</p>
@@ -133,7 +133,7 @@ const OrderDetailModal = ({ isOpen, onClose, orderId }) => {
 
         <div className="flex justify-between font-bold text-primary-800 text-sm">
           <p>Total</p>
-          <p>{formatNumber(order?.shipping_fee + order?.o_total_price)}</p>
+          <p>{formatNumber(order?.o_total_price)}</p>
         </div>
       </div>
     </div>
