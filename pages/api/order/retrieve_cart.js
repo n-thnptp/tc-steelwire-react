@@ -6,24 +6,13 @@ export default async function handler(req, res) {
         return res.status(405).json({ message: 'Method not allowed' });
     }
 
-    // Get customer ID from session
-    const sessionId = req.cookies.sessionId;
-    if (!sessionId) {
-        return res.status(401).json({ error: 'Not authenticated' });
-    }
-
     try {
-        // Get user ID from session
-        const sessions = await query(
-            'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
-            [sessionId]
-        );
-
-        if (sessions.length === 0) {
-            return res.status(401).json({ error: 'Invalid or expired session' });
+        // Get customer ID from query params or headers
+        const customerId = req.query.userId || req.headers['user-id'];
+        
+        if (!customerId) {
+            return res.status(401).json({ error: 'User ID not provided' });
         }
-
-        const customerId = sessions[0].c_id;
 
         // Fix the SQL query syntax
         const retrieveItems = await query(
@@ -43,6 +32,8 @@ export default async function handler(req, res) {
             WHERE c.c_id = ?`,
             [customerId]
         );
+
+        console.log('Retrieved items:', retrieveItems); // Debug log
 
         return res.status(200).json({
             success: true,

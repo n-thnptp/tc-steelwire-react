@@ -10,9 +10,11 @@ const OrderForm = () => {
     const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
-        // Check localStorage on mount
+        // Check both context and localStorage
         const storedUser = localStorage.getItem('user');
-        if (storedUser || user) {
+        const effectiveUser = user || (storedUser ? JSON.parse(storedUser) : null);
+        
+        if (effectiveUser) {
             setIsInitialized(true);
         }
     }, [user]);

@@ -12,12 +12,18 @@ export const CartProvider = ({ children }) => {
     // Load orders inside cart
     useEffect(() => {
         const fetchItems = async () => {
-            if (!user) return; // Don't fetch if user isn't logged in
+            // Get user from context or localStorage
+            const storedUser = localStorage.getItem('user');
+            const effectiveUser = user || (storedUser ? JSON.parse(storedUser) : null);
+
+            if (!effectiveUser) return; // Don't fetch if no user
 
             try {
                 setLoading(true);
-                const response = await fetch('/api/order/retrieve_cart', {
-                    credentials: 'include'
+                const response = await fetch(`/api/order/retrieve_cart?userId=${effectiveUser.id}`, {
+                    headers: {
+                        'user-id': effectiveUser.id
+                    }
                 });
 
                 const data = await response.json();

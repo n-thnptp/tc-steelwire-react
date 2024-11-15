@@ -16,8 +16,8 @@ export default function OrderPage() {
         if (!loading) {
             if (!user && !parsedUser) {
                 router.push('/login');
-            } else if (parsedUser && parsedUser.role_id === 1) {
-                // Valid user found in localStorage
+            } else {
+                // Valid user found in either context or localStorage
                 setIsInitialized(true);
             }
         }
@@ -36,7 +36,7 @@ export default function OrderPage() {
     const storedUser = localStorage.getItem('user');
     const effectiveUser = user || (storedUser ? JSON.parse(storedUser) : null);
 
-    if (!effectiveUser || effectiveUser.role_id !== 1) {
+    if (!effectiveUser) {
         router.push('/login');
         return null;
     }

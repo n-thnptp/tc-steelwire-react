@@ -29,8 +29,11 @@ export default async function handler(req, res) {
             cart_id = cartResult[0].cart_id;
         }
 
-        for (const product of products) {
+        // Add console.log to debug
+        console.log('Cart ID:', cart_id);
 
+        for (const product of products) {
+            // Debug shop material query
             const getShopMaterialId = await query(
                 `SELECT
                     sm_id,
@@ -40,23 +43,36 @@ export default async function handler(req, res) {
                 WHERE mt_id = ?
                 AND ms_id = ?`,
                 [product.mt_id, product.ms_id]
-            )
+            );
 
+            // Check if shop material exists
+            if (!getShopMaterialId || getShopMaterialId.length === 0) {
+                throw new Error(`Shop material not found for mt_id: ${product.mt_id}, ms_id: ${product.ms_id}`);
+            }
+
+            console.log('Shop Material:', getShopMaterialId[0]);
+
+            // Insert product
             const productResult = await query(
                 `INSERT INTO product (feature, weight, length, sm_id)
                  VALUES (?, ?, ?, ?)`,
-                [product.feature, product.weight, product.length, getShopMaterialId[0].sm_id]
+                [
+                    product.feature, 
+                    parseFloat(product.weight), 
+                    parseFloat(product.length), 
+                    getShopMaterialId[0].sm_id
+                ]
             );
 
             const product_id = productResult.insertId;
+            console.log('Product ID:', product_id);
 
+            // Insert into cart_product
             await query(
-                `
-                INSERT INTO cart_product (cart_id, p_id)
-                VALUES (?, ?)
-                `,
+                `INSERT INTO cart_product (cart_id, p_id)
+                 VALUES (?, ?)`,
                 [cart_id, product_id]
-            )
+            );
         }
 
         res.status(201).json({
@@ -66,6 +82,10 @@ export default async function handler(req, res) {
 
     } catch (error) {
         console.error('Database error:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ 
+            success: false,
+            message: error.message || 'Internal server error',
+            error: error.toString()
+        });
     }
 }

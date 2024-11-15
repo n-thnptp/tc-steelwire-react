@@ -31,18 +31,23 @@ export default async function handler(req, res) {
                 o.o_id,
                 o.o_total_price,
                 o.shipping_fee,
+                o.o_date,
+                o.o_status_id,
                 c.firstname,
                 c.lastname,
                 sa.address,
                 t.name_th AS tambon_name,
                 am.name_th AS amphur_name,
-                p.name_th AS province_name
+                p.name_th AS province_name,
+                cr.name as courier_name,
+                cr.courier_id
             FROM \`order\` o
             JOIN user c ON o.c_id = c.c_id
             JOIN shipping_address sa ON c.sh_id = sa.sh_id
             JOIN tambons t ON sa.tambon_id = t.tambon_id
             JOIN amphurs am ON t.amphur_id = am.amphur_id
             JOIN provinces p ON am.province_id = p.province_id
+            LEFT JOIN courier cr ON o.courier_id = cr.courier_id
             WHERE o.o_id = ? AND o.c_id = ?`,
             [orderId, customerId]
         );

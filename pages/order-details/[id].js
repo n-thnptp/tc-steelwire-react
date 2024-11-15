@@ -15,9 +15,10 @@ export default function OrderDetails() {
 
     const fetchOrderDetails = async () => {
         try {
-            const response = await fetch(`/api/orders/${id}`);
+            const response = await fetch(`/api/order/${id}`);
             const data = await response.json();
             if (data.success) {
+                console.log('Order Details:', data.order);
                 setOrderDetails(data.order);
             }
         } catch (error) {

@@ -167,7 +167,11 @@ export const OrderProvider = ({ children }) => {
     const handleConfirm = async (e) => {
         e?.preventDefault();
 
-        if (!user) {
+        // Check both context user and localStorage
+        const storedUser = localStorage.getItem('user');
+        const effectiveUser = user || (storedUser ? JSON.parse(storedUser) : null);
+
+        if (!effectiveUser) {
             setError("Please login to place an order");
             router.push('/login');
             return;
@@ -207,7 +211,7 @@ export const OrderProvider = ({ children }) => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    customer_id: user.id,
+                    customer_id: effectiveUser.id,
                     products: orderState.items.map(item => ({
                         mt_id: item.mt_id,
                         ms_id: item.ms_id,

@@ -78,7 +78,6 @@ const Navbar = () => {
                             className="h-8 w-auto"
                         />
                         <span className="font-inter font-bold text-accent-900 text-[20px] whitespace-nowrap">
-                            STEELWIRE
                         </span>
                     </a>
                 </div>
