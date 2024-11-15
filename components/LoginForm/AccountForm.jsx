@@ -1,7 +1,5 @@
 import React, { useState, useRef } from "react";
 import FormInput from "./FormInput";
-import { Button } from '@material-tailwind/react';
-import { FileUploader } from 'react-drag-drop-files';
 import { FaUser } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { RiLockPasswordFill } from "react-icons/ri";
@@ -61,8 +59,6 @@ const ValidationTooltip = ({ show, message, requirements }) => {
         </div>
     ) : null;
 };
-
-const FileTypes = ["JPG", "JPEG", "PNG"];
 
 const AccountForm = () => {
     const { data, handleChange, handleFileChange, page, setPage } = useFormContext();
@@ -240,15 +236,6 @@ const AccountForm = () => {
                     Step 1
                 </h1>
 
-                <div className="mb-5 drag-and-drop">
-                    <FileUploader
-                        multiple={false}
-                        handleChange={handleFileChange}
-                        name="profileImage"
-                        types={FileTypes}
-                    />
-                </div>
-
                 <div className="flex flex-col gap-4">
                     {/* Name fields in a row */}
                     <div className="flex gap-4">
@@ -353,36 +340,6 @@ const AccountForm = () => {
             </div>
 
             <div className="px-10">
-                <div className="mt-7 line separator"> OR </div>
-
-                <div className="grid grid-cols-2 gap-5 mt-7">
-                    <Button
-                        href="#"
-                        size="lg"
-                        color="white"
-                        className="flex items-center justify-center"
-                    >
-                        <img 
-                            src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" 
-                            className="w-8 h-8" 
-                            alt="Google logo"
-                        />
-                    </Button>
-
-                    <Button
-                        href="#"
-                        size="lg"
-                        color="white"
-                        className="flex items-center justify-center"
-                    >
-                        <img 
-                            src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Facebook_icon_2013.svg" 
-                            className="w-8 h-8" 
-                            alt="Facebook logo"
-                        />
-                    </Button>
-                </div>
-
                 <div className="flex py-8 gap-2 font-inter text-sm items-center justify-center text-primary-700">
                     <div>Already have an account ?</div>
                     <a href="/login" className="button-underline inline-flex items-center justify-center gap-1">
