@@ -29,7 +29,17 @@ const EditPersonalInfo = ({ userData, onClose, onSave }) => {
     return (
         <div
             className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50"
-            onClick={(e) => e.target === e.currentTarget && onClose()}
+            onMouseDown={(e) => {
+                if (e.target === e.currentTarget) {
+                    const handleMouseUp = (upEvent) => {
+                        if (upEvent.target === e.currentTarget) {
+                            onClose();
+                        }
+                        document.removeEventListener('mouseup', handleMouseUp);
+                    };
+                    document.addEventListener('mouseup', handleMouseUp);
+                }
+            }}
         >
             <div className="bg-neutral-white rounded-lg p-8 w-full max-w-md shadow-lg relative">
                 <button

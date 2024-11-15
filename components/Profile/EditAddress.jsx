@@ -345,8 +345,9 @@ const EditAddress = ({ userData, onClose, onSave }) => {
                             name="postalCode"
                             value={formData.postalCode}
                             onChange={handleChange}
-                            className="w-full p-3 input-field"
+                            className="w-full p-3 input-field bg-gray-100"
                             maxLength="5"
+                            readOnly
                             placeholder="Enter postal code"
                         />
                         {errors.postalCode && (
