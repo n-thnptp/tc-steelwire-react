@@ -3,7 +3,10 @@ import query from '../../../lib/db';
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
         res.setHeader('Allow', ['POST']);
+        const [userIdCheck] = await query('SELECT @current_user_id as current_user_id');
+        console.log('Current user_id in order validation:', userIdCheck.current_user_id);
         return res.status(405).end(`Method ${req.method} Not Allowed`);
+        
     }
 
     const { products } = req.body;

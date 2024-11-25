@@ -62,6 +62,14 @@ export default async function handler(req, res) {
             [sessionId || null, user.c_id || null, expirationDate || null]
         );
 
+        // Log current user after setting session
+        await query(
+            `SET @current_user_id = ?`,
+            [user.c_id]
+        );
+        const [userIdCheck] = await query('SELECT @current_user_id as current_user_id');
+        console.log('Current user_id after login:', userIdCheck.current_user_id);
+
         // 5. Set cookie and return response
         res.setHeader(
             'Set-Cookie',
