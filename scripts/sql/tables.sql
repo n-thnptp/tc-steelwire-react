@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 06, 2024 at 07:08 AM
+-- Generation Time: Nov 25, 2024 at 08:58 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `tc_steelwires_system`
+-- Database: `tc_steelwire_system`
 --
 
 -- --------------------------------------------------------
@@ -972,6 +972,37 @@ INSERT INTO `amphurs` (`amphur_id`, `name_th`, `name_en`, `province_id`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cart`
+--
+
+CREATE TABLE `cart` (
+  `cart_id` int(11) NOT NULL,
+  `c_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cart`
+--
+
+INSERT INTO `cart` (`cart_id`, `c_id`) VALUES
+(11, 3),
+(12, 31436);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cart_product`
+--
+
+CREATE TABLE `cart_product` (
+  `cart_product_id` int(11) NOT NULL,
+  `cart_id` int(11) NOT NULL,
+  `p_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `courier`
 --
 
@@ -986,7 +1017,9 @@ CREATE TABLE `courier` (
 --
 
 INSERT INTO `courier` (`courier_id`, `name`, `phone_number`) VALUES
-(1, 'สมชาย ก้องเกื้อ', '0626100039');
+(1, 'สมชาย ก้องเกื้อ', '0626100039'),
+(2, 'ผูผา ก้องแก้ว', '0847578457'),
+(3, 'อิสเราะห์ นาบี', '0626458547');
 
 -- --------------------------------------------------------
 
@@ -1061,7 +1094,7 @@ INSERT INTO `material_type` (`mt_id`, `name`) VALUES
 
 CREATE TABLE `order` (
   `o_id` int(11) NOT NULL,
-  `c_id` int(16) DEFAULT NULL,
+  `c_id` int(5) DEFAULT NULL,
   `o_date` date NOT NULL,
   `o_status_id` int(11) DEFAULT NULL,
   `shipping_fee` int(10) NOT NULL,
@@ -1075,8 +1108,24 @@ CREATE TABLE `order` (
 --
 
 INSERT INTO `order` (`o_id`, `c_id`, `o_date`, `o_status_id`, `shipping_fee`, `o_total_price`, `o_estimated_shipping_day`, `courier_id`) VALUES
-(1, 123456789, '2024-10-29', 1, 0, 5000, 5, 1),
-(2, 234567890, '2024-10-30', 2, 0, 7500, 7, 1);
+(44, 3, '2024-11-14', 4, 3500, 90158, 3, 0),
+(45, 3, '2024-11-14', 4, 3500, 90158, 3, 2),
+(46, 3, '2024-11-14', 4, 3500, 3526, 3, 1),
+(83, 3, '2024-11-15', 3, 3500, 3526, 3, 1),
+(84, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(85, 3, '2024-11-15', 5, 3500, 3526, 3, 1),
+(86, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(87, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(88, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(89, 3, '2024-11-15', 3, 3500, 3526, 3, 0),
+(90, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(91, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(92, 3, '2024-11-15', 5, 3500, 29500, 3, 0),
+(93, 3, '2024-11-15', 5, 3500, 29500, 3, 0),
+(94, 3, '2024-11-15', 1, 3500, 29500, 3, 0),
+(95, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(96, 3, '2024-11-15', 5, 3500, 3526, 3, 0),
+(97, 31436, '2024-11-15', 1, 3500, 3578, 3, 0);
 
 -- --------------------------------------------------------
 
@@ -1094,8 +1143,28 @@ CREATE TABLE `order_product` (
 --
 
 INSERT INTO `order_product` (`o_id`, `p_id`) VALUES
-(1, 1),
-(2, 2);
+(44, 20),
+(44, 21),
+(45, 20),
+(45, 21),
+(46, 33),
+(83, 84),
+(84, 85),
+(85, 86),
+(86, 85),
+(87, 85),
+(88, 87),
+(89, 88),
+(90, 85),
+(91, 85),
+(92, 89),
+(93, 89),
+(94, 89),
+(95, 85),
+(96, 85),
+(97, 90),
+(97, 91),
+(97, 92);
 
 -- --------------------------------------------------------
 
@@ -1139,7 +1208,89 @@ CREATE TABLE `product` (
 
 INSERT INTO `product` (`p_id`, `feature`, `weight`, `length`, `sm_id`) VALUES
 (1, 'Indented', 200, 100, 1),
-(2, 'Plain', 300, 150, 2);
+(2, 'Plain', 300, 150, 2),
+(6, 'Indented', 1000, 1000, 1),
+(10, 'Indented', 1000, 1000, 1),
+(12, 'Indented', 1000, 1000, 1),
+(14, 'Indented', 1000, 1000, 1),
+(15, 'Indented', 1000, 1000, 1),
+(16, 'Plain', 1000, 2000, 1),
+(17, 'Indented', 3800, 2000, 4),
+(18, 'Indented', 2000, 2000, 1),
+(19, 'Indented', 1000, 3000, 3),
+(20, 'Indented', 2121, 2121, 1),
+(21, 'Indented', 1212, 1212, 2),
+(22, 'Indented', 0.16, 107, 3),
+(23, 'Indented', 3800, 1000, 10),
+(24, 'Indented', 1000, 1000, 1),
+(25, 'Indented', 1, 102, 1),
+(26, 'Indented', 1, 100, 1),
+(27, 'Indented', 1, 100, 1),
+(28, 'Indented', 2, 100, 1),
+(29, 'Indented', 1, 100, 1),
+(30, 'Indented', 1, 100, 1),
+(31, 'Indented', 1, 100, 1),
+(32, 'Indented', 1, 100, 1),
+(33, 'Indented', 1, 100, 1),
+(34, 'Indented', 1, 100, 1),
+(35, 'Indented', 1, 100, 1),
+(36, 'Indented', 2, 100, 1),
+(37, 'Indented', 1000, 1000, 1),
+(38, 'Indented', 1000, 100, 1),
+(39, 'Indented', 100, 100, 1),
+(40, 'Indented', 3800, 110, 1),
+(41, 'Plain', 1111, 100, 1),
+(42, 'Indented', 2, 100, 1),
+(43, 'Indented', 1, 100, 1),
+(44, 'Indented', 1, 100, 3),
+(45, 'Indented', 1, 100, 3),
+(46, 'Indented', 1, 100, 1),
+(47, 'Indented', 2, 100, 3),
+(48, 'Indented', 1, 101, 1),
+(49, 'Indented', 1, 100, 3),
+(50, 'Indented', 1, 100, 1),
+(51, 'Indented', 1, 100, 1),
+(52, 'Indented', 1, 100, 1),
+(53, 'Indented', 1, 100, 1),
+(54, 'Indented', 1, 100, 1),
+(55, 'Indented', 1, 100, 7),
+(56, 'Indented', 1, 100, 1),
+(57, 'Indented', 0, 100, 1),
+(58, 'Indented', 1, 100, 1),
+(59, 'Indented', 1000, 1000, 1),
+(60, 'Plain', 1000, 1000, 6),
+(61, 'Indented', 1000, 1000, 6),
+(62, 'Indented', 2, 107, 6),
+(63, 'Indented', 111, 103, 1),
+(64, 'Indented', 1, 100, 1),
+(65, 'Plain', 1000, 1000, 1),
+(66, 'Indented', 3800, 100, 1),
+(67, 'Indented', 2000, 1000, 1),
+(68, 'Indented', 1000, 100, 1),
+(69, 'Indented', 3000, 320, 1),
+(70, 'Indented', 3000, 1000, 1),
+(71, 'Indented', 1000, 101, 1),
+(72, 'Indented', 1000, 1000, 1),
+(73, 'Indented', 1000, 1000, 1),
+(74, 'Indented', 200, 1000, 1),
+(75, 'Plain', 200, 1000, 1),
+(76, 'Indented', 1000, 1000, 2),
+(77, 'Indented', 200, 1000, 1),
+(78, 'Indented', 2000, 1000, 4),
+(79, 'Indented', 1000, 1000, 2),
+(80, 'Plain', 1, 100, 2),
+(81, 'Indented', 1, 100, 2),
+(82, 'Indented', 1, 100, 2),
+(83, 'Indented', 1, 100, 2),
+(84, 'Indented', 1, 100, 6),
+(85, 'Indented', 1, 100, 6),
+(86, 'Plain', 1, 100, 6),
+(87, 'Indented', 1, 100, 1),
+(88, 'Indented', 1, 100, 1),
+(89, 'Indented', 1000, 102, 6),
+(90, 'Indented', 1, 100, 7),
+(91, 'Indented', 1, 100, 6),
+(92, 'Indented', 1, 100, 6);
 
 -- --------------------------------------------------------
 
@@ -1268,6 +1419,13 @@ CREATE TABLE `sessions` (
   `expiration` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `sessions`
+--
+
+INSERT INTO `sessions` (`session_id`, `c_id`, `expiration`) VALUES
+('a51155b29bf5fa16ecb839e3a28e542880099f23', 3, '2024-11-27 02:26:38');
+
 -- --------------------------------------------------------
 
 --
@@ -1285,8 +1443,11 @@ CREATE TABLE `shipping_address` (
 --
 
 INSERT INTO `shipping_address` (`sh_id`, `tambon_id`, `address`) VALUES
-(1, 100101, '89/2 ถนนซัมติง เขตซัมวัน'),
-(2, 100102, '91/8 ถนนซัมวัน เขตซัมติง');
+(1, 460304, 'lllllllll'),
+(14, 700401, '6-88 8'),
+(17, 260301, '6-88 8'),
+(15610, 810402, '6-88 8'),
+(74053, 461201, '6-88 8');
 
 -- --------------------------------------------------------
 
@@ -1308,13 +1469,13 @@ CREATE TABLE `shop_material` (
 --
 
 INSERT INTO `shop_material` (`sm_id`, `mt_id`, `ms_id`, `total_amount`, `min_amount`, `date_added`) VALUES
-(1, 1, 1, 40000, 3800, '2024-11-03'),
-(2, 1, 2, 40000, 3800, '2024-11-03'),
+(1, 1, 1, 3800, 3800, '2024-11-03'),
+(2, 1, 2, 10555, 3800, '2024-11-03'),
 (3, 1, 3, 40000, 3800, '2024-11-03'),
 (4, 1, 4, 40000, 3800, '2024-11-03'),
 (5, 1, 5, 40000, 3800, '2024-11-03'),
-(6, 2, 1, 40000, 3800, '2024-11-03'),
-(7, 2, 2, 40000, 3800, '2024-11-03'),
+(6, 2, 1, 5998, 3800, '2024-11-03'),
+(7, 2, 2, 39998, 3800, '2024-11-03'),
 (8, 2, 3, 40000, 3800, '2024-11-03'),
 (9, 2, 4, 40000, 3800, '2024-11-03'),
 (10, 2, 5, 40000, 3800, '2024-11-03');
@@ -1332,6 +1493,19 @@ CREATE TABLE `shop_material_order` (
   `quantity` float NOT NULL,
   `smos_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `shop_material_order`
+--
+
+INSERT INTO `shop_material_order` (`smo_id`, `sm_id`, `order_date`, `quantity`, `smos_id`) VALUES
+(1, 1, '2024-11-09', 20000, 2),
+(2, 1, '2024-11-09', 20000, 2),
+(3, 1, '2024-11-14', 20000, 2),
+(4, 1, '2024-11-15', 20000, 2),
+(5, 1, '2024-11-15', 20000, 2),
+(6, 1, '2024-11-15', 40000, 2),
+(7, 2, '2024-11-15', 60000, 2);
 
 -- --------------------------------------------------------
 
@@ -8859,15 +9033,40 @@ INSERT INTO `tambons` (`tambon_id`, `zip_code`, `name_th`, `name_en`, `amphur_id
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `test`
+--
+
+CREATE TABLE `test` (
+  `c_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `test`
+--
+
+INSERT INTO `test` (`c_id`) VALUES
+(3);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `transaction_history`
 --
 
 CREATE TABLE `transaction_history` (
-  `transaction_id` int(11) NOT NULL,
+  `transaction_id` varchar(50) NOT NULL,
   `o_id` int(11) NOT NULL,
-  `method` varchar(50) NOT NULL,
+  `filename` varchar(50) NOT NULL,
   `price` decimal(10,2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `transaction_history`
+--
+
+INSERT INTO `transaction_history` (`transaction_id`, `o_id`, `filename`, `price`) VALUES
+('202411143hxsnnlBE87F8sxXz', 44, 'slip_44_1731578915357.jpg', 90158.00),
+('4319160826231000013B9790', 45, 'slip_45_1731578982743.jpg', 90158.00);
 
 -- --------------------------------------------------------
 
@@ -8876,7 +9075,7 @@ CREATE TABLE `transaction_history` (
 --
 
 CREATE TABLE `user` (
-  `c_id` int(16) NOT NULL,
+  `c_id` int(5) NOT NULL,
   `firstname` varchar(50) NOT NULL,
   `lastname` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
@@ -8888,6 +9087,17 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
+-- Dumping data for table `user`
+--
+
+INSERT INTO `user` (`c_id`, `firstname`, `lastname`, `email`, `password_hashed`, `phone_number`, `company`, `sh_id`, `role_id`) VALUES
+(1, 'Natthapat', 'Yimlamai', 'wh1tebe4st20@gmail.com', '$argon2id$v=19$m=65536,t=2,p=4$uGD/IiTJNS8I/zzIALkaEA$dpH3JQgLGnSWVi4RCOqP5PKBgF3tXfJh1Moey+Pf8J5A4t5g498WukEb0g/Bx5T7j5Q', '0626100038', 'wh1tebeast', 14, 1),
+(2, 'Natthapat', 'Yimlamai', 'minkza2013.mz@gmail.com', '$argon2id$v=19$m=65536,t=2,p=4$yF7ziriXg2OXHLYZwz59RA$ddvw6jOT1bS7pq0Fqnb5+JBxyWB5l2ItGXpNbOzOlTPo74l+Wib8XfbojYXAkUBOXbU', '0626100038', 'wh1tebeast', 17, 2),
+(3, 'Natthapat', 'ABCDEF', 'kicknametakeass118@gmail.com', '$argon2id$v=19$m=65536,t=2,p=4$T3CbOj0VKiXRhQsAdDTSRQ$aIqhoTYO8aAO7H+7FE2gUKJceqoqQUmTki8BCumZL2uNQVCqlZsbANczBj3v0wDdbeQ', '0626100037', 'adasdasd', 1, 1),
+(23187, 'Natthapat', 'Muiphuek', 'kicknametakeass119@gmail.com', '$argon2id$v=19$m=65536,t=2,p=4$gp3mRRKGs6bnFbiTAGpCFw$4dVIlo5JrNhLz0M4eUx96Bm0K04pHPWCjVP/eLZ513KNx0wwoQxBYx29sMyV/FOG8P8', '0626100038', 'wh1tebeast', 74053, 1),
+(31436, 'Natthapat', 'Yimlamai', 'k@g.c', '$argon2id$v=19$m=65536,t=2,p=4$EBo9X1YWsveFieX5uqq7/Q$tvtMrluS6TOvU7nXClm3KEDbOQqg2OUgtBQzBuoGJZLflewig1vZuNzyR/amco8H8/8', '0626100038', 'wh1tebeast', 15610, 2);
+
+--
 -- Indexes for dumped tables
 --
 
@@ -8896,6 +9106,21 @@ CREATE TABLE `user` (
 --
 ALTER TABLE `amphurs`
   ADD PRIMARY KEY (`amphur_id`);
+
+--
+-- Indexes for table `cart`
+--
+ALTER TABLE `cart`
+  ADD PRIMARY KEY (`cart_id`),
+  ADD KEY `cart_ibfk_1` (`c_id`);
+
+--
+-- Indexes for table `cart_product`
+--
+ALTER TABLE `cart_product`
+  ADD PRIMARY KEY (`cart_product_id`),
+  ADD KEY `p_id` (`p_id`),
+  ADD KEY `cart_product_ibfk_1` (`cart_id`);
 
 --
 -- Indexes for table `courier`
@@ -9024,10 +9249,22 @@ ALTER TABLE `user`
 --
 
 --
+-- AUTO_INCREMENT for table `cart`
+--
+ALTER TABLE `cart`
+  MODIFY `cart_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT for table `cart_product`
+--
+ALTER TABLE `cart_product`
+  MODIFY `cart_product_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=195;
+
+--
 -- AUTO_INCREMENT for table `courier`
 --
 ALTER TABLE `courier`
-  MODIFY `courier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `courier_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `material_size`
@@ -9042,6 +9279,12 @@ ALTER TABLE `material_type`
   MODIFY `mt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
+-- AUTO_INCREMENT for table `order`
+--
+ALTER TABLE `order`
+  MODIFY `o_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+
+--
 -- AUTO_INCREMENT for table `order_status`
 --
 ALTER TABLE `order_status`
@@ -9051,7 +9294,7 @@ ALTER TABLE `order_status`
 -- AUTO_INCREMENT for table `product`
 --
 ALTER TABLE `product`
-  MODIFY `p_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `p_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
 -- AUTO_INCREMENT for table `role`
@@ -9063,7 +9306,7 @@ ALTER TABLE `role`
 -- AUTO_INCREMENT for table `shipping_address`
 --
 ALTER TABLE `shipping_address`
-  MODIFY `sh_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `sh_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=74054;
 
 --
 -- AUTO_INCREMENT for table `shop_material`
@@ -9075,7 +9318,7 @@ ALTER TABLE `shop_material`
 -- AUTO_INCREMENT for table `shop_material_order`
 --
 ALTER TABLE `shop_material_order`
-  MODIFY `smo_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `smo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `shop_material_order_status`
@@ -9088,6 +9331,19 @@ ALTER TABLE `shop_material_order_status`
 --
 
 --
+-- Constraints for table `cart`
+--
+ALTER TABLE `cart`
+  ADD CONSTRAINT `cart_ibfk_1` FOREIGN KEY (`c_id`) REFERENCES `user` (`c_id`);
+
+--
+-- Constraints for table `cart_product`
+--
+ALTER TABLE `cart_product`
+  ADD CONSTRAINT `cart_product_ibfk_1` FOREIGN KEY (`cart_id`) REFERENCES `cart` (`cart_id`),
+  ADD CONSTRAINT `cart_product_ibfk_2` FOREIGN KEY (`p_id`) REFERENCES `product` (`p_id`);
+
+--
 -- Constraints for table `order`
 --
 ALTER TABLE `order`
@@ -9097,7 +9353,7 @@ ALTER TABLE `order`
 -- Constraints for table `order_product`
 --
 ALTER TABLE `order_product`
-  ADD CONSTRAINT `order_product_ibfk_1` FOREIGN KEY (`o_id`) REFERENCES `order` (`o_id`),
+  ADD CONSTRAINT `order_product_ibfk_1` FOREIGN KEY (`o_id`) REFERENCES `order` (`o_id`) ON DELETE CASCADE,
   ADD CONSTRAINT `order_product_ibfk_2` FOREIGN KEY (`p_id`) REFERENCES `product` (`p_id`);
 
 --
@@ -9130,7 +9386,7 @@ ALTER TABLE `shop_material_order`
 -- Constraints for table `transaction_history`
 --
 ALTER TABLE `transaction_history`
-  ADD CONSTRAINT `transaction_history_ibfk_1` FOREIGN KEY (`o_id`) REFERENCES `order` (`o_id`);
+  ADD CONSTRAINT `transaction_history_ibfk_1` FOREIGN KEY (`o_id`) REFERENCES `order` (`o_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `user`

@@ -1,4 +1,5 @@
 import query from '../../../lib/db';
+import { setCurrentUser } from '../../../lib/middleware/setCurrentUser';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -9,10 +10,12 @@ export default async function handler(req, res) {
     const sessionId = req.cookies.sessionId;
 
     try {
+        await setCurrentUser(req);
+
         // Get customer ID from session
         const sessions = await query(
             'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
-            [sessionId]
+            [req.cookies.sessionId]
         );
 
         if (!sessions || sessions.length === 0) {

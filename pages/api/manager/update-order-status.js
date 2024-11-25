@@ -1,4 +1,5 @@
 import query from '../../../lib/db';
+import { setCurrentUser } from '../../../lib/middleware/setCurrentUser';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -6,6 +7,8 @@ export default async function handler(req, res) {
   }
 
   try {
+    await setCurrentUser(req);
+
     const { orderId, newStatus } = req.body;
 
     if (!orderId || !newStatus) {
