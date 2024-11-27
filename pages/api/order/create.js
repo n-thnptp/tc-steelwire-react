@@ -28,6 +28,9 @@ export default async function handler(req, res) {
 
         const customer_id = sessionResult.c_id;
 
+        // Set current_user_id for trigger
+        await query('SET @current_user_id = ?', [customer_id]);
+
         // Get cart items
         const cartItems = await query(`
             SELECT 

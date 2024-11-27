@@ -6,6 +6,24 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Get user ID from session cookie
+    const sessionId = req.cookies.sessionId;
+    if (!sessionId) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    const [sessionResult] = await query(
+      'SELECT c_id FROM sessions WHERE session_id = ? AND expiration > NOW()',
+      [sessionId]
+    );
+
+    if (!sessionResult) {
+      return res.status(401).json({ error: 'Invalid or expired session' });
+    }
+
+    // Set current user ID for trigger
+    await query('SET @current_user_id = ?', [sessionResult.c_id]);
+
     const { materialId, quantity } = req.body;
 
     if (!materialId || !quantity) {
