@@ -1,6 +1,7 @@
 import { serialize } from 'cookie';
 import query from '../../../lib/db';
 import { hashPassword, generateSessionId } from '../../../lib/auth';
+import { calculateShippingFee } from '../../../lib/shipping-calculator';
 
 // Utility function to generate numeric IDs
 function generateNumericId(length) {
@@ -72,41 +73,74 @@ export default async function handler(req, res) {
             });
         }
 
-        // Find tambon
+        // Find tambon with full location details
         const tambonQuery = `
-            SELECT * from tambons 
-            WHERE amphur_id = ?
-            AND amphur_id IN (SELECT amphur_id FROM amphurs WHERE province_id = ?)
+            SELECT 
+                t.tambon_id,
+                t.name_th as tambon_name,
+                a.amphur_id,
+                a.name_th as amphur_name,
+                p.province_id,
+                p.name_th as province_name,
+                t.zip_code
+            FROM tambons t
+            JOIN amphurs a ON t.amphur_id = a.amphur_id
+            JOIN provinces p ON a.province_id = p.province_id
+            WHERE t.tambon_id = ?
         `;
-        const tambons = await query(tambonQuery, [amphur, province]);
+        const [tambonDetails] = await query(tambonQuery, [tambon]);
 
-        if (!tambons || tambons.length === 0) {
+        if (!tambonDetails) {
             return res.status(400).json({
-                error: 'Invalid tambon',
-                message: 'tambon not found in our database'
+                error: 'Invalid location',
+                message: 'Location details not found'
             });
         }
 
         // Generate unique IDs
         const customerId = await generateUniqueCustomerId();
-
         const shippingId = await generateUniqueShippingId();
 
+        // Create search term in Thai format
+        const searchTerm = `ตำบล${tambonDetails.tambon_name} อำเภอ${tambonDetails.amphur_name} จังหวัด${tambonDetails.province_name}`;
+        console.log('Searching address:', searchTerm);
+
+        // Use the same shipping calculator as update-address
+        const { coordinates } = await calculateShippingFee(searchTerm);
+        console.log('Coordinates found:', coordinates);
+
+        // Create shipping address with ALL details
+        const shippingInsertQuery = `
+            INSERT INTO shipping_address (
+                sh_id, 
+                tambon_id, 
+                amphur_id,
+                province_id,
+                address, 
+                latitude, 
+                longitude,
+                zip_code
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+        const shippingValues = [
+            shippingId,
+            tambonDetails.tambon_id,
+            tambonDetails.amphur_id,
+            tambonDetails.province_id,
+            address,
+            coordinates?.lat || null,
+            coordinates?.lng || null,
+            postcode
+        ];
+
+        console.log('Shipping insert values:', shippingValues);
+
+        await query(shippingInsertQuery, shippingValues);
 
         // Hash password
-  
         const hashedPassword = await hashPassword(password);
 
-        // Create shipping address with generated sh_id
-  
-        await query(
-            'INSERT INTO shipping_address (sh_id, tambon_id, address) VALUES (?, ?, ?)',
-            [shippingId, tambons[0].tambon_id, address]
-        );
-
-
-        // Create customer record with generated c_id
-
+        // Create customer record
         await query(
             `INSERT INTO user (
                 c_id,
@@ -131,7 +165,6 @@ export default async function handler(req, res) {
                 1
             ]
         );
-   
 
         // Create session
         const sessionId = generateSessionId();
@@ -160,13 +193,7 @@ export default async function handler(req, res) {
         });
 
     } catch (error) {
-        console.error('Registration error:', {
-            message: error.message,
-            stack: error.stack,
-            code: error.code,
-            sqlMessage: error.sqlMessage
-        });
-
+        console.error('Registration error:', error);
         return res.status(500).json({
             error: 'Registration failed',
             message: process.env.NODE_ENV === 'development'
