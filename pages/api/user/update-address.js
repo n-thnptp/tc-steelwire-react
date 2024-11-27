@@ -28,6 +28,26 @@ export default async function handler(req, res) {
             return res.status(400).json({ error: 'Invalid tambon ID' });
         }
 
+        // Get location data for the selected tambon
+        const locationData = await query(`
+            SELECT 
+                t.tambon_id,
+                t.zip_code,
+                a.amphur_id,
+                p.province_id
+            FROM tambons t
+            JOIN amphurs a ON t.amphur_id = a.amphur_id
+            JOIN provinces p ON a.province_id = p.province_id
+            WHERE t.tambon_id = ?`,
+            [tambon]
+        );
+
+        if (!locationData.length) {
+            return res.status(400).json({ error: 'Invalid tambon ID' });
+        }
+
+        const { zip_code, amphur_id, province_id } = locationData[0];
+
         // Get province ID for the selected tambon
         const provinceResult = await query(`
             SELECT p.province_id 
@@ -72,8 +92,10 @@ export default async function handler(req, res) {
 
         if (!shippingAddressId) {
             const result = await query(
-                'INSERT INTO shipping_address (tambon_id, address) VALUES (?, ?)',
-                [tambon, address]
+                `INSERT INTO shipping_address 
+                (tambon_id, amphur_id, province_id, zip_code, address) 
+                VALUES (?, ?, ?, ?, ?)`,
+                [tambon, amphur_id, province_id, zip_code, address]
             );
 
             await query(
@@ -82,8 +104,10 @@ export default async function handler(req, res) {
             );
         } else {
             await query(
-                'UPDATE shipping_address SET tambon_id = ?, address = ? WHERE sh_id = ?',
-                [tambon, address || '', shippingAddressId]
+                `UPDATE shipping_address 
+                SET tambon_id = ?, amphur_id = ?, province_id = ?, zip_code = ?, address = ? 
+                WHERE sh_id = ?`,
+                [tambon, amphur_id, province_id, zip_code, address || '', shippingAddressId]
             );
         }
 
