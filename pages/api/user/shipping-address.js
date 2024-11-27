@@ -49,7 +49,10 @@ export default async function handler(req, res) {
             success: true,
             address: {
                 customer_name: `${address.firstname} ${address.lastname}`,
-                address: `${address.address} ${address.tambon_name} ${address.amphur_name} ${address.province_name} ${address.zip_code}`,
+                full_address: `${address.address} ตำบล${address.tambon_name} อำเภอ${address.amphur_name} จังหวัด${address.province_name} ${address.zip_code}`,
+                tambon_name: address.tambon_name,
+                amphur_name: address.amphur_name,
+                province_name: address.province_name,
                 phone: address.phone_number || '',
             },
             province_id: address.province_id

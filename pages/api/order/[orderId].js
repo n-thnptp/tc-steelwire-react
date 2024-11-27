@@ -40,7 +40,8 @@ export default async function handler(req, res) {
                 am.name_th AS amphur_name,
                 p.name_th AS province_name,
                 cr.name as courier_name,
-                cr.courier_id
+                cr.courier_id,
+                subtotal
             FROM \`order\` o
             JOIN user c ON o.c_id = c.c_id
             JOIN shipping_address sa ON c.sh_id = sa.sh_id

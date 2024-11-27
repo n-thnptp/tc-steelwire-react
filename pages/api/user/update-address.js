@@ -1,4 +1,5 @@
 import query from '../../../lib/db';
+import { calculateShippingFee } from '../../../lib/shipping-calculator';
 
 export default async function handler(req, res) {
     if (req.method !== 'POST') {
@@ -9,6 +10,8 @@ export default async function handler(req, res) {
     if (!sessionId) {
         return res.status(401).json({ error: 'Not authenticated' });
     }
+
+    console.log('Request body:', req.body);
 
     try {
         // Get user ID from session
@@ -22,16 +25,19 @@ export default async function handler(req, res) {
         }
 
         const userId = sessions[0].c_id;
-        const { address, tambon } = req.body;
+        const { address, tambon, amphur, province, zipCode } = req.body;
 
         if (!tambon) {
             return res.status(400).json({ error: 'Invalid tambon ID' });
         }
 
-        // Get location data for the selected tambon
+        // Get tambon name and location data
         const locationData = await query(`
             SELECT 
                 t.tambon_id,
+                t.name_th as tambon_name,
+                a.name_th as amphur_name,
+                p.name_th as province_name,
                 t.zip_code,
                 a.amphur_id,
                 p.province_id
@@ -42,47 +48,28 @@ export default async function handler(req, res) {
             [tambon]
         );
 
+        console.log('Database result:', locationData[0]);
+
         if (!locationData.length) {
             return res.status(400).json({ error: 'Invalid tambon ID' });
         }
 
-        const { zip_code, amphur_id, province_id } = locationData[0];
+        const { 
+            tambon_name, 
+            amphur_name, 
+            province_name, 
+            zip_code, 
+            amphur_id, 
+            province_id 
+        } = locationData[0];
 
-        // Get province ID for the selected tambon
-        const provinceResult = await query(`
-            SELECT p.province_id 
-            FROM tambons t
-            JOIN amphurs a ON t.amphur_id = a.amphur_id
-            JOIN provinces p ON a.province_id = p.province_id
-            WHERE t.tambon_id = ?`,
-            [tambon]
-        );
+        // Create search term
+        const searchTerm = `ตำบล${tambon_name} อำเภอ${amphur_name} จังหวัด${province_name}`;
+        
+        // Get coordinates and shipping fee
+        const { distance, shippingFee, coordinates } = await calculateShippingFee(searchTerm);
 
-        if (provinceResult.length > 0) {
-            const provinceId = provinceResult[0].province_id;
-            const freeShippingProvinces = [1, 2, 3, 4, 58, 59];
-            const newShippingFee = freeShippingProvinces.includes(provinceId) ? 0 : 3500;
-
-            // First get all orders with status = 1 and their current shipping fees
-            const pendingOrders = await query(
-                'SELECT o_id, o_total_price, shipping_fee FROM `order` WHERE c_id = ? AND o_status_id = 1',
-                [userId]
-            );
-
-            // Update shipping fee and total price for each order
-            for (const order of pendingOrders) {
-                const oldShippingFee = order.shipping_fee || 0;
-                const basePrice = order.o_total_price - oldShippingFee; // Remove old shipping fee
-                const newTotalPrice = basePrice + newShippingFee; // Add new shipping fee
-
-                await query(
-                    'UPDATE `order` SET shipping_fee = ?, o_total_price = ? WHERE o_id = ?',
-                    [newShippingFee, newTotalPrice, order.o_id]
-                );
-            }
-        }
-
-        // Rest of the address update logic
+        // Save coordinates
         const userResult = await query(
             'SELECT sh_id FROM user WHERE c_id = ?',
             [userId]
@@ -90,24 +77,65 @@ export default async function handler(req, res) {
 
         const shippingAddressId = userResult[0]?.sh_id;
 
-        if (!shippingAddressId) {
+        if (shippingAddressId) {
+            await query(
+                `UPDATE shipping_address 
+                 SET latitude = ?, 
+                     longitude = ?,
+                     tambon_id = ?,
+                     amphur_id = ?,
+                     province_id = ?,
+                     zip_code = ?,
+                     address = ?
+                 WHERE sh_id = ?`,
+                [
+                    coordinates.lat,
+                    coordinates.lng,
+                    tambon,
+                    amphur_id,
+                    province_id,
+                    zip_code,
+                    address || '',
+                    shippingAddressId
+                ]
+            );
+        } else {
             const result = await query(
                 `INSERT INTO shipping_address 
-                (tambon_id, amphur_id, province_id, zip_code, address) 
-                VALUES (?, ?, ?, ?, ?)`,
-                [tambon, amphur_id, province_id, zip_code, address]
+                (latitude, longitude, tambon_id, amphur_id, province_id, zip_code, address) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    coordinates.lat,
+                    coordinates.lng,
+                    tambon,
+                    amphur_id,
+                    province_id,
+                    zip_code,
+                    address
+                ]
             );
 
             await query(
                 'UPDATE user SET sh_id = ? WHERE c_id = ?',
                 [result.insertId, userId]
             );
-        } else {
+        }
+
+        // First get the current order details
+        const orders = await query(
+            `SELECT o_id, subtotal FROM \`order\` 
+             WHERE c_id = ? AND o_status_id = 1`,
+            [userId]
+        );
+
+        // Then update with correct calculations
+        for (const order of orders) {
             await query(
-                `UPDATE shipping_address 
-                SET tambon_id = ?, amphur_id = ?, province_id = ?, zip_code = ?, address = ? 
-                WHERE sh_id = ?`,
-                [tambon, amphur_id, province_id, zip_code, address || '', shippingAddressId]
+                `UPDATE \`order\` 
+                 SET shipping_fee = ?,
+                     o_total_price = subtotal + ?
+                 WHERE o_id = ?`,
+                [shippingFee, shippingFee, order.o_id]
             );
         }
 
@@ -137,10 +165,13 @@ export default async function handler(req, res) {
 
         return res.status(200).json({
             success: true,
-            user: users[0]
+            user: users[0],
+            distance,
+            shippingFee,
+            inFreeRadius: distance <= 80
         });
     } catch (error) {
         console.error('Update address error:', error);
-        return res.status(500).json({ error: 'Internal server error' });
+        return res.status(500).json({ error: error.message });
     }
 }

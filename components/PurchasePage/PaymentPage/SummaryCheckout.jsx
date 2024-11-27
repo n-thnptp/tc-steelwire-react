@@ -143,7 +143,7 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
               {address.customer_name}
             </p>
             <p className="text-sm text-[#4C4C60] font-inter">
-              {address.address}
+              {address.full_address}
             </p>
             <p className="text-sm text-[#4C4C60] font-inter">
               {address.phone}
@@ -158,7 +158,7 @@ const SummaryCheckout = ({ orderId, selectedFile, isPromptPayOpen }) => {
         <div className="mb-4 border-b pb-4">
           <p className="flex justify-between mb-3 text-[#4C4C60] font-bold font-inter">
             <span>SUBTOTAL</span> 
-            <span>{(orderDetails.o_total_price - orderDetails.shipping_fee).toLocaleString()} BAHT</span>
+            <span>{orderDetails.subtotal.toLocaleString()} BAHT</span>
           </p>
           <p className="flex justify-between text-[#4C4C60] font-bold font-inter mb-6">
             <span>SHIPPING FEE</span> 

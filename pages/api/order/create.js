@@ -6,8 +6,15 @@ export default async function handler(req, res) {
     }
 
     try {
-        const { total_price, shipping_fee } = req.body;
+        const { total_price, shipping_fee, subtotal } = req.body;
         const sessionId = req.cookies.sessionId;
+
+        // Validate prices
+        if (total_price !== subtotal + shipping_fee) {
+            return res.status(400).json({ 
+                message: 'Invalid total price. Must equal subtotal + shipping fee' 
+            });
+        }
 
         // Get customer ID from session
         const [sessionResult] = await query(
@@ -46,18 +53,19 @@ export default async function handler(req, res) {
             }
         }
 
-        // Create order
+        // Create order with subtotal
         const orderResult = await query(
             `INSERT INTO \`order\` (
                 c_id, 
+                subtotal,
                 o_total_price, 
                 o_status_id, 
                 o_date, 
                 shipping_fee, 
                 o_estimated_shipping_day
             )
-            VALUES (?, ?, 1, NOW(), ?, 3)`,
-            [customer_id, total_price, shipping_fee]
+            VALUES (?, ?, ?, 1, NOW(), ?, 3)`,
+            [customer_id, subtotal, total_price, shipping_fee]
         );
 
         const orderId = orderResult.insertId;
