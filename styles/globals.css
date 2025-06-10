@@ -1,0 +1,232 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html:focus-within {
+  scroll-behavior: smooth !important;
+}
+
+* {
+  scroll-behavior: smooth !important;
+}
+
+*:focus {
+  outline: none;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: theme(colors.primary.950);
+}
+
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: theme(colors.primary.500) theme(colors.neutral.gray.100);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: theme(colors.neutral.gray.300);
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: theme(colors.primary.500);
+  border-radius: 3px;
+}
+
+.separator {
+  font-family: 'Inter', 'sans-serif';
+  color: #a5a5a5;
+  display: flex;
+  align-items: center;
+  text-align: center;
+}
+
+.separator::before,
+.separator::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #a5a5a5;
+}
+
+.separator:not(:empty)::before {
+  margin-right: .25em;
+}
+
+.separator:not(:empty)::after {
+  margin-left: .25em;
+}
+
+.input-field {
+  font-family: 'Inter', 'sans-serif';
+  background-color: #FFF;
+  margin: auto;
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid theme(colors.neutral.gray.200); /* Change this line */
+  color: theme(colors.primary.700);
+  resize: none;
+}
+
+.primary-buttons {
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: normal;
+  height: 60px;
+  border-radius: 100px;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 10px;
+  background-color: theme(colors.primary.500);
+  color: theme(colors.neutral.white);
+}
+
+.primary-buttons::before {
+  content: '';
+  width: 0;
+  height: 100%;
+  border-radius: 101px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, theme(colors.primary.900) 0%, theme(colors.primary.700) 100%);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+  display: block;
+  z-index: -1;
+}
+
+.primary-buttons:hover::before {
+  width: 100%;
+}
+
+.primary-buttons:hover {
+  color: theme(colors.primary.200);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+}
+
+/* Disabled state styles */
+.primary-buttons:disabled,
+.primary-buttons.disabled {
+  background-color: theme(colors.neutral.gray.300);
+  color: theme(colors.neutral.gray.500);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.primary-buttons:disabled::before,
+.primary-buttons.disabled::before {
+  display: none;
+}
+
+.primary-buttons:disabled:hover,
+.primary-buttons.disabled:hover {
+  color: theme(colors.neutral.gray.300);
+  transition: none;
+}
+
+.secondary-buttons {
+  text-align: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  font-size: 22px;
+  line-height: normal;
+
+  height: 60px;
+  border: solid;
+  border-width: 1px;
+  border-radius: 100px;
+  border-color: theme(colors.primary.200);
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  padding: 10px;
+  background-color: theme(colors.white);
+  color: theme(colors.secondary.500);
+}
+
+.secondary-buttons::before {
+  content: '';
+  width: 0;
+  height: 100%;
+  border-radius: 101px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, theme(colors.secondary.600) 0%, theme(colors.secondary.600) 100%);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+  display: block;
+  z-index: -1;
+}
+
+.secondary-buttons:hover::before {
+  /* https://uiverse.io/xueyuantan/rotten-pig-19 */
+  width: 100%;
+}
+
+.secondary-buttons:hover {
+  color: theme(colors.neutral.white);
+  border-color: rgba(255, 0, 0, .0);
+  transition: .5s cubic-bezier(.31,.12,.33,1);
+}
+
+.button-underline {
+  display: inline-block;
+  position: relative;
+  padding-bottom: 2px;
+  font-weight: 700;
+  color: theme(colors.primary.700);
+  transition: color 0.25s ease-out;
+}
+
+/* Style for non-selected items */
+.button-underline:not(.selected)::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: theme(colors.primary.700);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.button-underline:not(.selected):hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Style for selected items */
+.button-underline.selected {
+  position: relative;
+  color: theme(colors.primary.700);
+}
+
+.button-underline.selected::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  bottom: 0;
+  left: 0;
+  background-color: theme(colors.primary.700);
+  transform: scaleX(1);
+}
+
+/* Prevent hover effect on selected items */
+.button-underline.selected:hover::after {
+  transform: scaleX(1);
+}
